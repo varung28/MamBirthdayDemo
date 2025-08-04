@@ -5,6 +5,8 @@
 *.spv
 *.txt
 
+glm/*
+
 # Object files
 *.o
 *.ko
