@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+*.res
+*.spv
+*.txt
+
 # Object files
 *.o
 *.ko
