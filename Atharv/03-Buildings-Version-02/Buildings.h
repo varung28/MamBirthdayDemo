@@ -15,39 +15,15 @@
 
 extern FILE* gpFile;
 extern int winWidth, winHeight;
+
 extern VkDevice vkDevice;
+extern VkDescriptorSet vkDescriptorSet;
 extern VkPhysicalDeviceMemoryProperties vkPhysicalDeviceMemoryProperties;
 extern VkCommandBuffer* vkCommandBuffer_array;
 extern VkPipelineLayout vkPipelineLayout;
-extern VkDescriptorSetAllocateInfo vkDescriptorSetAllocateInfo;
-extern VkDescriptorPool vkDescriptorPool;
-extern VkDescriptorSetLayout vkDescriptorSetLayout;
-
-//? Vertex Buffer Related Variables
-typedef struct
-{
-    VkBuffer vkBuffer;
-    VkDeviceMemory vkDeviceMemory;
-} VertexData;
-
-typedef struct
-{
-    glm::mat4 modelMatrix;
-    glm::mat4 viewMatrix;
-    glm::mat4 projectionMatix;
-} MVP_UniformData;
-
-typedef struct
-{
-    VkBuffer vkBuffer;
-    VkDeviceMemory vkDeviceMemory;
-} UniformData;
-
 
 VkResult createVertexBuffer_buildings(void);
-VkResult createUniformBuffer_buildings(void);
 VkResult updateUniformBuffer_buildings(void);
-VkResult createDescriptorSet_buildings(void);
 void buildCommandBuffers_buildings(int);
 void uninitialize_buildings(void);
 

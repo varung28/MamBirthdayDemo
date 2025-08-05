@@ -1,21 +1,46 @@
 #include "Buildings.h"
 
+#define BUILDING_GEOMETRY_COUNT  7
+
 // Global Variable Declarations
-typedef struct 
+//? Vertex Buffer Related Variables
+typedef struct
+{
+    VkBuffer vkBuffer;
+    VkDeviceMemory vkDeviceMemory;
+} VertexData;
+
+typedef struct
+{
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatix;
+} VP_UniformData;
+
+typedef struct
+{
+    glm::mat4 modelMatrix;
+} PushData;
+
+typedef struct
+{
+    VkBuffer vkBuffer;
+    VkDeviceMemory vkDeviceMemory;
+} UniformData;
+
+typedef struct
 {
     VertexData vertexData_position;
     VertexData vertexData_color;
-    UniformData uniformData;
-    VkDescriptorSet vkDescriptorSet;
-    float color;
+    PushData modelData;
 } Buildings;
 
-Buildings buildings[5];
+Buildings buildings[7];
 
+extern UniformData uniformData;
 
 //! INTERNAL FUNCTIONS
 //! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-VkResult __createVertexBuffer(int index, float* position, float* color)
+VkResult __createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -35,7 +60,7 @@ VkResult __createVertexBuffer(int index, float* position, float* color)
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = 18 * sizeof(float);
+    vkBufferCreateInfo.size = positionSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     
     //* Step - 6
@@ -98,7 +123,7 @@ VkResult __createVertexBuffer(int index, float* position, float* color)
         fprintf(gpFile, "%s() => vkMapMemory() Succeeded For Vertex Position Buffer For Building Index : %d\n", __func__, index);
 
     //* Step - 12
-    memcpy(data, position, 18 * sizeof(float));
+    memcpy(data, position, positionSize);
 
     //* Step - 13
     vkUnmapMemory(vkDevice, buildings[index].vertexData_position.vkDeviceMemory);
@@ -114,7 +139,7 @@ VkResult __createVertexBuffer(int index, float* position, float* color)
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = 18 * sizeof(float);
+    vkBufferCreateInfo.size = colorSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     
     //* Step - 6
@@ -178,7 +203,7 @@ VkResult __createVertexBuffer(int index, float* position, float* color)
         fprintf(gpFile, "%s() => vkMapMemory() Succeeded For Vertex Color Buffer For Building Index : %d\n", __func__, index);
 
     //* Step - 12
-    memcpy(data, color, 18 * sizeof(float));
+    memcpy(data, color, colorSize);
 
     //* Step - 13
     vkUnmapMemory(vkDevice, buildings[index].vertexData_color.vkDeviceMemory);
@@ -187,169 +212,28 @@ VkResult __createVertexBuffer(int index, float* position, float* color)
     return vkResult;
 }
 
-VkResult __createUniformBuffer(int index)
+void __buildCommandBuffers(int swapchainImageIndex)
 {
-    // Variable Declarations
-    VkResult vkResult;
-
-    VkBufferCreateInfo vkBufferCreateInfo;
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
-    vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;
-    vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = sizeof(MVP_UniformData);
-    vkBufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-
-    memset((void*)&buildings[index].uniformData, 0, sizeof(UniformData));
-
-    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &buildings[index].uniformData.vkBuffer);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Uniform Data Used For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-        return vkResult;
-    }
-    else
-        fprintf(gpFile, "%s() => vkCreateBuffer() Succeeded For Uniform Data Used For Building Index : %d\n", __func__, index);
-    
-    VkMemoryRequirements vkMemoryRequirements;
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
-    vkGetBufferMemoryRequirements(vkDevice, buildings[index].uniformData.vkBuffer, &vkMemoryRequirements);
-
-    VkMemoryAllocateInfo vkMemoryAllocateInfo;
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
-    vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    vkMemoryAllocateInfo.pNext = NULL;
-    vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
-    vkMemoryAllocateInfo.memoryTypeIndex = 0;
-
-    for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
-    {
-        if ((vkMemoryRequirements.memoryTypeBits & 1) == 1)
-        {
-            if (vkPhysicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-            {
-                vkMemoryAllocateInfo.memoryTypeIndex = i;
-                break;
-            }
-        }
-
-        vkMemoryRequirements.memoryTypeBits >>= 1;
-    }
-
-    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &buildings[index].uniformData.vkDeviceMemory);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() => vkAllocateMemory() Failed For Uniform Data Used For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-        return vkResult;
-    }     
-    else
-        fprintf(gpFile, "%s() => vkAllocateMemory() Succeeded For Uniform Data Used For Building Index : %d\n", __func__, index);
-
-    vkResult = vkBindBufferMemory(vkDevice, buildings[index].uniformData.vkBuffer, buildings[index].uniformData.vkDeviceMemory, 0);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() => vkBindBufferMemory() Failed For Uniform Data Used For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-        return vkResult;
-    }
-    else
-        fprintf(gpFile, "%s() => vkBindBufferMemory() Succeeded For Uniform Data Used For Building Index : %d\n", __func__, index);
-
-    return vkResult;
-}
-
-VkResult __updateUniformBuffer(int index, MVP_UniformData* mvp_UniformData)
-{
-    // Variable Declarations
-    VkResult vkResult = VK_SUCCESS;
-    void* data = NULL;
-
-    // Code
-
-    //! Map Uniform Buffer
-    vkResult = vkMapMemory(vkDevice, buildings[index].uniformData.vkDeviceMemory, 0, sizeof(MVP_UniformData), 0, &data);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() => vkMapMemory() Failed For Uniform Buffer For Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-        return vkResult;
-    }
-
-    //! Copy the data to the mapped buffer (present on device memory)
-    memcpy(data, &mvp_UniformData, sizeof(MVP_UniformData));
-
-    //! Unmap memory
-    vkUnmapMemory(vkDevice, buildings[index].uniformData.vkDeviceMemory);
-
-    return vkResult;
-}
-
-VkResult __createDescriptorSet(int index)
-{
-    // Variable Declarations
-    VkResult vkResult = VK_SUCCESS;
-
-    // Code
-
-    //* Initialize DescriptorSetAllocationInfo
-    VkDescriptorSetAllocateInfo vkDescriptorSetAllocateInfo;
-    memset((void*)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
-    vkDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    vkDescriptorSetAllocateInfo.pNext = NULL;
-    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool;
-    vkDescriptorSetAllocateInfo.descriptorSetCount = 1;
-    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout;
-
-    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &buildings[index].vkDescriptorSet);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() => vkAllocateDescriptorSets() Failed For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-        return vkResult;
-    }  
-    else
-        fprintf(gpFile, "%s() => vkAllocateDescriptorSets() Succeeded For Building Index : %d\n", __func__, index);
-    
-    //* Describe whether we want buffer as uniform or image as uniform
-    VkDescriptorBufferInfo vkDescriptorBufferInfo;
-    memset((void*)&vkDescriptorBufferInfo, 0, sizeof(VkDescriptorBufferInfo));
-    vkDescriptorBufferInfo.buffer = buildings[index].uniformData.vkBuffer;
-    vkDescriptorBufferInfo.offset = 0;
-    vkDescriptorBufferInfo.range = sizeof(MVP_UniformData);
-
-    /* Update above descriptor set directly to the shader
-    There are 2 ways :-
-        1) Writing directly to the shader
-        2) Copying from one shader to another shader
-    */
-    VkWriteDescriptorSet vkWriteDescriptorSet;
-    memset((void*)&vkWriteDescriptorSet, 0, sizeof(VkWriteDescriptorSet));
-    vkWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    vkWriteDescriptorSet.pNext = NULL;
-    vkWriteDescriptorSet.dstSet = buildings[index].vkDescriptorSet;
-    vkWriteDescriptorSet.dstArrayElement = 0;
-    vkWriteDescriptorSet.descriptorCount = 1;
-    vkWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    vkWriteDescriptorSet.pBufferInfo = &vkDescriptorBufferInfo;
-    vkWriteDescriptorSet.pImageInfo = NULL;
-    vkWriteDescriptorSet.pTexelBufferView = NULL;
-    vkWriteDescriptorSet.dstBinding = 0;
-
-    vkUpdateDescriptorSets(vkDevice, 1, &vkWriteDescriptorSet, 0, NULL);
-    //! -------------------------------------------------------------------------------------------------------------------------------------
-
-    return vkResult;
-}
-
-void __buildCommandBuffers(int swapchainImageIndex, int index)
-{
-    //! Bind the Descriptor Set to the Pipeline
+    //* Building 1
+    //* ----------------------------------------------------------------------------------------
     vkCmdBindDescriptorSets(
         vkCommandBuffer_array[swapchainImageIndex],
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         vkPipelineLayout,
         0,
         1,
-        &buildings[index].vkDescriptorSet,
+        &vkDescriptorSet,
         0,
         NULL
+    );
+
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[0].modelData
     );
 
     //! Bind with Vertex Position Buffer
@@ -359,7 +243,7 @@ void __buildCommandBuffers(int swapchainImageIndex, int index)
         vkCommandBuffer_array[swapchainImageIndex], 
         0, 
         1, 
-        &buildings[index].vertexData_position.vkBuffer, 
+        &buildings[0].vertexData_position.vkBuffer, 
         vkDeviceSize_offset_position
     );
 
@@ -370,14 +254,222 @@ void __buildCommandBuffers(int swapchainImageIndex, int index)
         vkCommandBuffer_array[swapchainImageIndex], 
         1, 
         1, 
-        &buildings[index].vertexData_color.vkBuffer, 
+        &buildings[0].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 3, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[1].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[1].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[1].vertexData_color.vkBuffer, 
         vkDeviceSize_offset_color
     );
 
     //! Vulkan Drawing Function
     vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-}
+    //* ----------------------------------------------------------------------------------------
 
+    //* Building 2
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[2].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[2].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[2].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+    
+    //* Building 3
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[3].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[3].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[3].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 4
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[4].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[4].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[4].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 5
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[5].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[5].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[5].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 6
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        vkCommandBuffer_array[swapchainImageIndex],
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[6].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        0, 
+        1, 
+        &buildings[6].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        vkCommandBuffer_array[swapchainImageIndex], 
+        1, 
+        1, 
+        &buildings[6].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+}
 //! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //! EXPORT FUNCTIONS
@@ -388,69 +480,229 @@ VkResult createVertexBuffer_buildings(void)
     VkResult vkResult = VK_SUCCESS;
 
     // Code
-    float rectangle_position[] = 
+    float triangle_position[] = 
     {
-        // Triangle 1
-        1.0f,   1.0f,   0.0f,   // Top Right
-        -1.0f,  1.0f,   0.0f,   // Top Left
-        -1.0f,  -1.0f,  0.0f,   // Bottom Left
-
-        // Triangle 2
-        -1.0f,  -1.0f,  0.0f,   // Bottom Left
-        1.0f,   -1.0f,  0.0f,   // Bottom Right
-        1.0f,   1.0f,   0.0f,   // Top Right
+        0.0f,   1.0f,   0.0f,
+        -1.0f,  -1.0f,  0.0f,
+        1.0f,   -1.0f,  0.0f  
     };
 
-    float rectangle_color[] = 
+    float triangle_color[] = 
     {
-        0.0f,   0.0f,   1.0f,
-        0.0f,   0.0f,   1.0f,
-        0.0f,   0.0f,   1.0f,
+        0.498f,   0.450f,   0.443f,
+        0.498f,   0.450f,   0.443f,
+        0.498f,   0.450f,   0.443f
+    };
 
-        0.0f,   0.0f,   1.0f,
-        0.0f,   0.0f,   1.0f,
-        0.0f,   0.0f,   1.0f
+    float rectangle_position[] = 
+    {
+        1.0f,   1.0f,   0.0f,
+        -1.0f,  1.0f,   0.0f,
+        -1.0f,  -1.0f,  0.0f,
+        -1.0f,  -1.0f,  0.0f,
+        1.0f,   -1.0f,  0.0f,
+        1.0f,   1.0f,   0.0f
+    };
+
+    float rectangle_5_position[] = 
+    {
+        0.1f,   1.0f,   0.0f,
+        -1.0f,  1.0f,   0.0f,
+        -1.0f,  -1.0f,  0.0f,
+        -1.0f,  -1.0f,  0.0f,
+        1.1f,   -1.0f,  0.0f,
+        0.1f,   1.0f,   0.0f
+    };
+
+    float rectangle_1_color[] = 
+    {
+        0.443f,   0.450f,   0.494f,
+        0.443f,   0.450f,   0.494f,
+        0.443f,   0.450f,   0.494f,
+        0.443f,   0.450f,   0.494f,
+        0.443f,   0.450f,   0.494f,
+        0.443f,   0.450f,   0.494f
+    };
+
+    float rectangle_2_color[] = 
+    {
+        0.396f,   0.4f,   0.541f,
+        0.396f,   0.4f,   0.541f,
+        0.396f,   0.4f,   0.541f,
+        0.396f,   0.4f,   0.541f,
+        0.396f,   0.4f,   0.541f,
+        0.396f,   0.4f,   0.541f
+    };
+
+    float rectangle_3_color[] = 
+    {
+        0.890f,   0.835f,   0.784f,
+        0.890f,   0.835f,   0.784f,
+        0.890f,   0.835f,   0.784f,
+        0.890f,   0.835f,   0.784f,
+        0.890f,   0.835f,   0.784f,
+        0.890f,   0.835f,   0.784f
+    };
+
+    float rectangle_4_color[] = 
+    {
+        0.647f,   0.647f,   0.647f,
+        0.647f,   0.647f,   0.647f,
+        0.647f,   0.647f,   0.647f,
+        0.647f,   0.647f,   0.647f,
+        0.647f,   0.647f,   0.647f,
+        0.647f,   0.647f,   0.647f
+    };
+
+    float rectangle_5_color[] = 
+    {
+        0.501f,   0.501f,   0.501f,
+        0.501f,   0.501f,   0.501f,
+        0.501f,   0.501f,   0.501f,
+        0.501f,   0.501f,   0.501f,
+        0.501f,   0.501f,   0.501f,
+        0.501f,   0.501f,   0.501f
+    };
+
+    float rectangle_6_color[] = 
+    {
+        0.345f,   0.345f,   0.345f,
+        0.345f,   0.345f,   0.345f,
+        0.345f,   0.345f,   0.345f,
+        0.345f,   0.345f,   0.345f,
+        0.345f,   0.345f,   0.345f,
+        0.345f,   0.345f,   0.345f
     };
 
     // Code
-    return __createVertexBuffer(0, rectangle_position, rectangle_color);
-}
-
-VkResult createUniformBuffer_buildings(void)
-{
-    // Variable Declarations
-    VkResult vkResult = VK_SUCCESS;
-
-    vkResult = __createUniformBuffer(0);
+    vkResult = __createVertexBuffer(0, triangle_position, sizeof(triangle_position), triangle_color, sizeof(triangle_color));
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "%s() => __createUniformBuffer() Failed For For Building Index : %d, Reason : %d !!!\n", __func__, 0, vkResult);
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 0, Reason : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }
+    }    
     else
-        fprintf(gpFile, "%s() => __createUniformBuffer() Succeeded For For Building Index : %d\n", __func__, 0);
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
-    vkResult = updateUniformBuffer_buildings();
+    vkResult = __createVertexBuffer(1, rectangle_position, sizeof(rectangle_position), rectangle_1_color, sizeof(rectangle_1_color));
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "%s() => updateUniformBuffer_buildings() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 1 : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }
+    }    
     else
-        fprintf(gpFile, "%s() => updateUniformBuffer_buildings() Succeeded\n", __func__);
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
+    vkResult = __createVertexBuffer(2, rectangle_position, sizeof(rectangle_position), rectangle_2_color, sizeof(rectangle_2_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 2: %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }    
+    else
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
+
+    vkResult = __createVertexBuffer(3, rectangle_position, sizeof(rectangle_position), rectangle_3_color, sizeof(rectangle_3_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 3: %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }    
+    else
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
+
+    vkResult = __createVertexBuffer(4, rectangle_position, sizeof(rectangle_position), rectangle_4_color, sizeof(rectangle_4_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 4: %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }    
+    else
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
+
+    vkResult = __createVertexBuffer(5, rectangle_5_position, sizeof(rectangle_position), rectangle_5_color, sizeof(rectangle_5_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 5: %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }    
+    else
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
+
+    vkResult = __createVertexBuffer(6, rectangle_position, sizeof(rectangle_position), rectangle_6_color, sizeof(rectangle_6_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 6: %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }    
+    else
+        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
+    
     return vkResult;
 }
 
 VkResult updateUniformBuffer_buildings(void)
 {
-    // Code
-    MVP_UniformData mvp_UniformData;
-    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
 
-    //! Update Matrices
-    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+    // Code
+    VP_UniformData mvp_UniformData;
+    memset((void*)&mvp_UniformData, 0, sizeof(VP_UniformData));
+
+    glm::mat4 translationMatrix = glm::mat4(1.0f);
+    glm::mat4 scaleMatrix = glm::mat4(1.0f);
+
+    //* Building 1
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, 0.9f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.4f, 0.3f));
+    buildings[0].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[0].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, -0.5f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 1.0f, 0.3f));
+    buildings[1].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[1].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 2
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -0.8f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.9f, 0.7f, 0.3f));
+    buildings[2].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[2].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 3
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -0.5f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 1.0f, 0.3f));
+    buildings[3].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[3].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 4
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.3f, -0.6f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.9f, 0.3f));
+    buildings[4].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[4].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.8f, -0.85f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 0.65f, 0.3f));
+    buildings[5].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[5].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 5
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -0.8f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.2f, 0.7f, 0.3f));
+    buildings[6].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[6].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
     
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
@@ -464,54 +716,35 @@ VkResult updateUniformBuffer_buildings(void)
     perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
     mvp_UniformData.projectionMatix = perspectiveProjectionMatrix;
 
-    return __updateUniformBuffer(0, &mvp_UniformData);
-}
-
-VkResult createDescriptorSet_buildings(void)
-{
-    // Variable Declarations
-    VkResult vkResult = VK_SUCCESS;
-
-    // Code
-    vkResult = __createDescriptorSet(0);
+    //! Map Uniform Buffer
+    void* data = NULL;
+    vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(VP_UniformData), 0, &data);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "%s() => __createDescriptorSet() Failed For Building Index : %d, Reason : %d !!!\n", __func__, 0, vkResult);
+        fprintf(gpFile, "%s() => vkMapMemory() Failed For Uniform Buffer For Buildings : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }  
-    else
-        fprintf(gpFile, "%s() => __createDescriptorSet() Succeeded For Building Index : %d\n", __func__, 0);
-    
+    }
+
+    //! Copy the data to the mapped buffer (present on device memory)
+    memcpy(data, &mvp_UniformData, sizeof(VP_UniformData));
+
+    //! Unmap memory
+    vkUnmapMemory(vkDevice, uniformData.vkDeviceMemory);
+
     return vkResult;
 }
 
 void buildCommandBuffers_buildings(int swapchainImageIndex)
 {
     // Code
-    __buildCommandBuffers(swapchainImageIndex, 0);
+    __buildCommandBuffers(swapchainImageIndex);
 }
 
 void uninitialize_buildings(void)
 {
     // Code
-    for (int i = BUILDING_COUNT - 1; i <= 0; i++)
+     for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)
     {
-        buildings[i].vkDescriptorSet = VK_NULL_HANDLE;
-        
-        if (buildings[i].uniformData.vkDeviceMemory)
-        {
-            vkFreeMemory(vkDevice, buildings[i].uniformData.vkDeviceMemory, NULL);
-            buildings[i].uniformData.vkDeviceMemory = VK_NULL_HANDLE;
-            fprintf(gpFile, "%s() => vkFreeMemory() Succeeded For Uniform Buffer, Building Index : %d\n", __func__, i);
-        }
-
-        if (buildings[i].uniformData.vkBuffer)
-        {
-            vkDestroyBuffer(vkDevice, buildings[i].uniformData.vkBuffer, NULL);
-            buildings[i].uniformData.vkBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "%s() => vkDestroyBuffer() Succeeded For Uniform Buffer, Building Index : %d\n", __func__, i);
-        }
-
         if (buildings[i].vertexData_color.vkDeviceMemory)
         {
             vkFreeMemory(vkDevice, buildings[i].vertexData_color.vkDeviceMemory, NULL);

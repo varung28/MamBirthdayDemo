@@ -20,7 +20,8 @@ cl.exe  /c ^
         /std:c++17 ^
         /I %VULKAN_INCLUDE_PATH% ^
         /I %VULKAN_INCLUDE_PATH%\glm ^
-        Vk.cpp
+        Vk.cpp ^
+        Buildings.cpp
 
 if errorlevel 1 (
         @echo:
@@ -65,6 +66,7 @@ echo Creating Executable...
 echo ----------------------------------------------------------------------------------------------------------------
 link.exe ^
         Vk.obj ^
+        Buildings.obj ^
         Vk.res ^
         /LIBPATH:%VULKAN_LIB_PATH% user32.lib gdi32.lib /SUBSYSTEM:WINDOWS
 
