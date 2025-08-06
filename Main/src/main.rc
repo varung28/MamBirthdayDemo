@@ -1,0 +1,3 @@
+#include "main.h"
+
+MYICON ICON resources/textures/vks.ico
