@@ -3300,7 +3300,7 @@ VkResult createShader(void)
 
 	// CODE
 	// VERTEX SHADER
-	const char *szFileName = "shaders\\shader.vert.spv";
+	const char *szFileName = "bin\\shader.vert.spv";
 	FILE *fp = NULL;
 	size_t size;
 
@@ -3372,7 +3372,7 @@ VkResult createShader(void)
 	fprintf(gpFile, "===========================================================================================\n");
 
 	// FRAGMENT SHADER
-	szFileName = "shaders\\shader.frag.spv";
+	szFileName = "bin\\shader.frag.spv";
 	fp = NULL;
 	size = 0;
 

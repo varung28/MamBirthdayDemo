@@ -25,26 +25,28 @@ if not exist %GLSLANG_VALIDATOR% (
     exit /b
 )
 
-:: Compile Vertex Shader
-echo [Compiling] Vertex Shader: shader.vert -> shader.vert.spv
-echo.
-%GLSLANG_VALIDATOR% -V -H -o shaders\shader.vert.spv shaders\shader.vert
-if %ERRORLEVEL% neq 0 (
-    echo [Error] Failed to compile shader.vert
-    pause
-    exit /b
+for /r %%i in (*.vert) do (
+    set "INPUT=%%i"
+    set "FILENAME=%%~nxi"
+    set "OUTPUT=bin\%%~nxi.spv"
+
+    echo [Compiling] %INPUT% -> %OUTPUT%
+    %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
+    echo [Success] %FILENAME% compiled.
+    echo.
 )
 echo [Success] Vertex shader compiled successfully.
 echo.
 
-:: Compile Fragment Shader
-echo [Compiling] Fragment Shader: shader.frag -> shader.frag.spv
-echo.
-%GLSLANG_VALIDATOR% -V -H -o shaders\shader.frag.spv shaders\shader.frag
-if %ERRORLEVEL% neq 0 (
-    echo [Error] Failed to compile shader.frag
-    pause
-    exit /b
+for /r %%i in (*.frag) do (
+    set "INPUT=%%i"
+    set "FILENAME=%%~nxi"
+    set "OUTPUT=bin\%%~nxi.spv"
+
+    echo [Compiling] %INPUT% -> %OUTPUT%
+    %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
+    echo [Success] %FILENAME% compiled.
+    echo.
 )
 echo [Success] Fragment shader compiled successfully.
 echo.
