@@ -8,7 +8,7 @@ echo ===========================================================================
 echo.
 
 :: Define project name
-set PROJECT_NAME=main
+set PROJECT_NAME=VkMain
 
 :: Define Vulkan SDK path (update if needed)
 set VULKAN_SDK=C:\VulkanSDK\vulkan

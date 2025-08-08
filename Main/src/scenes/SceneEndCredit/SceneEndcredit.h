@@ -2,6 +2,8 @@
 #define SCENEENDCREDITS_H
 
 #include "../../helper/Geometry.h"
+#include "../../helper/ShaderModule.h"
+#include "../../helper/PipelineBuilder.h"
 
 class SceneEndCredit
 {
@@ -12,6 +14,10 @@ private:
     StopWatchInterface *timer = NULL;
     double elapsed_time = 0.0f;
     bool completed = false;
+
+    VkShaderModule vkShaderModule_Vertex = VK_NULL_HANDLE;
+    VkShaderModule vkShaderModule_Fragment = VK_NULL_HANDLE;
+    VulkanPipelineBuilder textureQuadPipeline = nullptr;
 
 public:
     SceneEndCredit(/* args */);

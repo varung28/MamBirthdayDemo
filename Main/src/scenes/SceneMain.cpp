@@ -7,6 +7,11 @@ SceneMain::SceneMain(/* args */)
 
 SceneMain::~SceneMain()
 {
+    if (sceneEndCredit)
+    {
+        delete sceneEndCredit;
+        sceneEndCredit = nullptr;
+    }
 }
 
 void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)

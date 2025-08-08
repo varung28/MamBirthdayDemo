@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "main.h"
+#include "VkMain.h"
 
 // VULKAN HEADERS
 #define VK_USE_PLATFORM_WIN32_KHR
