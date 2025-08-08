@@ -16,6 +16,7 @@
 #include "../external/glm/gtc/matrix_transform.hpp"
 
 #include "helper/Geometry.h"
+#include "scenes/SceneMain.h"
 
 // VULKAN LIBRARY LINKING
 #pragma comment(lib, "vulkan-1.lib")
@@ -162,7 +163,7 @@ VkPipeline vkPipeline;
 float angle = 0.0f;
 
 Pyramid *pyramid = nullptr;
-Quad *quad = nullptr;
+SceneMain *mainScene = nullptr;
 
 // ENTRY POINT FUNCTION
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -729,7 +730,7 @@ VkResult initialize(void)
 	// INITIALIZE CUBE GEOMETRY
 	pyramid = new Pyramid();
 
-	quad = new Quad();
+	mainScene = new SceneMain();
 
 	vkResult = buildCommandBuffers();
 	if (vkResult != VK_SUCCESS)
@@ -1267,11 +1268,11 @@ void uninitialize(void)
 		fprintf(gpFile, "%s => Pyramd Buffer DESTROYED SUCCESSFULLY.\n", __func__);
 	}
 
-	if (quad)
+	if (mainScene)
 	{
-		delete quad;
-		quad = nullptr;
-		fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
+		delete mainScene;
+		mainScene = nullptr;
+		fprintf(gpFile, "%s => MAIN SCENE DESTROYED SUCCESSFULLY.\n", __func__);
 	}
 
 	// DESTROY SHADER MOUDLE
@@ -3860,7 +3861,7 @@ VkResult buildCommandBuffers(void)
 
 			pyramid->initialCommandBuffer(vkCommandBuffer_Array[i]);
 
-			quad->initialCommandBuffer(vkCommandBuffer_Array[i]);
+			mainScene->initialCommandBuffer(vkCommandBuffer_Array[i]);
 		}
 		vkCmdEndRenderPass(vkCommandBuffer_Array[i]);
 

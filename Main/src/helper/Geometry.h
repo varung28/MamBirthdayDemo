@@ -1,3 +1,6 @@
+#ifndef GEOMTRY_H
+#define GEOMTRY_H
+
 #include "Common.h"
 
 typedef struct
@@ -20,7 +23,6 @@ public:
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
 };
 
-
 class Quad
 {
 private:
@@ -34,3 +36,5 @@ public:
 
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
 };
+
+#endif // GEMETRY_H

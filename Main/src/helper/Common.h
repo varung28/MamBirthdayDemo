@@ -1,3 +1,6 @@
+#ifndef COMMON_H
+#define COMMON_H
+
 // VULKAN HEADERS
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
@@ -7,6 +10,8 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "../../external/glm/glm.hpp"
 #include "../../external/glm/gtc/matrix_transform.hpp"
+
+#include "../../external/helper_timer/helper_timer.h"
 
 extern BOOL gbActiveWindow;
 extern HWND ghwnd;
@@ -41,3 +46,23 @@ extern VkDevice vkDevice;
 
 // DEVICE QUEUE
 extern VkQueue vkQueue;
+
+namespace TSM
+{
+    enum SCENE
+    {
+        INTRO = 0,
+        MAIN,
+        END_CREDITS
+    };
+
+    extern double SCENE_INTRO_TIME;
+    extern double SCENE_MAIN_TIME;
+    extern double SCENE_ENDCREDITS_TIME;
+
+    extern double g_current_scene_time;
+    extern double g_delta_time;
+    extern unsigned int selectedScene;
+}
+
+#endif // COMMON_H
