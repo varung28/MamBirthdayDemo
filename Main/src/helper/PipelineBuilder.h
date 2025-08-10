@@ -14,7 +14,7 @@ public:
     VkRect2D mScissor;
 
     VkPipelineRasterizationStateCreateInfo mRasterizer;
-    VkPipelineColorBlendAttachmentState mColorBlendAttachment;
+     VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo;
     VkPipelineMultisampleStateCreateInfo mMultisampling;
     VkPipelineLayout mPipelineLayout;
     VkPipelineDepthStencilStateCreateInfo mDepthStencil;

@@ -15,6 +15,7 @@ public:
     ~SceneMain();
 
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
+    void onResize(int width, int height);
     void update(void);
 };
 

@@ -22,3 +22,8 @@ void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 void SceneMain::update(void)
 {
 }
+
+void SceneMain::onResize(int width, int height)
+{
+    sceneEndCredit->onResize(width, height);
+}

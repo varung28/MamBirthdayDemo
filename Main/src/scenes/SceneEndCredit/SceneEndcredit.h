@@ -17,22 +17,17 @@ private:
 
     VkShaderModule vkShaderModule_Vertex = VK_NULL_HANDLE;
     VkShaderModule vkShaderModule_Fragment = VK_NULL_HANDLE;
-    VulkanPipelineBuilder textureQuadPipeline = nullptr;
+    VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
+    VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
 public:
     SceneEndCredit(/* args */);
     ~SceneEndCredit();
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
-    void update(void)
-    {
-        elapsed_time = sdkGetTimerValue(&timer);
-        elapsed_time = elapsed_time / 1000.0f;
+    void createPipeline(void);
+    void update(void);
+    void onResize(int width, int height);
 
-        if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
-        {
-            completed = true;
-        }
-    }
     inline bool isCompleted(void)
     {
         return completed;
