@@ -743,7 +743,7 @@ void buildCommandBuffers_buildings(int swapchainImageIndex)
 void uninitialize_buildings(void)
 {
     // Code
-     for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)
+    for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)
     {
         if (buildings[i].vertexData_color.vkDeviceMemory)
         {
