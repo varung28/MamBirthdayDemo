@@ -10,13 +10,16 @@ SceneMyTown::SceneMyTown(/* args */)
 
     ///////////////////////////// PIPELINE RELATED CODE ////////////////////////////////
     vkShaderModule_Vertex = ShaderModuleHelper::LoadShaderModule("bin\\shader.vert.spv");
-    vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv");
+    vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader_red.frag.spv");
 
     textureQuadPipelineBuilder = new VulkanPipelineBuilder();
 
     createPipeline();
-    
+
     ////////////////////////////////////////////////////////////////////////////////////
+
+    scenePradnya = new ScenePradnya();
+    scenePradnya->initialize();
 
     sdkCreateTimer(&timer);
 }
@@ -98,6 +101,12 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
+    if (scenePradnya)
+    {
+        scenePradnya->uninitialize();
+        delete scenePradnya;
+        scenePradnya = nullptr;
+    }
     if (quad)
     {
         delete quad;
@@ -124,13 +133,15 @@ SceneMyTown::~SceneMyTown()
 void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
 
-    // BIND WITH THE PIPELINE
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineTexture);
+    // // BIND WITH THE PIPELINE
+    // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineTexture);
 
-    // BIND OUR DESCRIPTOR SET TO PIPELINE
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
+    // // BIND OUR DESCRIPTOR SET TO PIPELINE
+    // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
 
-    quad->initialCommandBuffer(commandBuffer);
+    // quad->initialCommandBuffer(commandBuffer);
+
+    scenePradnya->buildCommandBuffers(commandBuffer);
 }
 
 void SceneMyTown::update(void)
@@ -141,6 +152,11 @@ void SceneMyTown::update(void)
     if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
     {
         completed = true;
+    }
+
+    if (scenePradnya)
+    {
+        scenePradnya->update();
     }
 }
 
@@ -154,4 +170,9 @@ void SceneMyTown::onResize(int width, int height)
     }
 
     createPipeline();
+
+    if (scenePradnya)
+    {
+        scenePradnya->resize(width, height);
+    }
 }

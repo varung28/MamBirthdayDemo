@@ -1,30 +1,33 @@
 #include "../../helper/Common.h"
 #include "../../helper/Geometry.h"
+#include "../../helper/ShaderModule.h"
+#include "../../helper/PipelineBuilder.h"
 
 class SceneIntro
 {
 private:
     /* data */
+    StopWatchInterface *timer = NULL;
+    double elapsed_time = 0.0f;
+    bool completed = false;
+
+    Pyramid *pyramid = nullptr;
+
+    VkShaderModule vkShaderModule_Vertex = VK_NULL_HANDLE;
+    VkShaderModule vkShaderModule_Fragment = VK_NULL_HANDLE;
+    VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
+    VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
+
 public:
     SceneIntro(/* args */);
     ~SceneIntro();
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
-    void update(void)
-    {
-        elapsed_time = sdkGetTimerValue(&timer);
-        elapsed_time = elapsed_time / 1000.0f;
+    void createPipeline(void);
+    void onResize(int width, int height);
 
-        if (elapsed_time >= TSM::SCENE_INTRO_TIME)
-        {
-            completed = true;
-        }
-    }
+    void update(void);
     inline bool isCompleted(void)
     {
         return completed;
     };
-
-    StopWatchInterface *timer = NULL;
-    double elapsed_time = 0.0f;
-    bool completed = false;
 };

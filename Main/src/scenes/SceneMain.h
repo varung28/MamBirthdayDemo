@@ -4,6 +4,7 @@
 #include "../helper/Common.h"
 #include "SceneEndCredit/SceneEndcredit.h"
 #include "SceneMyTown/SceneMyTown.h"
+#include "SceneIntro/SceneIntro.h"
 
 class SceneMain
 {
@@ -11,6 +12,7 @@ private:
     /* data */
     SceneEndCredit *sceneEndCredit = nullptr;
     SceneMyTown *sceneMyTown = nullptr;
+    SceneIntro *sceneIntro = nullptr;
 
 public:
     SceneMain(/* args */);
