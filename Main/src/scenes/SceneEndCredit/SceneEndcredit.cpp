@@ -15,6 +15,7 @@ SceneEndCredit::SceneEndCredit(/* args */)
     textureQuadPipelineBuilder = new VulkanPipelineBuilder();
 
     createPipeline();
+    
     ////////////////////////////////////////////////////////////////////////////////////
 
     sdkCreateTimer(&timer);
