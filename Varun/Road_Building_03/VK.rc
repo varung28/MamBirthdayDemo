@@ -1,0 +1,5 @@
+#include <Windows.h>
+//#include "VK.h"
+#define VOID_DERIVATIVES_ICON	102
+
+VOID_DERIVATIVES_ICON	ICON	void_derivatives_icon.ico
