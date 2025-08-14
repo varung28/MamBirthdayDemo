@@ -2,21 +2,41 @@
 
 SceneMain::SceneMain(/* args */)
 {
-    sceneEndCredit = new SceneEndCredit();
+
+    // TSM::selectedScene = SCENE::MAIN;
+    //  sceneEndCredit = new SceneEndCredit();
+    sceneMyTown = new SceneMyTown();
 }
 
 SceneMain::~SceneMain()
 {
-    if (sceneEndCredit)
+    // if (sceneEndCredit)
+    // {
+    //     delete sceneEndCredit;
+    //     sceneEndCredit = nullptr;
+    // }
+
+    if (sceneMyTown)
     {
-        delete sceneEndCredit;
-        sceneEndCredit = nullptr;
+        delete sceneMyTown;
+        sceneMyTown = nullptr;
     }
 }
 
 void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
-    sceneEndCredit->initialCommandBuffer(commandBuffer);
+    sceneMyTown->initialCommandBuffer(commandBuffer);
+
+    // switch(TSM::selectedScene)
+    // {
+    //     case SCENE:: :
+    //         sceneEndCredit->initialCommandBuffer(commandBuffer);
+    //     break;
+
+    //     case TSM::SCENE::
+    //     break;
+
+    // }
 }
 
 void SceneMain::update(void)
@@ -25,5 +45,6 @@ void SceneMain::update(void)
 
 void SceneMain::onResize(int width, int height)
 {
-    sceneEndCredit->onResize(width, height);
+    sceneMyTown->onResize(width, height);
+    // sceneEndCredit->onResize(width, height);
 }

@@ -3,12 +3,14 @@
 
 #include "../helper/Common.h"
 #include "SceneEndCredit/SceneEndcredit.h"
+#include "SceneMyTown/SceneMyTown.h"
 
 class SceneMain
 {
 private:
     /* data */
     SceneEndCredit *sceneEndCredit = nullptr;
+    SceneMyTown *sceneMyTown = nullptr;
 
 public:
     SceneMain(/* args */);
