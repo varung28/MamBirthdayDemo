@@ -19,6 +19,9 @@ extern BOOL gbFullScreen;
 extern BOOL bWindowMinimized;
 extern FILE *gpFile;
 
+extern int winWidth ;
+extern int winHeight ;
+
 // INSTANCE EXTENSION RELATED VARIABLES
 extern uint32_t enabledInstanceExtensionCount;
 extern const char *enabledInstanceExtensionNames_Array[3];
