@@ -303,6 +303,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	// FUNCTION DECLARATIONS
 	VkResult resize(int, int);
 	void ToggleFullScreen();
+	VkResult buildCommandBuffers(void);
 
 	// CODE
 	switch (iMsg)
@@ -325,8 +326,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case 'F':
 			ToggleFullScreen();
 			break;
+		case 'i':
+		case 'I':
+
+			break;
 		case 27:
 			PostQuitMessage(0);
+		}
+		break;
+
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_NUMPAD1:
+
+			TSM::selectedScene = TSM::SCENE::INTRO; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
+			break;
+
+		case VK_NUMPAD2:
+			TSM::selectedScene = TSM::SCENE::MAIN; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
+			break;
+
+		case VK_NUMPAD3:
+			TSM::selectedScene = TSM::SCENE::END_CREDITS; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
+			break;
+
+		default:
+			break;
 		}
 		break;
 
@@ -711,7 +740,7 @@ VkResult initialize(void)
 
 	vkClearColorValue.float32[0] = 0.0f;
 	vkClearColorValue.float32[1] = 0.0f;
-	vkClearColorValue.float32[2] = 0.0f;
+	vkClearColorValue.float32[2] = 0.3f;
 	vkClearColorValue.float32[3] = 1.0f;
 
 	// INTIALIZE CLEAR DEPTH VALUE
@@ -1155,6 +1184,8 @@ VkResult display(void)
 	}
 
 	updateUniformBuffer();
+
+	mainScene->update();
 
 	vkDeviceWaitIdle(vkDevice);
 

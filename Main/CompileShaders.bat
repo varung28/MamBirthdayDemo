@@ -9,8 +9,7 @@ echo.
 
 :: Delete previous SPIR-V files
 echo [Cleaning] Removing old SPIR-V files...
-del /Q "shaders\shader.vert.spv" >nul 2>&1
-del /Q "shaders\shader.frag.spv" >nul 2>&1
+del /Q "*.spv" >nul 2>&1
 echo [Cleaning] Done.
 echo.
 
@@ -25,17 +24,50 @@ if not exist %GLSLANG_VALIDATOR% (
     exit /b
 )
 
+@REM for /r %%i in (*.vert) do (
+@REM     set "INPUT=%%i"
+@REM     set "FILENAME=%%~nxi"
+@REM     set "OUTPUT=bin\%%~nxi.spv"
+
+@REM     echo [Compiling] %INPUT% -> %OUTPUT%
+@REM     %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
+@REM     echo [Success] %FILENAME% compiled.
+@REM     echo.
+@REM )
+@REM echo [Success] Vertex shader compiled successfully.
+@REM echo.
+
+@REM for /r %%i in (*.frag) do (
+@REM     set "INPUT=%%i"
+@REM     set "FILENAME=%%~nxi"
+@REM     set "OUTPUT=bin\%%~nxi.spv"
+
+@REM     echo [Compiling] %INPUT% -> %OUTPUT%
+@REM     %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
+@REM     echo [Success] %FILENAME% compiled.
+@REM     echo.
+@REM )
+@REM echo [Success] Fragment shader compiled successfully.
+@REM echo.
+
+@echo off
+setlocal enabledelayedexpansion
+
 for /r %%i in (*.vert) do (
     set "INPUT=%%i"
     set "FILENAME=%%~nxi"
     set "OUTPUT=bin\%%~nxi.spv"
 
-    echo [Compiling] %INPUT% -> %OUTPUT%
-    %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
-    echo [Success] %FILENAME% compiled.
+    echo [Compiling] !INPUT! -> !OUTPUT!
+    "%GLSLANG_VALIDATOR%" -V -o "!OUTPUT!" "!INPUT!"
+    if !errorlevel! neq 0 (
+        echo [Error] Failed to compile !FILENAME!
+    ) else (
+        echo [Success] !FILENAME! compiled.
+    )
     echo.
 )
-echo [Success] Vertex shader compiled successfully.
+echo [Success] Vertex shaders compiled successfully.
 echo.
 
 for /r %%i in (*.frag) do (
@@ -43,13 +75,19 @@ for /r %%i in (*.frag) do (
     set "FILENAME=%%~nxi"
     set "OUTPUT=bin\%%~nxi.spv"
 
-    echo [Compiling] %INPUT% -> %OUTPUT%
-    %GLSLANG_VALIDATOR% -V -o "%OUTPUT%" "%INPUT%"
-    echo [Success] %FILENAME% compiled.
+    echo [Compiling] !INPUT! -> !OUTPUT!
+    "%GLSLANG_VALIDATOR%" -V -o "!OUTPUT!" "!INPUT!"
+    if !errorlevel! neq 0 (
+        echo [Error] Failed to compile !FILENAME!
+    ) else (
+        echo [Success] !FILENAME! compiled.
+    )
     echo.
 )
-echo [Success] Fragment shader compiled successfully.
+echo [Success] Fragment shaders compiled successfully.
 echo.
+pause
+
 
 echo ===============================================================================================
 echo                             Shader Compilation Complete 
