@@ -1,46 +1,9 @@
 #include "Buildings.h"
 
-#define BUILDING_GEOMETRY_COUNT  7
+extern int winWidth;
+extern int winHeight;
 
-// Global Variable Declarations
-//? Vertex Buffer Related Variables
-typedef struct
-{
-    VkBuffer vkBuffer;
-    VkDeviceMemory vkDeviceMemory;
-} VertexData;
-
-typedef struct
-{
-    glm::mat4 viewMatrix;
-    glm::mat4 projectionMatix;
-} VP_UniformData;
-
-typedef struct
-{
-    glm::mat4 modelMatrix;
-} PushData;
-
-typedef struct
-{
-    VkBuffer vkBuffer;
-    VkDeviceMemory vkDeviceMemory;
-} UniformData;
-
-typedef struct
-{
-    VertexData vertexData_position;
-    VertexData vertexData_color;
-    PushData modelData;
-} Buildings;
-
-Buildings buildings[7];
-
-extern UniformData uniformData;
-
-//! INTERNAL FUNCTIONS
-//! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-VkResult __createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize)
+VkResult Buildings::__createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -212,269 +175,15 @@ VkResult __createVertexBuffer(int index, float* position, int positionSize, floa
     return vkResult;
 }
 
-void __buildCommandBuffers(int swapchainImageIndex)
+Buildings::Buildings()
 {
-    //* Building 1
-    //* ----------------------------------------------------------------------------------------
-    vkCmdBindDescriptorSets(
-        vkCommandBuffer_array[swapchainImageIndex],
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        vkPipelineLayout,
-        0,
-        1,
-        &vkDescriptorSet,
-        0,
-        NULL
-    );
+    vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
+    vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv");
 
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[0].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    VkDeviceSize vkDeviceSize_offset_position[1];
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[0].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    VkDeviceSize vkDeviceSize_offset_color[1];
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[0].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 3, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[1].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[1].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[1].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-
-    //* Building 2
-    //* ----------------------------------------------------------------------------------------
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[2].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[2].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[2].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-    
-    //* Building 3
-    //* ----------------------------------------------------------------------------------------
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[3].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[3].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[3].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-
-    //* Building 4
-    //* ----------------------------------------------------------------------------------------
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[4].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[4].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[4].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-
-    //* Building 5
-    //* ----------------------------------------------------------------------------------------
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[5].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[5].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[5].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
-
-    //* Building 6
-    //* ----------------------------------------------------------------------------------------
-    vkCmdPushConstants(
-        vkCommandBuffer_array[swapchainImageIndex],
-        vkPipelineLayout,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &buildings[6].modelData
-    );
-
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        0, 
-        1, 
-        &buildings[6].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
-
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        vkCommandBuffer_array[swapchainImageIndex], 
-        1, 
-        1, 
-        &buildings[6].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
-
-    //! Vulkan Drawing Function
-    vkCmdDraw(vkCommandBuffer_array[swapchainImageIndex], 6, 1, 0, 0);
-    //* ----------------------------------------------------------------------------------------
+    createVertexBuffer();
 }
-//! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//! EXPORT FUNCTIONS
-//! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-VkResult createVertexBuffer_buildings(void)
+VkResult Buildings::createVertexBuffer(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -641,7 +350,7 @@ VkResult createVertexBuffer_buildings(void)
     return vkResult;
 }
 
-VkResult updateUniformBuffer_buildings(void)
+VkResult Buildings::updateUniformBuffer()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -734,15 +443,272 @@ VkResult updateUniformBuffer_buildings(void)
     return vkResult;
 }
 
-void buildCommandBuffers_buildings(int swapchainImageIndex)
+void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
-    __buildCommandBuffers(swapchainImageIndex);
+
+    //* Building 1
+    //* ----------------------------------------------------------------------------------------
+    vkCmdBindDescriptorSets(
+        commandBuffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        vkPipelineLayout,
+        0,
+        1,
+        &vkDescriptorSet,
+        0,
+        NULL
+    );
+
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[0].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    VkDeviceSize vkDeviceSize_offset_position[1];
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[0].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    VkDeviceSize vkDeviceSize_offset_color[1];
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[0].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[1].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[1].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[1].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 2
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[2].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[2].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[2].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+    
+    //* Building 3
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[3].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[3].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[3].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 4
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[4].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[4].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[4].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 5
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[5].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[5].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[5].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Building 6
+    //* ----------------------------------------------------------------------------------------
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[6].modelData
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &buildings[6].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &buildings[6].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
 }
 
-void uninitialize_buildings(void)
+Buildings::~Buildings()
 {
-    // Code
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_fragment);
+
     for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)
     {
         if (buildings[i].vertexData_color.vkDeviceMemory)
@@ -773,6 +739,4 @@ void uninitialize_buildings(void)
             fprintf(gpFile, "%s() => vkDestroyBuffer() Succeeded For Position Buffer, Building Index : %d\n", __func__, i);
         }
     }
-    
 }
-//! ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

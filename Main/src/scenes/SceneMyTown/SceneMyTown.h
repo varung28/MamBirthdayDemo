@@ -4,6 +4,7 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
+#include "Buildings.h"
 
 class SceneMyTown
 {
@@ -19,6 +20,8 @@ private:
     VkShaderModule vkShaderModule_Fragment = VK_NULL_HANDLE;
     VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
+
+    Buildings* buildings = nullptr;
 
 public:
     SceneMyTown(/* args */);

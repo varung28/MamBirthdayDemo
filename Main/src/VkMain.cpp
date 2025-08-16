@@ -3058,12 +3058,6 @@ VkResult createPipelineLayout(void)
 	VkResult vkResult = VK_SUCCESS;
 
 	// CODE
-	VkPushConstantRange vkPushConstantRange;
-    memset((void*)&vkPushConstantRange, 0, sizeof(VkPushConstantRange));
-    vkPushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    vkPushConstantRange.offset = 0;
-    vkPushConstantRange.size = sizeof(glm::mat4);
-
 	VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo;
 	memset(&vkPipelineLayoutCreateInfo, 0, sizeof(VkPipelineLayoutCreateInfo));
 
@@ -3073,8 +3067,8 @@ VkResult createPipelineLayout(void)
 
 	vkPipelineLayoutCreateInfo.setLayoutCount = 1;
 	vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout;
-	vkPipelineLayoutCreateInfo.pushConstantRangeCount = 1;
-    vkPipelineLayoutCreateInfo.pPushConstantRanges = &vkPushConstantRange;
+	vkPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+    vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
 
 	vkResult = vkCreatePipelineLayout(vkDevice,
 									  &vkPipelineLayoutCreateInfo,
