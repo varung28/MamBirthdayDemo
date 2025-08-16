@@ -15,6 +15,8 @@
 #include "../external/glm/glm.hpp"
 #include "../external/glm/gtc/matrix_transform.hpp"
 
+#include "../external/openal/include/OpenAL.h"
+
 #include "helper/Geometry.h"
 #include "scenes/SceneMain.h"
 
@@ -159,6 +161,14 @@ float angle = 0.0f;
 
 Pyramid *pyramid = nullptr;
 SceneMain *mainScene = nullptr;
+
+OpenAL *openal;
+
+// ONLY FOR DEBUG
+int main()
+{
+	return WinMain(GetModuleHandle(NULL), NULL, (LPSTR)GetCommandLine(), SW_SHOWNORMAL);
+}
 
 // ENTRY POINT FUNCTION
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
@@ -772,6 +782,10 @@ VkResult initialize(void)
 	fprintf(gpFile, "						INITIALIZATION COMPLETE SUCCESSFULLY\n");
 	fprintf(gpFile, "===========================================================================================\n");
 	bInitialized = TRUE;
+
+	openal = new OpenAL();
+	openal->InitializeAudio();
+	openal->Play();
 
 	return (vkResult);
 }
