@@ -4,11 +4,8 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
-<<<<<<< HEAD
 #include "Buildings.h"
-=======
 #include "pradnya.h"
->>>>>>> origin/main
 
 class SceneMyTown
 {
@@ -25,11 +22,8 @@ private:
     VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
-<<<<<<< HEAD
     Buildings* buildings = nullptr;
-=======
     ScenePradnya *scenePradnya = nullptr;
->>>>>>> origin/main
 
 public:
     SceneMyTown(/* args */);

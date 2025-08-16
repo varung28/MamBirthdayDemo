@@ -3,7 +3,7 @@
 SceneMain::SceneMain(/* args */)
 {
 
-    TSM::selectedScene = TSM::SCENE::INTRO;
+    TSM::selectedScene = TSM::SCENE::MAIN;
 
     sceneEndCredit = new SceneEndCredit();
     sceneMyTown = new SceneMyTown();
