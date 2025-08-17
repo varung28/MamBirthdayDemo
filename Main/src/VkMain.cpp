@@ -3103,7 +3103,6 @@ VkResult createPipelineLayout(void)
 	VkResult vkResult = VK_SUCCESS;
 
 	// CODE
-
 	VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo;
 	memset(&vkPipelineLayoutCreateInfo, 0, sizeof(VkPipelineLayoutCreateInfo));
 
@@ -3114,7 +3113,7 @@ VkResult createPipelineLayout(void)
 	vkPipelineLayoutCreateInfo.setLayoutCount = 1;
 	vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout;
 	vkPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-	vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
+    vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
 
 	vkResult = vkCreatePipelineLayout(vkDevice,
 									  &vkPipelineLayoutCreateInfo,
