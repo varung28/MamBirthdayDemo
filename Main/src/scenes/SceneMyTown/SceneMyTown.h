@@ -4,7 +4,8 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
-#include "Buildings.h"
+#include "../../helper/TexturedQuad.h"
+
 #include "pradnya.h"
 
 class SceneMyTown
@@ -22,8 +23,8 @@ private:
     VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
-    Buildings* buildings = nullptr;
     ScenePradnya *scenePradnya = nullptr;
+    TexturedQuad* texturedQuad = nullptr;
 
 public:
     SceneMyTown(/* args */);

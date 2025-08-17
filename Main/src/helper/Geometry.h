@@ -29,9 +29,12 @@ private:
     /* data */
     VertexData vertexData_position;
     VertexData vertexData_color;
+    VertexData vertexData_texcoord;
+    bool isTextureEnabled;
 
 public:
-    Quad(/* args */);
+    Quad();
+    Quad(bool isTextureEnabled);
     ~Quad();
 
     void initialCommandBuffer(VkCommandBuffer &commandBuffer);
