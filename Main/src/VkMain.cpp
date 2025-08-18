@@ -6,8 +6,9 @@
 #include "VkMain.h"
 
 // VULKAN HEADERS
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <vulkan/vulkan.h>
+#define VK_USE_PLATFORM_WIN32_KHR	
+//#include<vulkan/vulkan.h>
+#include"C:\\VulkanSDK\\VulkanSDK\\Include\\vulkan\\vulkan.h"
 
 // GLM MACROS & HEADER FILES
 #define GLM_FORCE_RADIANCE
@@ -748,9 +749,9 @@ VkResult initialize(void)
 	// INTIALIZE CLEAR COLOR VALUE
 	memset((void *)&vkClearColorValue, 0, sizeof(VkClearColorValue));
 
-	vkClearColorValue.float32[0] = 0.0f;
-	vkClearColorValue.float32[1] = 0.0f;
-	vkClearColorValue.float32[2] = 0.3f;
+	vkClearColorValue.float32[0] = 0.1490f;
+	vkClearColorValue.float32[1] = 0.1921f;
+	vkClearColorValue.float32[2] = 0.2352f;
 	vkClearColorValue.float32[3] = 1.0f;
 
 	// INTIALIZE CLEAR DEPTH VALUE

@@ -11,7 +11,7 @@ echo.
 set PROJECT_NAME=VkMain
 
 :: Define Vulkan SDK path (update if needed)
-set VULKAN_SDK=C:\VulkanSDK\vulkan
+set VULKAN_SDK=C:\VulkanSDK\VulkanSDK
 set OPENAL_LIB="./external/openal/libs/Win64"
 
 :: Step 1: Cleanup previous build artifacts

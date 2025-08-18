@@ -4,6 +4,7 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
+#include "../../helper/TexturedQuad.h"
 
 class SceneEndCredit
 {
@@ -19,6 +20,9 @@ private:
     VkShaderModule vkShaderModule_Fragment = VK_NULL_HANDLE;
     VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
+    
+    TexturedQuad* texQuadEndCreditSlide_1 = nullptr;
+    TexturedQuad* texQuadEndCreditSlide_2 = nullptr;
 
 public:
     SceneEndCredit(/* args */);
