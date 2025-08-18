@@ -6,8 +6,9 @@
 #include "VkMain.h"
 
 // VULKAN HEADERS
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <vulkan/vulkan.h>
+#define VK_USE_PLATFORM_WIN32_KHR	
+//#include<vulkan/vulkan.h>
+#include"C:\\VulkanSDK\\VulkanSDK\\Include\\vulkan\\vulkan.h"
 
 // GLM MACROS & HEADER FILES
 #define GLM_FORCE_RADIANCE
@@ -783,9 +784,9 @@ VkResult initialize(void)
 	fprintf(gpFile, "===========================================================================================\n");
 	bInitialized = TRUE;
 
-	openal = new OpenAL();
-	openal->InitializeAudio();
-	openal->Play();
+	//openal = new OpenAL();
+	//openal->InitializeAudio();
+	//openal->Play();
 
 	return (vkResult);
 }
