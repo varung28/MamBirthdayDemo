@@ -7,6 +7,7 @@ namespace TSM
 
     double g_current_scene_time = 10.0;
     double g_delta_time = 10.0;
+
     unsigned int selectedScene = SCENE::INTRO;
 }
 

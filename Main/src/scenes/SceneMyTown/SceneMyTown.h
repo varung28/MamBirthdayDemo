@@ -7,6 +7,7 @@
 
 #include "pradnya.h"
 #include "Buildings.h"
+#include "Trees.h"
 
 class SceneMyTown
 {
@@ -26,6 +27,7 @@ private:
     ScenePradnya *scenePradnya = nullptr;
     ScenePradnya *scenePradnya_Sky = nullptr;
     Buildings *buildings = nullptr;
+    Trees* trees = nullptr;
 
 public:
     SceneMyTown(/* args */);
