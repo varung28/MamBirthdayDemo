@@ -24,6 +24,7 @@ private:
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
     ScenePradnya *scenePradnya = nullptr;
+    ScenePradnya *scenePradnya_Sky = nullptr;
     Buildings *buildings = nullptr;
 
 public:

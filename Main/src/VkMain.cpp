@@ -349,7 +349,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_NUMPAD1:
-
 			TSM::selectedScene = TSM::SCENE::INTRO; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
 			buildCommandBuffers();
 			break;
@@ -363,6 +362,39 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			TSM::selectedScene = TSM::SCENE::END_CREDITS; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
 			buildCommandBuffers();
 			break;
+
+			// case VK_LEFT:
+			// 	scaleX -= scaleIncrement;
+			// 	break;
+			// case VK_RIGHT:
+			// 	scaleX += scaleIncrement;
+			// 	break;
+			// case VK_UP:
+			// 	scaleY += scaleIncrement;
+
+			// 	break;
+			// case VK_DOWN:
+			// 	scaleY -= scaleIncrement;
+
+			// 	break;
+			// case VK_NUMPAD8:
+			// 	objY += objIncrement;
+			// 	break;
+			// case VK_NUMPAD5:
+			// 	objY -= objIncrement;
+			// 	break;
+			// case VK_NUMPAD4:
+			// 	objX -= objIncrement;
+			// 	break;
+			// case VK_NUMPAD6:
+			// 	objX += objIncrement;
+			// 	break;
+			// case VK_NUMPAD7:
+			// 	objZ -= objIncrement;
+			// 	break;
+			// case VK_NUMPAD1:
+			// 	objZ += objIncrement;
+			// 	break;
 
 		default:
 			break;
@@ -1466,6 +1498,8 @@ void uninitialize(void)
 		DestroyWindow(ghwnd);
 		fprintf(gpFile, "%s => DESTROY WINDOW DESTROYED SUCCESSFULLY.\n", __func__);
 	}
+
+	fprintf(gpFile, "\n\nVariables  | OBJ %ff, %ff, %ff | SCALE %ff, %ff, %ff\n\n\n\n", objX, objY, objZ, scaleX, scaleY, scaleZ);
 
 	if (gpFile)
 	{
@@ -3113,7 +3147,7 @@ VkResult createPipelineLayout(void)
 	vkPipelineLayoutCreateInfo.setLayoutCount = 1;
 	vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout;
 	vkPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-    vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
+	vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
 
 	vkResult = vkCreatePipelineLayout(vkDevice,
 									  &vkPipelineLayoutCreateInfo,

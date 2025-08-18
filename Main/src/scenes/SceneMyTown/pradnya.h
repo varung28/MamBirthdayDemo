@@ -64,6 +64,7 @@ public:
     VkResult initialize(void);
     VkResult resize(int width, int height);
     VkResult update(void);
+    VkResult update_sky(void);
 
     void uninitialize(void);
     // (Vertex Buffer) Step 2(c) : Defining createVertexBuffer() at this specific position
@@ -71,8 +72,9 @@ public:
     // (Ortho Change 7(a)) : Defining createUniformBuffer()
     VkResult createUniformBuffer(void);
     // (Ortho Change 7(b)) : Defining updateUniformBuffer()
-    VkResult updateUniformBuffer(void);
+    VkResult updateUniformBuffer(bool bSky);
     VkResult updateColorVertexBuffer(void);
+    VkResult updateColorVertexBuffer_sky(void);
     // (Shaders) Step 5 : Defining createShaders() at this specific position.
     VkResult createShaders(void);
     VkResult createDescriptorSetLayout(void);

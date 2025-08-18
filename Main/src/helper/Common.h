@@ -76,4 +76,14 @@ namespace TSM
     extern unsigned int selectedScene;
 }
 
+extern float objX;
+extern float objY;
+extern float objZ;
+extern float objIncrement;
+
+extern float scaleX;
+extern float scaleY;
+extern float scaleZ;
+extern float scaleIncrement;
+
 #endif // COMMON_H

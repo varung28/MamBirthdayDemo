@@ -210,7 +210,7 @@ VkResult ScenePradnya::update(void)
     VkResult vkResult = VK_SUCCESS;
 
     // (Ortho Change 4(b)) : Update Uniform Buffer
-    vkResult = updateUniformBuffer();
+    vkResult = updateUniformBuffer(false);
     if (vkResult != VK_SUCCESS)
     {
         fprintf(gpFile, "%s() : updateUniformBuffer() Failed.\n", __func__);
@@ -218,6 +218,27 @@ VkResult ScenePradnya::update(void)
     }
 
     vkResult = updateColorVertexBuffer();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() : updateColorVertexBuffer() Failed.\n", __func__);
+        return (vkResult);
+    }
+    return (vkResult);
+}
+
+VkResult ScenePradnya::update_sky(void)
+{
+    VkResult vkResult = VK_SUCCESS;
+
+    // (Ortho Change 4(b)) : Update Uniform Buffer
+    vkResult = updateUniformBuffer(true);
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() : updateUniformBuffer() Failed.\n", __func__);
+        return (vkResult);
+    }
+
+    vkResult = updateColorVertexBuffer_sky();
     if (vkResult != VK_SUCCESS)
     {
         fprintf(gpFile, "%s() : updateColorVertexBuffer() Failed.\n", __func__);
@@ -744,7 +765,7 @@ VkResult ScenePradnya::createUniformBuffer(void)
     }
 
     // Call updateUniformBuffer()
-    vkResult = updateUniformBuffer();
+    vkResult = updateUniformBuffer(false);
     if (vkResult != VK_SUCCESS)
     {
         fprintf(gpFile, "%s() : updateUniformBuffer() Failed.\n", __func__);
@@ -766,7 +787,7 @@ VkResult ScenePradnya::createUniformBuffer(void)
 }
 
 // (Ortho Change 7(b)) : Defining updateUniformBuffer()
-VkResult ScenePradnya::updateUniformBuffer(void)
+VkResult ScenePradnya::updateUniformBuffer(bool bSky)
 {
     // variable declarations
     VkResult vkResult = VK_SUCCESS;
@@ -777,8 +798,14 @@ VkResult ScenePradnya::updateUniformBuffer(void)
 
     // Update Matrices
     myUniformData.modelMatrix = glm::mat4(1.0f);
-    myUniformData.modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 3.0f, 1.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f)); // (Perspective Change 2) : Translation
-
+    if (bSky)
+    {
+        myUniformData.modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0f + 8.999998f, 3.0f + 0.500000f, 1.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.000000f + objY, -5.0f + -11.300007f)); // (Perspective Change 2) : Translation
+    }
+    else
+    {
+        myUniformData.modelMatrix = glm::scale(glm::mat4(1.0), glm::vec3(3.0f + 8.999998f, 3.0f + 0.500000f, 1.0f)) * glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f + -1.000000f, -5.0f + -11.300007f)); // (Perspective Change 2) : Translation
+    } // Variables  | OBJ 0.000000f, -1.000000f, -11.300007f | SCALE 8.999998f, 0.500000f, 0.000000f
     myUniformData.viewMatrix = glm::mat4(1.0f);
 
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
@@ -876,6 +903,153 @@ VkResult ScenePradnya::updateColorVertexBuffer(void)
 
     // (Vertex Buffer) Step 13 : To complete this MMIO, finally call vkUnmapMmeory()
     vkUnmapMemory(vkDevice, vertexData_color.vkDeviceMemory);
+
+    return (vkResult);
+}
+
+VkResult ScenePradnya::updateColorVertexBuffer_sky(void)
+{
+    // variable declarations
+    VkResult vkResult = VK_SUCCESS;
+
+    // code
+    // INSERT_NEW_LINE_IN_LOG_FILE(gpFile);
+    // fprintf(gpFile, "===================================\n");
+    // fprintf(gpFile, "\"%s()\" Log (Start)\n", __func__);
+    // fprintf(gpFile, "===================================\n");
+    // INSERT_NEW_LINE_IN_LOG_FILE(gpFile);
+
+    struct MyUniformData myUniformData;
+    memset((void *)&myUniformData, 0, sizeof(struct MyUniformData));
+
+    // Update Matrices
+    const unsigned int numRows = 6;
+    const unsigned int numColumns = 3;
+
+    const float beginning_skyTop_R = 163.0 / 255.0f;
+    const float beginning_skyTop_G = 163.0 / 255.0f;
+    const float beginning_skyTop_B = 239.0 / 255.0f;
+
+    const float beginning_skyBottom_R = 191.0 / 255.0f;
+    const float beginning_skyBottom_G = 113.0 / 255.0f;
+    const float beginning_skyBottom_B = 218.0 / 255.0f;
+
+    const float end_skyTop_R = 0.0f;
+    const float end_skyTop_G = 0.0f;
+    const float end_skyTop_B = 0.0f;
+
+    const float end_skyBottom_R = 129.0 / 255.0f;
+    const float end_skyBottom_G = 49.0 / 255.0f;
+    const float end_skyBottom_B = 154.0 / 255.0f;
+
+    static float rectangle_colors_2D_array[numRows][numColumns] = {{beginning_skyTop_R, beginning_skyTop_G, beginning_skyTop_B},
+                                                                   {beginning_skyTop_R, beginning_skyTop_G, beginning_skyTop_B},
+                                                                   {beginning_skyBottom_R, beginning_skyBottom_G, beginning_skyBottom_B},
+
+                                                                   {beginning_skyBottom_R, beginning_skyBottom_G, beginning_skyBottom_B},
+                                                                   {beginning_skyBottom_R, beginning_skyBottom_G, beginning_skyBottom_B},
+                                                                   {beginning_skyTop_R, beginning_skyTop_G, beginning_skyTop_B}};
+
+    const float delta = 0.0005f;
+
+    // ****** SKY QUAD TOP COLOR CHANGE ******
+    if (rectangle_colors_2D_array[0][0] > end_skyTop_R)
+        rectangle_colors_2D_array[0][0] = rectangle_colors_2D_array[0][0] - delta;
+
+    if (rectangle_colors_2D_array[0][1] > end_skyTop_G)
+        rectangle_colors_2D_array[0][1] = rectangle_colors_2D_array[0][1] - delta;
+
+    if (rectangle_colors_2D_array[0][2] > end_skyTop_B)
+        rectangle_colors_2D_array[0][2] = rectangle_colors_2D_array[0][2] - delta;
+
+    if (rectangle_colors_2D_array[1][0] > end_skyTop_R)
+        rectangle_colors_2D_array[1][0] = rectangle_colors_2D_array[1][0] - delta;
+
+    if (rectangle_colors_2D_array[1][1] > end_skyTop_G)
+        rectangle_colors_2D_array[1][1] = rectangle_colors_2D_array[1][1] - delta;
+
+    if (rectangle_colors_2D_array[1][2] > end_skyTop_B)
+        rectangle_colors_2D_array[1][2] = rectangle_colors_2D_array[1][2] - delta;
+
+    if (rectangle_colors_2D_array[5][0] > end_skyTop_R)
+        rectangle_colors_2D_array[5][0] = rectangle_colors_2D_array[5][0] - delta;
+
+    if (rectangle_colors_2D_array[5][1] > end_skyTop_G)
+        rectangle_colors_2D_array[5][1] = rectangle_colors_2D_array[5][1] - delta;
+
+    if (rectangle_colors_2D_array[5][2] > end_skyTop_B)
+        rectangle_colors_2D_array[5][2] = rectangle_colors_2D_array[5][2] - delta;
+
+    // ****** SKY QUAD BOTTOM COLOR CHANGE ******
+    if (rectangle_colors_2D_array[2][0] > end_skyBottom_R)
+        rectangle_colors_2D_array[2][0] = rectangle_colors_2D_array[2][0] - delta;
+
+    if (rectangle_colors_2D_array[2][1] > end_skyBottom_G)
+        rectangle_colors_2D_array[2][1] = rectangle_colors_2D_array[2][1] - delta;
+
+    if (rectangle_colors_2D_array[2][2] > end_skyBottom_B)
+        rectangle_colors_2D_array[2][2] = rectangle_colors_2D_array[2][2] - delta;
+
+    if (rectangle_colors_2D_array[3][0] > end_skyBottom_R)
+        rectangle_colors_2D_array[3][0] = rectangle_colors_2D_array[3][0] - delta;
+
+    if (rectangle_colors_2D_array[3][1] > end_skyBottom_G)
+        rectangle_colors_2D_array[3][1] = rectangle_colors_2D_array[3][1] - delta;
+
+    if (rectangle_colors_2D_array[3][2] > end_skyBottom_B)
+        rectangle_colors_2D_array[3][2] = rectangle_colors_2D_array[3][2] - delta;
+
+    if (rectangle_colors_2D_array[4][0] > end_skyBottom_R)
+        rectangle_colors_2D_array[4][0] = rectangle_colors_2D_array[4][0] - delta;
+
+    if (rectangle_colors_2D_array[4][1] > end_skyBottom_G)
+        rectangle_colors_2D_array[4][1] = rectangle_colors_2D_array[4][1] - delta;
+
+    if (rectangle_colors_2D_array[4][2] > end_skyBottom_B)
+        rectangle_colors_2D_array[4][2] = rectangle_colors_2D_array[4][2] - delta;
+
+    float rectangle_color[numRows * numColumns];
+
+    int i, j;
+    for (i = 0; i < numRows; i++)
+    {
+        for (j = 0; j < numColumns; j++)
+        {
+            rectangle_color[(i * numColumns) + j] = rectangle_colors_2D_array[i][j];
+        }
+    }
+
+    // (Vertex Buffer) Step 10 : Now we have our required device memory handle and vkBuffer handle.
+    // Bind this device memory handle to the Vulkan Buffer handle using vkBindBufferMemory()
+    vkResult = vkBindBufferMemory(vkDevice, vertexData_color.vkBuffer, vertexData_color.vkDeviceMemory, 0);
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() : vkBindBufferMemory() Failed For Vertex Color Buffer.\n", __func__);
+        return (vkResult);
+    }
+
+    // (Vertex Buffer) Step 11 : Declare a local void * buffer, say 'data', and call vkMapMemory() to map our device memory object handle to this void * data
+    // This will allow us to do MMIO.
+    // Means - when we write on to void *data, it will automatically be written / copied to the device memory represented by device memory object handle.
+    void *data = NULL;
+    vkResult = vkMapMemory(vkDevice, vertexData_color.vkDeviceMemory, 0, colorVertexBuffer_AllocationSize, 0, &data);
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() : vkMapMemory() Failed For Vertex Color Buffer.\n", __func__);
+        return (vkResult);
+    }
+
+    // (Vertex Buffer) Step 12 : Now to do actual MMIO, call memcpy()
+    memcpy(data, rectangle_color, sizeof(rectangle_color));
+
+    // (Vertex Buffer) Step 13 : To complete this MMIO, finally call vkUnmapMmeory()
+    vkUnmapMemory(vkDevice, vertexData_color.vkDeviceMemory);
+
+    // INSERT_NEW_LINE_IN_LOG_FILE(gpFile);
+    // fprintf(gpFile, "===================================\n");
+    // fprintf(gpFile, "\"%s()\" Log (End)\n", __func__);
+    // fprintf(gpFile, "===================================\n");
+    // INSERT_NEW_LINE_IN_LOG_FILE(gpFile);
 
     return (vkResult);
 }
