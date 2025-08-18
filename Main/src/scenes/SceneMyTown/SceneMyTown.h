@@ -4,7 +4,6 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
-#include "../../helper/TexturedQuad.h"
 
 #include "pradnya.h"
 #include "Buildings.h"
@@ -26,7 +25,6 @@ private:
 
     ScenePradnya *scenePradnya = nullptr;
     Buildings *buildings = nullptr;
-    TexturedQuad* tq = nullptr;
 
 public:
     SceneMyTown(/* args */);

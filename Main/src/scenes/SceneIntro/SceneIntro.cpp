@@ -17,12 +17,22 @@ SceneIntro::SceneIntro(/* args */)
 
     createPipeline();
 
+    texturedQuad = new TexturedQuad();
+    texturedQuad->initialize("resources\\textures\\Smiley.png");
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
 SceneIntro::~SceneIntro()
 {
-     if (pyramid)
+
+    if (texturedQuad)
+    {
+        delete texturedQuad;
+        texturedQuad = nullptr;
+        fprintf(gpFile, "%s() => Textured Quad Destroyed Successully\n", __func__);
+    }
+
+    if (pyramid)
     {
         delete pyramid;
         pyramid = nullptr;
@@ -56,6 +66,8 @@ void SceneIntro::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
 
     pyramid->initialCommandBuffer(commandBuffer);
+
+    texturedQuad->buildCommandBuffers(commandBuffer);
 }
 
 void SceneIntro::createPipeline(void)
@@ -142,16 +154,24 @@ void SceneIntro::update(void)
     {
         completed = true;
     }
+
+//     if (texturedQuad)
+//     {
+//         texturedQuad->update();
+//     }
 }
 
 void SceneIntro::onResize(int width, int height)
 {
 
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
+    // if (vkPipelineTexture)
+    // {
+    //     vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
+    //     vkPipelineTexture = VK_NULL_HANDLE;
+    // }
 
-    createPipeline();
+    // createPipeline();
+
+    if (texturedQuad)
+        texturedQuad->resize(width, height);
 }
