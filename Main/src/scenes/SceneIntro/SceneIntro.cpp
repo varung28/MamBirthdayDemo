@@ -155,9 +155,19 @@ void SceneIntro::update(void)
         completed = true;
     }
 
+    MVP_UniformData mvp_UniformData;
+    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+
+    //! Update Matrices
+    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
+    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
+    mvp_UniformData.viewMatrix = glm::mat4(1.0f);
+
+
+
     if (texturedQuad)
     {
-        texturedQuad->updateUniformBuffer();
+        texturedQuad->update(mvp_UniformData);
     }
 }
 
@@ -171,4 +181,5 @@ void SceneIntro::onResize(int width, int height)
     }
 
     createPipeline();
+    texturedQuad->resize(width, height);
 }

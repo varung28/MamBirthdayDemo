@@ -2180,7 +2180,7 @@ VkResult fillDeviceExtensionNames(void)
 		deviceExtensionNames_Array[i] = (char *)malloc(sizeof(char) * (strlen(vkExtensionProperties_array[i].extensionName) + 1));
 		memcpy(deviceExtensionNames_Array[i], vkExtensionProperties_array[i].extensionName, strlen(vkExtensionProperties_array[i].extensionName) + 1);
 
-		fprintf(gpFile, "%s => Vulakn Device Extension Name = %s.\n", __func__, deviceExtensionNames_Array[i]);
+		// fprintf(gpFile, "%s => Vulakn Device Extension Name = %s.\n", __func__, deviceExtensionNames_Array[i]);
 	}
 
 	if (vkExtensionProperties_array)
@@ -2230,10 +2230,10 @@ VkResult fillDeviceExtensionNames(void)
 
 	fprintf(gpFile, "===========================================================================================\n");
 	// Print only supported extension names.
-	for (uint32_t i = 0; i < enabledDeviceExtensionCount; i++)
-	{
-		fprintf(gpFile, "%s => Enabled Vulkan Device Extension NAMES = %s.\n", __func__, enabledDeviceExtensionNames_Array[i]);
-	}
+	// for (uint32_t i = 0; i < enabledDeviceExtensionCount; i++)
+	// {
+	// 	fprintf(gpFile, "%s => Enabled Vulkan Device Extension NAMES = %s.\n", __func__, enabledDeviceExtensionNames_Array[i]);
+	// }
 
 	return (vkResult);
 }

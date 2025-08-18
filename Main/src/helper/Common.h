@@ -76,4 +76,11 @@ namespace TSM
     extern unsigned int selectedScene;
 }
 
+typedef struct
+{
+    glm::mat4 modelMatrix;
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
+} MVP_UniformData;
+
 #endif // COMMON_H

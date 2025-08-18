@@ -30,7 +30,7 @@ private:
     VertexData vertexData_position;
     VertexData vertexData_color;
     VertexData vertexData_texcoord;
-    bool isTextureEnabled;
+    bool isTextureEnabled = false;
 
 public:
     Quad();

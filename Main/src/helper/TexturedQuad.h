@@ -20,12 +20,12 @@ class TexturedQuad
             VkDeviceMemory vkDeviceMemory;
         } UniformData;
 
-        typedef struct 
+        /*typedef struct 
         {
             glm::mat4 modelMatrix;
             glm::mat4 viewMatrix;
             glm::mat4 projectionMatrix;
-        } MVP_UniformData;
+        } MVP_UniformData;*/
 
         UniformData uniformData;
 
@@ -40,7 +40,7 @@ class TexturedQuad
         VkResult createDescriptorPool();
         VkResult createDescriptorSet();
         VkResult createPipeline();
-
+        VkResult updateUniformBuffer(MVP_UniformData& mvpUniformData);
 
     public:
         TexturedQuad();
@@ -48,8 +48,8 @@ class TexturedQuad
 
         VkResult initialize(std::string filePath);
         void buildCommandBuffers(VkCommandBuffer& commandBuffer);
-        VkResult updateUniformBuffer();
-        VkResult updateUniformBuffer(float x,float y,float z);
+        void update(MVP_UniformData& mvpUniformData);
+        VkResult resize(int width, int height);
 };
 
 #endif // TEXTUREDQUAD_H

@@ -173,63 +173,29 @@ VkResult TexturedQuad::createUniformBuffer()
     return vkResult;
 }
 
-VkResult TexturedQuad::updateUniformBuffer()
+
+void TexturedQuad::update(MVP_UniformData& mvpUniformData)
 {
-    // Variable Declarations
-    VkResult vkResult = VK_SUCCESS;
-
-    // Code
-    MVP_UniformData mvp_UniformData;
-    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
-
-    //! Update Matrices
-    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)) *  glm::scale(glm::mat4(1.0),glm::vec3(4.0f,2.0f,1.0f));
-    mvp_UniformData.viewMatrix = glm::mat4(1.0f);
-    
-    glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
-    perspectiveProjectionMatrix = glm::perspective(
-        glm::radians(45.0f),
-        (float)winWidth / (float)winHeight,
-        0.1f,
-        100.0f
-    );
-    //! 2D Matrix with Column Major (Like OpenGL)
-    perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
-    mvp_UniformData.projectionMatrix = perspectiveProjectionMatrix;
-
-    //! Map Uniform Buffer
-    void* data = NULL;
-    vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(MVP_UniformData), 0, &data);
+    VkResult vkResult = updateUniformBuffer(mvpUniformData);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkMapMemory() Failed For Uniform Buffer : %d !!!\n", __func__, vkResult);
-        return vkResult;
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
     }
-
-    //! Copy the data to the mapped buffer (present on device memory)
-    memcpy(data, &mvp_UniformData, sizeof(MVP_UniformData));
-
-    //! Unmap memory
-    vkUnmapMemory(vkDevice, uniformData.vkDeviceMemory);
-
-    return vkResult;
 }
 
-VkResult TexturedQuad::updateUniformBuffer(float x, float y, float z)
+VkResult TexturedQuad::updateUniformBuffer(MVP_UniformData& mvpUniformData)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
 
-    // Code
-    MVP_UniformData mvp_UniformData;
-    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+    //MVP_UniformData mvpUniformData;
+    //memset((void*)&mvpUniformData, 0, sizeof(MVP_UniformData));
 
-    //! Update Matrices
-    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, -5.0f)) *  glm::scale(glm::mat4(1.0),glm::vec3(3.0f,1.5f,1.0f));
-    mvp_UniformData.viewMatrix = glm::mat4(1.0f);
-    
+    ////! Update Matrices
+  /* mvpUniformData.modelMatrix = glm::mat4(1.0f);
+   mvpUniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
+    mvpUniformData.viewMatrix = glm::mat4(1.0f);*/
+
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
     perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f),
@@ -237,9 +203,10 @@ VkResult TexturedQuad::updateUniformBuffer(float x, float y, float z)
         0.1f,
         100.0f
     );
+
     //! 2D Matrix with Column Major (Like OpenGL)
-    perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
-    mvp_UniformData.projectionMatrix = perspectiveProjectionMatrix;
+    //perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
+    mvpUniformData.projectionMatrix = perspectiveProjectionMatrix;
 
     //! Map Uniform Buffer
     void* data = NULL;
@@ -251,7 +218,8 @@ VkResult TexturedQuad::updateUniformBuffer(float x, float y, float z)
     }
 
     //! Copy the data to the mapped buffer (present on device memory)
-    memcpy(data, &mvp_UniformData, sizeof(MVP_UniformData));
+    // memcpy(data, &mvpUniformData, sizeof(MVP_UniformData));
+    memcpy(data, &mvpUniformData, sizeof(MVP_UniformData));
 
     //! Unmap memory
     vkUnmapMemory(vkDevice, uniformData.vkDeviceMemory);
@@ -666,6 +634,55 @@ void TexturedQuad::buildCommandBuffers(VkCommandBuffer& commandBuffer)
     
     quad->initialCommandBuffer(commandBuffer);
 }
+
+VkResult TexturedQuad::resize(int width, int height)
+{
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
+
+    //? DESTROY
+    //?--------------------------------------------------------------------------------------------------
+    //* Wait for device to complete in-hand tasks
+    if (vkDevice)
+        vkDeviceWaitIdle(vkDevice);
+
+    //* Destroy PipelineLayout
+    //if (vkPipelineLayout_Texture)
+    //{
+    //    vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Texture, NULL);
+    //    vkPipelineLayout_Texture = VK_NULL_HANDLE;
+    //}
+
+    ////* Destroy Pipeline
+    //if (vkPipeline_Texture)
+    //{
+    //    vkDestroyPipeline(vkDevice, vkPipeline_Texture, NULL);
+    //    vkPipeline_Texture = VK_NULL_HANDLE;
+    //}
+    //?--------------------------------------------------------------------------------------------------
+
+    //? RECREATE FOR RESIZE
+    //?--------------------------------------------------------------------------------------------------
+    //* Create Pipeline Layout
+    vkResult = createPipelineLayout();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
+    //* Create Pipeline
+    vkResult = createPipeline();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+    //?--------------------------------------------------------------------------------------------------
+
+    return vkResult;
+}
+
 
 TexturedQuad::~TexturedQuad()
 {

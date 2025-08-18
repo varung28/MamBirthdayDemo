@@ -6,6 +6,7 @@
 #include "../../helper/PipelineBuilder.h"
 
 #include "pradnya.h"
+#include "Buildings.h"
 
 class SceneMyTown
 {
@@ -23,6 +24,7 @@ private:
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
     ScenePradnya *scenePradnya = nullptr;
+    Buildings *buildings = nullptr;
 
 public:
     SceneMyTown(/* args */);

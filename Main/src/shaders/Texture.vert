@@ -11,11 +11,12 @@ layout(binding = 0) uniform mvpMatrix
     mat4 modelMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;
-} uMVP;
+} uMPV;
 
 void main(void)
 {
     // Code
-    gl_Position = uMVP.projectionMatrix * uMVP.viewMatrix * uMVP.modelMatrix * vPosition;
+    gl_Position = uMPV.projectionMatrix * uMPV.viewMatrix * uMPV.modelMatrix * vPosition;
     out_texcoord = vTexcoord;
+    gl_Position.y = -gl_Position.y;
 }
