@@ -22,6 +22,8 @@ SceneMyTown::SceneMyTown(/* args */)
     buildings = new Buildings();
     buildings->initialize();
 
+    trees = new Trees();
+    trees->initialize();
 
     sdkCreateTimer(&timer);
 }
@@ -109,6 +111,12 @@ SceneMyTown::~SceneMyTown()
         buildings = nullptr;
     }
 
+    if (trees)
+    {
+        delete trees;
+        trees = nullptr;
+    }
+
     if (scenePradnya)
     {
         scenePradnya->uninitialize();
@@ -136,6 +144,9 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     if (buildings)
         buildings->buildCommandBuffers(commandBuffer);
 
+    if (trees)
+        trees->buildCommandBuffers(commandBuffer);
+
 }
 
 void SceneMyTown::update(void)
@@ -153,6 +164,9 @@ void SceneMyTown::update(void)
 
     if (buildings)
         buildings->update();
+
+    if (trees)
+        trees->update();
         
 }
 
@@ -164,5 +178,8 @@ void SceneMyTown::onResize(int width, int height)
         scenePradnya->resize(width, height);
 
     if (buildings)
-        buildings->resize(width, height);  
+        buildings->resize(width, height); 
+        
+    if (trees)
+        trees->resize(width, height);
 }
