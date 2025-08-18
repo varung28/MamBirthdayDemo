@@ -3,45 +3,45 @@
 extern int winWidth;
 extern int winHeight;
 
-VkResult Buildings::__createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize)
+VkResult Buildings::__createVertexBuffer(int index, float *position, int positionSize, float *color, int colorSize)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
     VkBufferCreateInfo vkBufferCreateInfo;
     VkMemoryRequirements vkMemoryRequirements;
     VkMemoryAllocateInfo vkMemoryAllocateInfo;
-    void* data = NULL;
+    void *data = NULL;
 
     //! Vertex Position
     //! ---------------------------------------------------------------------------------------------------------------------------------
     //* Step - 4
-    memset((void*)&buildings[index].vertexData_position, 0, sizeof(VertexData));
+    memset((void *)&buildings[index].vertexData_position, 0, sizeof(VertexData));
 
     //* Step - 5
-    
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
     vkBufferCreateInfo.size = positionSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
+
     //* Step - 6
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &buildings[index].vertexData_position.vkBuffer);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Position Buffer For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-    
+
     //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
     vkGetBufferMemoryRequirements(vkDevice, buildings[index].vertexData_position.vkBuffer, &vkMemoryRequirements);
 
     //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
     vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     vkMemoryAllocateInfo.pNext = NULL;
     vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
     vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
+
     //* Step - 8.1
     for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
@@ -87,32 +87,32 @@ VkResult Buildings::__createVertexBuffer(int index, float* position, int positio
     //! Vertex Color
     //! ---------------------------------------------------------------------------------------------------------------------------------
     //* Step - 4
-    memset((void*)&buildings[index].vertexData_color, 0, sizeof(VertexData));
+    memset((void *)&buildings[index].vertexData_color, 0, sizeof(VertexData));
 
     //* Step - 5
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
     vkBufferCreateInfo.size = colorSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
+
     //* Step - 6
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &buildings[index].vertexData_color.vkBuffer);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Color Buffer For Building Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
-    
+
     //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
     vkGetBufferMemoryRequirements(vkDevice, buildings[index].vertexData_color.vkBuffer, &vkMemoryRequirements);
 
     //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
     vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     vkMemoryAllocateInfo.pNext = NULL;
     vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
     vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
+
     //* Step - 8.1
     for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
@@ -162,7 +162,7 @@ VkResult Buildings::__createVertexBuffer(int index, float* position, int positio
 Buildings::Buildings()
 {
     vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
-    vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv"); 
+    vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv");
 }
 
 VkResult Buildings::initialize()
@@ -241,7 +241,6 @@ VkResult Buildings::initialize()
     else
         fprintf(gpFile, "BUILDINGS::%s() => createPipeline() Succeeded\n", __func__);
 
-
     return vkResult;
 }
 
@@ -251,99 +250,89 @@ VkResult Buildings::createVertexBuffer(void)
     VkResult vkResult = VK_SUCCESS;
 
     // Code
-    float triangle_position[] = 
-    {
-        0.0f,   1.0f,   0.0f,
-        -1.0f,  -1.0f,  0.0f,
-        1.0f,   -1.0f,  0.0f  
-    };
+    float triangle_position[] =
+        {
+            0.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f};
 
-    float triangle_color[] = 
-    {
-        0.498f,   0.450f,   0.443f,
-        0.498f,   0.450f,   0.443f,
-        0.498f,   0.450f,   0.443f
-    };
+    float triangle_color[] =
+        {
+            0.498f, 0.450f, 0.443f,
+            0.498f, 0.450f, 0.443f,
+            0.498f, 0.450f, 0.443f};
 
-    float rectangle_position[] = 
-    {
-        1.0f,   1.0f,   0.0f,
-        -1.0f,  1.0f,   0.0f,
-        -1.0f,  -1.0f,  0.0f,
-        -1.0f,  -1.0f,  0.0f,
-        1.0f,   -1.0f,  0.0f,
-        1.0f,   1.0f,   0.0f
-    };
+    float rectangle_position[] =
+        {
+            1.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f};
 
-    float rectangle_5_position[] = 
-    {
-        0.1f,   1.0f,   0.0f,
-        -1.0f,  1.0f,   0.0f,
-        -1.0f,  -1.0f,  0.0f,
-        -1.0f,  -1.0f,  0.0f,
-        1.1f,   -1.0f,  0.0f,
-        0.1f,   1.0f,   0.0f
-    };
+    float rectangle_5_position[] =
+        {
+            0.1f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f,
+            1.1f, -1.0f, 0.0f,
+            0.1f, 1.0f, 0.0f};
 
-    float rectangle_1_color[] = 
-    {
-        0.443f,   0.450f,   0.494f,
-        0.443f,   0.450f,   0.494f,
-        0.443f,   0.450f,   0.494f,
-        0.443f,   0.450f,   0.494f,
-        0.443f,   0.450f,   0.494f,
-        0.443f,   0.450f,   0.494f
-    };
+    float rectangle_1_color[] =
+        {
+            0.443f, 0.450f, 0.494f,
+            0.443f, 0.450f, 0.494f,
+            0.443f, 0.450f, 0.494f,
+            0.443f, 0.450f, 0.494f,
+            0.443f, 0.450f, 0.494f,
+            0.443f, 0.450f, 0.494f};
 
-    float rectangle_2_color[] = 
-    {
-        0.396f,   0.4f,   0.541f,
-        0.396f,   0.4f,   0.541f,
-        0.396f,   0.4f,   0.541f,
-        0.396f,   0.4f,   0.541f,
-        0.396f,   0.4f,   0.541f,
-        0.396f,   0.4f,   0.541f
-    };
+    float rectangle_2_color[] =
+        {
+            0.396f, 0.4f, 0.541f,
+            0.396f, 0.4f, 0.541f,
+            0.396f, 0.4f, 0.541f,
+            0.396f, 0.4f, 0.541f,
+            0.396f, 0.4f, 0.541f,
+            0.396f, 0.4f, 0.541f};
 
-    float rectangle_3_color[] = 
-    {
-        0.890f,   0.835f,   0.784f,
-        0.890f,   0.835f,   0.784f,
-        0.890f,   0.835f,   0.784f,
-        0.890f,   0.835f,   0.784f,
-        0.890f,   0.835f,   0.784f,
-        0.890f,   0.835f,   0.784f
-    };
+    float rectangle_3_color[] =
+        {
+            0.890f, 0.835f, 0.784f,
+            0.890f, 0.835f, 0.784f,
+            0.890f, 0.835f, 0.784f,
+            0.890f, 0.835f, 0.784f,
+            0.890f, 0.835f, 0.784f,
+            0.890f, 0.835f, 0.784f};
 
-    float rectangle_4_color[] = 
-    {
-        0.647f,   0.647f,   0.647f,
-        0.647f,   0.647f,   0.647f,
-        0.647f,   0.647f,   0.647f,
-        0.647f,   0.647f,   0.647f,
-        0.647f,   0.647f,   0.647f,
-        0.647f,   0.647f,   0.647f
-    };
+    float rectangle_4_color[] =
+        {
+            0.647f, 0.647f, 0.647f,
+            0.647f, 0.647f, 0.647f,
+            0.647f, 0.647f, 0.647f,
+            0.647f, 0.647f, 0.647f,
+            0.647f, 0.647f, 0.647f,
+            0.647f, 0.647f, 0.647f};
 
-    float rectangle_5_color[] = 
-    {
-        0.501f,   0.501f,   0.501f,
-        0.501f,   0.501f,   0.501f,
-        0.501f,   0.501f,   0.501f,
-        0.501f,   0.501f,   0.501f,
-        0.501f,   0.501f,   0.501f,
-        0.501f,   0.501f,   0.501f
-    };
+    float rectangle_5_color[] =
+        {
+            0.501f, 0.501f, 0.501f,
+            0.501f, 0.501f, 0.501f,
+            0.501f, 0.501f, 0.501f,
+            0.501f, 0.501f, 0.501f,
+            0.501f, 0.501f, 0.501f,
+            0.501f, 0.501f, 0.501f};
 
-    float rectangle_6_color[] = 
-    {
-        0.345f,   0.345f,   0.345f,
-        0.345f,   0.345f,   0.345f,
-        0.345f,   0.345f,   0.345f,
-        0.345f,   0.345f,   0.345f,
-        0.345f,   0.345f,   0.345f,
-        0.345f,   0.345f,   0.345f
-    };
+    float rectangle_6_color[] =
+        {
+            0.345f, 0.345f, 0.345f,
+            0.345f, 0.345f, 0.345f,
+            0.345f, 0.345f, 0.345f,
+            0.345f, 0.345f, 0.345f,
+            0.345f, 0.345f, 0.345f,
+            0.345f, 0.345f, 0.345f};
 
     // Code
     vkResult = __createVertexBuffer(0, triangle_position, sizeof(triangle_position), triangle_color, sizeof(triangle_color));
@@ -351,7 +340,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 0, Reason : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -360,7 +349,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 1 : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -369,7 +358,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 2: %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -378,7 +367,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 3: %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -387,7 +376,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 4: %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -396,7 +385,7 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 5: %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
@@ -405,10 +394,10 @@ VkResult Buildings::createVertexBuffer(void)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 6: %d !!!\n", __func__, vkResult);
         return vkResult;
-    }    
+    }
     else
         fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
-    
+
     return vkResult;
 }
 
@@ -419,14 +408,14 @@ VkResult Buildings::createUniformBuffer(void)
 
     // Code
     VkBufferCreateInfo vkBufferCreateInfo;
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     vkBufferCreateInfo.flags = 0;
     vkBufferCreateInfo.pNext = NULL;
     vkBufferCreateInfo.size = sizeof(VP_UniformData);
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
-    memset((void*)&uniformData, 0, sizeof(UniformData));
+    memset((void *)&uniformData, 0, sizeof(UniformData));
 
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &uniformData.vkBuffer);
     if (vkResult != VK_SUCCESS)
@@ -434,13 +423,13 @@ VkResult Buildings::createUniformBuffer(void)
         fprintf(gpFile, "BUILDINGS::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    
+
     VkMemoryRequirements vkMemoryRequirements;
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
     vkGetBufferMemoryRequirements(vkDevice, uniformData.vkBuffer, &vkMemoryRequirements);
 
     VkMemoryAllocateInfo vkMemoryAllocateInfo;
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
     vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     vkMemoryAllocateInfo.pNext = NULL;
     vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
@@ -465,7 +454,7 @@ VkResult Buildings::createUniformBuffer(void)
     {
         fprintf(gpFile, "BUILDINGS::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }     
+    }
 
     vkResult = vkBindBufferMemory(vkDevice, uniformData.vkBuffer, uniformData.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
@@ -481,7 +470,6 @@ VkResult Buildings::createUniformBuffer(void)
         return vkResult;
     }
 
-
     return vkResult;
 }
 
@@ -492,20 +480,20 @@ VkResult Buildings::createDescriptorSetLayout(void)
 
     //! Initialize VkDescriptorSetLayoutBinding
     VkDescriptorSetLayoutBinding vkDescriptorSetLayoutBinding;
-    memset((void*)&vkDescriptorSetLayoutBinding, 0, sizeof(VkDescriptorSetLayoutBinding));
+    memset((void *)&vkDescriptorSetLayoutBinding, 0, sizeof(VkDescriptorSetLayoutBinding));
     vkDescriptorSetLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    vkDescriptorSetLayoutBinding.binding = 0;   //! Mapped with layout(binding = 0) in vertex shader
+    vkDescriptorSetLayoutBinding.binding = 0; //! Mapped with layout(binding = 0) in vertex shader
     vkDescriptorSetLayoutBinding.descriptorCount = 1;
     vkDescriptorSetLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     vkDescriptorSetLayoutBinding.pImmutableSamplers = NULL;
 
     //* Step - 3
     VkDescriptorSetLayoutCreateInfo vkDescriptorSetLayoutCreateInfo;
-    memset((void*)&vkDescriptorSetLayoutCreateInfo, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
+    memset((void *)&vkDescriptorSetLayoutCreateInfo, 0, sizeof(VkDescriptorSetLayoutCreateInfo));
     vkDescriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     vkDescriptorSetLayoutCreateInfo.pNext = NULL;
     vkDescriptorSetLayoutCreateInfo.flags = 0;
-    vkDescriptorSetLayoutCreateInfo.bindingCount = 1;   //! An integer value where you want to bind descriptor set
+    vkDescriptorSetLayoutCreateInfo.bindingCount = 1; //! An integer value where you want to bind descriptor set
     vkDescriptorSetLayoutCreateInfo.pBindings = &vkDescriptorSetLayoutBinding;
 
     //* Step - 4
@@ -522,14 +510,14 @@ VkResult Buildings::createPipelineLayout(void)
     VkResult vkResult = VK_SUCCESS;
 
     VkPushConstantRange vkPushConstantRange;
-    memset((void*)&vkPushConstantRange, 0, sizeof(VkPushConstantRange));
+    memset((void *)&vkPushConstantRange, 0, sizeof(VkPushConstantRange));
     vkPushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
     vkPushConstantRange.offset = 0;
     vkPushConstantRange.size = sizeof(glm::mat4);
 
     //* Step - 3
     VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo;
-    memset((void*)&vkPipelineLayoutCreateInfo, 0, sizeof(VkPipelineLayoutCreateInfo));
+    memset((void *)&vkPipelineLayoutCreateInfo, 0, sizeof(VkPipelineLayoutCreateInfo));
     vkPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     vkPipelineLayoutCreateInfo.pNext = NULL;
     vkPipelineLayoutCreateInfo.flags = 0;
@@ -555,13 +543,13 @@ VkResult Buildings::createDescriptorPool(void)
 
     //* Vulkan expects decriptor pool size before creating actual descriptor pool
     VkDescriptorPoolSize vkDescriptorPoolSize;
-    memset((void*)&vkDescriptorPoolSize, 0, sizeof(VkDescriptorPoolSize));
+    memset((void *)&vkDescriptorPoolSize, 0, sizeof(VkDescriptorPoolSize));
     vkDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     vkDescriptorPoolSize.descriptorCount = 1;
-   
+
     //* Create the pool
     VkDescriptorPoolCreateInfo vkDescriptorPoolCreateInfo;
-    memset((void*)&vkDescriptorPoolCreateInfo, 0, sizeof(VkDescriptorPoolCreateInfo));
+    memset((void *)&vkDescriptorPoolCreateInfo, 0, sizeof(VkDescriptorPoolCreateInfo));
     vkDescriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     vkDescriptorPoolCreateInfo.pNext = NULL;
     vkDescriptorPoolCreateInfo.flags = 0;
@@ -571,7 +559,7 @@ VkResult Buildings::createDescriptorPool(void)
 
     vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Buildings);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "BUILDINGS::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
+        fprintf(gpFile, "BUILDINGS::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);
 
     return vkResult;
 }
@@ -585,7 +573,7 @@ VkResult Buildings::createDescriptorSet(void)
 
     //* Initialize DescriptorSetAllocationInfo
     VkDescriptorSetAllocateInfo vkDescriptorSetAllocateInfo;
-    memset((void*)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
+    memset((void *)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
     vkDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     vkDescriptorSetAllocateInfo.pNext = NULL;
     vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Buildings;
@@ -597,11 +585,11 @@ VkResult Buildings::createDescriptorSet(void)
     {
         fprintf(gpFile, "BUILDINGS::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
-    }  
-    
+    }
+
     //* Describe whether we want buffer as uniform or image as uniform
     VkDescriptorBufferInfo vkDescriptorBufferInfo;
-    memset((void*)&vkDescriptorBufferInfo, 0, sizeof(VkDescriptorBufferInfo));
+    memset((void *)&vkDescriptorBufferInfo, 0, sizeof(VkDescriptorBufferInfo));
     vkDescriptorBufferInfo.buffer = uniformData.vkBuffer;
     vkDescriptorBufferInfo.offset = 0;
     vkDescriptorBufferInfo.range = sizeof(VP_UniformData);
@@ -612,7 +600,7 @@ VkResult Buildings::createDescriptorSet(void)
         2) Copying from one shader to another shader
     */
     VkWriteDescriptorSet vkWriteDescriptorSet;
-    memset((void*)&vkWriteDescriptorSet, 0, sizeof(VkWriteDescriptorSet));
+    memset((void *)&vkWriteDescriptorSet, 0, sizeof(VkWriteDescriptorSet));
     vkWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     vkWriteDescriptorSet.pNext = NULL;
     vkWriteDescriptorSet.dstSet = vkDescriptorSet_Buildings;
@@ -638,27 +626,27 @@ VkResult Buildings::createPipeline(void)
 
     //! Vertex Input State
     VkVertexInputBindingDescription vkVertexInputBindingDescription_array[2];
-    memset((void*)vkVertexInputBindingDescription_array, 0, sizeof(VkVertexInputBindingDescription) * _ARRAYSIZE(vkVertexInputBindingDescription_array));
-    
+    memset((void *)vkVertexInputBindingDescription_array, 0, sizeof(VkVertexInputBindingDescription) * _ARRAYSIZE(vkVertexInputBindingDescription_array));
+
     //! Position
-    vkVertexInputBindingDescription_array[0].binding = 0;   //! Corresponds to layout(location = 0) in Vertex Shader
-    vkVertexInputBindingDescription_array[0].stride = sizeof(float) * 3; 
+    vkVertexInputBindingDescription_array[0].binding = 0; //! Corresponds to layout(location = 0) in Vertex Shader
+    vkVertexInputBindingDescription_array[0].stride = sizeof(float) * 3;
     vkVertexInputBindingDescription_array[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     //! Color
     vkVertexInputBindingDescription_array[1].binding = 1; //! Corresponds to layout(location = 1) in Vertex Shader
-    vkVertexInputBindingDescription_array[1].stride = sizeof(float) * 3; 
+    vkVertexInputBindingDescription_array[1].stride = sizeof(float) * 3;
     vkVertexInputBindingDescription_array[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     VkVertexInputAttributeDescription vkVertexInputAttributeDescription_array[2];
-    memset((void*)vkVertexInputAttributeDescription_array, 0, sizeof(VkVertexInputAttributeDescription) * _ARRAYSIZE(vkVertexInputAttributeDescription_array));
-    
+    memset((void *)vkVertexInputAttributeDescription_array, 0, sizeof(VkVertexInputAttributeDescription) * _ARRAYSIZE(vkVertexInputAttributeDescription_array));
+
     //! Position
     vkVertexInputAttributeDescription_array[0].binding = 0;
     vkVertexInputAttributeDescription_array[0].location = 0;
     vkVertexInputAttributeDescription_array[0].format = VK_FORMAT_R32G32B32_SFLOAT;
     vkVertexInputAttributeDescription_array[0].offset = 0;
-    
+
     //! Color
     vkVertexInputAttributeDescription_array[1].binding = 1;
     vkVertexInputAttributeDescription_array[1].location = 1;
@@ -666,7 +654,7 @@ VkResult Buildings::createPipeline(void)
     vkVertexInputAttributeDescription_array[1].offset = 0;
 
     VkPipelineVertexInputStateCreateInfo vkPipelineVertexInputStateCreateInfo;
-    memset((void*)&vkPipelineVertexInputStateCreateInfo, 0, sizeof(VkPipelineVertexInputStateCreateInfo));
+    memset((void *)&vkPipelineVertexInputStateCreateInfo, 0, sizeof(VkPipelineVertexInputStateCreateInfo));
     vkPipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vkPipelineVertexInputStateCreateInfo.pNext = NULL;
     vkPipelineVertexInputStateCreateInfo.flags = 0;
@@ -674,10 +662,10 @@ VkResult Buildings::createPipeline(void)
     vkPipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vkVertexInputBindingDescription_array;
     vkPipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = _ARRAYSIZE(vkVertexInputAttributeDescription_array);
     vkPipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vkVertexInputAttributeDescription_array;
-    
+
     //! Input Assembly State
     VkPipelineInputAssemblyStateCreateInfo vkPipelineInputAssemblyStateCreateInfo;
-    memset((void*)&vkPipelineInputAssemblyStateCreateInfo, 0, sizeof(VkPipelineInputAssemblyStateCreateInfo));
+    memset((void *)&vkPipelineInputAssemblyStateCreateInfo, 0, sizeof(VkPipelineInputAssemblyStateCreateInfo));
     vkPipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
     vkPipelineInputAssemblyStateCreateInfo.pNext = NULL;
     vkPipelineInputAssemblyStateCreateInfo.flags = 0;
@@ -685,7 +673,7 @@ VkResult Buildings::createPipeline(void)
 
     //! Rasterization State
     VkPipelineRasterizationStateCreateInfo vkPipelineRasterizationStateCreateInfo;
-    memset((void*)&vkPipelineRasterizationStateCreateInfo, 0, sizeof(VkPipelineRasterizationStateCreateInfo));
+    memset((void *)&vkPipelineRasterizationStateCreateInfo, 0, sizeof(VkPipelineRasterizationStateCreateInfo));
     vkPipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     vkPipelineRasterizationStateCreateInfo.pNext = NULL;
     vkPipelineRasterizationStateCreateInfo.flags = 0;
@@ -696,12 +684,12 @@ VkResult Buildings::createPipeline(void)
 
     //! Color Blend State
     VkPipelineColorBlendAttachmentState vkPipelineColorBlendAttachmentState_array[1];
-    memset((void*)vkPipelineColorBlendAttachmentState_array, 0, sizeof(VkPipelineColorBlendAttachmentState) * _ARRAYSIZE(vkPipelineColorBlendAttachmentState_array));
+    memset((void *)vkPipelineColorBlendAttachmentState_array, 0, sizeof(VkPipelineColorBlendAttachmentState) * _ARRAYSIZE(vkPipelineColorBlendAttachmentState_array));
     vkPipelineColorBlendAttachmentState_array[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     vkPipelineColorBlendAttachmentState_array[0].blendEnable = VK_FALSE;
 
     VkPipelineColorBlendStateCreateInfo vkPipelineColorBlendStateCreateInfo;
-    memset((void*)&vkPipelineColorBlendStateCreateInfo, 0, sizeof(VkPipelineColorBlendStateCreateInfo));
+    memset((void *)&vkPipelineColorBlendStateCreateInfo, 0, sizeof(VkPipelineColorBlendStateCreateInfo));
     vkPipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     vkPipelineColorBlendStateCreateInfo.pNext = NULL;
     vkPipelineColorBlendStateCreateInfo.flags = 0;
@@ -710,15 +698,15 @@ VkResult Buildings::createPipeline(void)
 
     //! Viewport Scissor State
     VkPipelineViewportStateCreateInfo vkPipelineViewportStateCreateInfo;
-    memset((void*)&vkPipelineViewportStateCreateInfo, 0, sizeof(VkPipelineViewportStateCreateInfo));
+    memset((void *)&vkPipelineViewportStateCreateInfo, 0, sizeof(VkPipelineViewportStateCreateInfo));
     vkPipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     vkPipelineViewportStateCreateInfo.pNext = NULL;
     vkPipelineViewportStateCreateInfo.flags = 0;
-    vkPipelineViewportStateCreateInfo.viewportCount = 1;    //* We can specify multiple viewports here
+    vkPipelineViewportStateCreateInfo.viewportCount = 1; //* We can specify multiple viewports here
     vkPipelineViewportStateCreateInfo.scissorCount = 1;
 
-    //! Viewport Info     
-    memset((void*)&vkViewport, 0, sizeof(VkViewport));
+    //! Viewport Info
+    memset((void *)&vkViewport, 0, sizeof(VkViewport));
     vkViewport.x = 0;
     vkViewport.y = 0;
     vkViewport.width = (float)vkExtent2D_swapchain.width;
@@ -727,19 +715,19 @@ VkResult Buildings::createPipeline(void)
     vkViewport.maxDepth = 1.0f;
 
     vkPipelineViewportStateCreateInfo.pViewports = &vkViewport;
-    
+
     //! Scissor Info
-    memset((void*)&vkRect2D_Scissor, 0, sizeof(VkRect2D));
+    memset((void *)&vkRect2D_Scissor, 0, sizeof(VkRect2D));
     vkRect2D_Scissor.offset.x = 0;
     vkRect2D_Scissor.offset.y = 0;
     vkRect2D_Scissor.extent.width = vkExtent2D_swapchain.width;
     vkRect2D_Scissor.extent.height = vkExtent2D_swapchain.height;
-   
+
     vkPipelineViewportStateCreateInfo.pScissors = &vkRect2D_Scissor;
 
     //! Depth Stencil State !//
     VkPipelineDepthStencilStateCreateInfo vkPipelineDepthStencilCreateInfo;
-    memset((void*)&vkPipelineDepthStencilCreateInfo, 0, sizeof(VkPipelineDepthStencilStateCreateInfo));
+    memset((void *)&vkPipelineDepthStencilCreateInfo, 0, sizeof(VkPipelineDepthStencilStateCreateInfo));
     vkPipelineDepthStencilCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     vkPipelineDepthStencilCreateInfo.flags = 0;
     vkPipelineDepthStencilCreateInfo.pNext = NULL;
@@ -757,7 +745,7 @@ VkResult Buildings::createPipeline(void)
 
     //! Multi-Sample State
     VkPipelineMultisampleStateCreateInfo vkPipelineMultisampleStateCreateInfo;
-    memset((void*)&vkPipelineMultisampleStateCreateInfo, 0, sizeof(VkPipelineMultisampleStateCreateInfo));
+    memset((void *)&vkPipelineMultisampleStateCreateInfo, 0, sizeof(VkPipelineMultisampleStateCreateInfo));
     vkPipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
     vkPipelineMultisampleStateCreateInfo.pNext = NULL;
     vkPipelineMultisampleStateCreateInfo.flags = 0;
@@ -765,8 +753,8 @@ VkResult Buildings::createPipeline(void)
 
     //! Shader Stage State
     VkPipelineShaderStageCreateInfo vkPipelineShaderStageCreateInfo_array[2];
-    memset((void*)vkPipelineShaderStageCreateInfo_array, 0, sizeof(VkPipelineShaderStageCreateInfo) * _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array));
-    
+    memset((void *)vkPipelineShaderStageCreateInfo_array, 0, sizeof(VkPipelineShaderStageCreateInfo) * _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array));
+
     //* Vertex Shader
     vkPipelineShaderStageCreateInfo_array[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vkPipelineShaderStageCreateInfo_array[0].pNext = NULL;
@@ -789,11 +777,11 @@ VkResult Buildings::createPipeline(void)
 
     //! As pipelines are created from pipeline caches, we will create VkPipelineCache Object
     VkPipelineCacheCreateInfo vkPipelineCacheCreateInfo;
-    memset((void*)&vkPipelineCacheCreateInfo, 0, sizeof(VkPipelineCacheCreateInfo));
+    memset((void *)&vkPipelineCacheCreateInfo, 0, sizeof(VkPipelineCacheCreateInfo));
     vkPipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
     vkPipelineCacheCreateInfo.pNext = NULL;
     vkPipelineCacheCreateInfo.flags = 0;
-    
+
     VkPipelineCache vkPipelineCache = VK_NULL_HANDLE;
     vkResult = vkCreatePipelineCache(vkDevice, &vkPipelineCacheCreateInfo, NULL, &vkPipelineCache);
     if (vkResult != VK_SUCCESS)
@@ -803,7 +791,7 @@ VkResult Buildings::createPipeline(void)
 
     //! Create actual Graphics Pipeline
     VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo;
-    memset((void*)&vkGraphicsPipelineCreateInfo, 0, sizeof(VkGraphicsPipelineCreateInfo));
+    memset((void *)&vkGraphicsPipelineCreateInfo, 0, sizeof(VkGraphicsPipelineCreateInfo));
     vkGraphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     vkGraphicsPipelineCreateInfo.pNext = NULL;
     vkGraphicsPipelineCreateInfo.flags = 0;
@@ -857,19 +845,19 @@ VkResult Buildings::updateUniformBuffer()
 
     // Code
     VP_UniformData mvp_UniformData;
-    memset((void*)&mvp_UniformData, 0, sizeof(VP_UniformData));
+    memset((void *)&mvp_UniformData, 0, sizeof(VP_UniformData));
 
     glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 scaleMatrix = glm::mat4(1.0f);
 
     //* Building 1
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, 0.9f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, 0.9f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.4f, 0.3f));
     buildings[0].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[0].modelData.modelMatrix = translationMatrix * scaleMatrix;
 
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, -0.5f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-7.0f, -0.5f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 1.0f, 0.3f));
     buildings[1].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[1].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -877,7 +865,7 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 2
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -0.8f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -0.8f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.9f, 0.7f, 0.3f));
     buildings[2].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[2].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -885,7 +873,7 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 3
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -0.5f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -0.5f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 1.0f, 0.3f));
     buildings[3].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[3].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -893,12 +881,12 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 4
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.3f, -0.6f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.3f, -0.6f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.9f, 0.3f));
     buildings[4].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[4].modelData.modelMatrix = translationMatrix * scaleMatrix;
 
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.8f, -0.85f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.8f, -0.85f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.6f, 0.65f, 0.3f));
     buildings[5].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[5].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -906,27 +894,26 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 5
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -0.8f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -0.8f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.2f, 0.7f, 0.3f));
     buildings[6].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[6].modelData.modelMatrix = translationMatrix * scaleMatrix;
     //* ----------------------------------------------------------------------------------------
 
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
-    
+
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
     perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f),
         (float)winWidth / (float)winHeight,
         0.1f,
-        100.0f
-    );
+        100.0f);
     //! 2D Matrix with Column Major (Like OpenGL)
     perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
     mvp_UniformData.projectionMatix = perspectiveProjectionMatrix;
 
     //! Map Uniform Buffer
-    void* data = NULL;
+    void *data = NULL;
     vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(VP_UniformData), 0, &data);
     if (vkResult != VK_SUCCESS)
     {
@@ -943,7 +930,7 @@ VkResult Buildings::updateUniformBuffer()
     return vkResult;
 }
 
-void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
+void Buildings::buildCommandBuffers(VkCommandBuffer &commandBuffer)
 {
     // Code
 
@@ -960,8 +947,7 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         1,
         &vkDescriptorSet_Buildings,
         0,
-        NULL
-    );
+        NULL);
 
     vkCmdPushConstants(
         commandBuffer,
@@ -969,30 +955,27 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[0].modelData
-    );
+        &buildings[0].modelData);
 
     //! Bind with Vertex Position Buffer
     VkDeviceSize vkDeviceSize_offset_position[1];
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[0].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[0].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
     VkDeviceSize vkDeviceSize_offset_color[1];
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[0].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[0].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 3, 1, 0, 0);
@@ -1004,28 +987,25 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[1].modelData
-    );
+        &buildings[1].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[1].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[1].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[1].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[1].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1039,33 +1019,30 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[2].modelData
-    );
+        &buildings[2].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[2].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[2].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[2].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[2].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
     //* ----------------------------------------------------------------------------------------
-    
+
     //* Building 3
     //* ----------------------------------------------------------------------------------------
     vkCmdPushConstants(
@@ -1074,28 +1051,25 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[3].modelData
-    );
+        &buildings[3].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[3].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[3].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[3].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[3].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1109,28 +1083,25 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[4].modelData
-    );
+        &buildings[4].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[4].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[4].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[4].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[4].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1144,28 +1115,25 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[5].modelData
-    );
+        &buildings[5].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[5].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[5].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[5].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[5].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1179,28 +1147,25 @@ void Buildings::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[6].modelData
-    );
+        &buildings[6].modelData);
 
     //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &buildings[6].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        commandBuffer,
+        0,
+        1,
+        &buildings[6].vertexData_position.vkBuffer,
+        vkDeviceSize_offset_position);
 
     //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
     vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &buildings[6].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        commandBuffer,
+        1,
+        1,
+        &buildings[6].vertexData_color.vkBuffer,
+        vkDeviceSize_offset_color);
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1232,7 +1197,7 @@ VkResult Buildings::resize(int width, int height)
         vkPipeline_Buildings = VK_NULL_HANDLE;
     }
     //?--------------------------------------------------------------------------------------------------
-    
+
     //? RECREATE FOR RESIZE
     //?--------------------------------------------------------------------------------------------------
     //* Create Pipeline Layout
@@ -1289,11 +1254,11 @@ Buildings::~Buildings()
     }
 
     if (vkDescriptorSetLayout_Buildings)
-	{
-		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Buildings, NULL);
-		vkDescriptorSetLayout_Buildings = VK_NULL_HANDLE;
+    {
+        vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Buildings, NULL);
+        vkDescriptorSetLayout_Buildings = VK_NULL_HANDLE;
         fprintf(gpFile, "BUILDINGS::%s() => vkDestroyDescriptorSetLayout() Succeeded\n", __func__);
-	}
+    }
 
     for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)
     {
@@ -1320,6 +1285,18 @@ Buildings::~Buildings()
             vkDestroyBuffer(vkDevice, buildings[i].vertexData_position.vkBuffer, NULL);
             buildings[i].vertexData_position.vkBuffer = VK_NULL_HANDLE;
         }
+    }
+
+    if (uniformData.vkDeviceMemory)
+    {
+        vkFreeMemory(vkDevice, uniformData.vkDeviceMemory, NULL);
+        uniformData.vkDeviceMemory = VK_NULL_HANDLE;
+    }
+
+    if (uniformData.vkBuffer)
+    {
+        vkDestroyBuffer(vkDevice, uniformData.vkBuffer, NULL);
+        uniformData.vkBuffer = VK_NULL_HANDLE;
     }
 
     ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);

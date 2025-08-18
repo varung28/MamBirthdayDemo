@@ -7,5 +7,16 @@ namespace TSM
 
     double g_current_scene_time = 10.0;
     double g_delta_time = 10.0;
-    unsigned int selectedScene = SCENE::END_CREDITS;
+
+    unsigned int selectedScene = SCENE::INTRO;
 }
+
+float objX = 0.0f;
+float objY = 0.0f;
+float objZ = 0.0f;
+float objIncrement = 0.1f;
+
+float scaleX = 0.0f;
+float scaleY = 0.0f;
+float scaleZ = 0.0f;
+float scaleIncrement = 0.1f;

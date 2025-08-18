@@ -16,11 +16,15 @@ SceneMyTown::SceneMyTown(/* args */)
 
     ////////////////////////////////////////////////////////////////////////////////////
 
-    // scenePradnya = new ScenePradnya();
-    // scenePradnya->initialize();
+    scenePradnya = new ScenePradnya();
+    scenePradnya->initialize();
+
+    scenePradnya_Sky = new ScenePradnya();
+    scenePradnya_Sky->initialize();
 
     buildings = new Buildings();
     buildings->initialize();
+
 
     trees = new Trees();
     trees->initialize();
@@ -139,10 +143,14 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
     // quad->initialCommandBuffer(commandBuffer);
 
-    // scenePradnya->buildCommandBuffers(commandBuffer);
-
     if (buildings)
         buildings->buildCommandBuffers(commandBuffer);
+
+    if (scenePradnya)
+        scenePradnya->buildCommandBuffers(commandBuffer);
+
+    if (scenePradnya_Sky)
+        scenePradnya_Sky->buildCommandBuffers(commandBuffer);
 
     if (trees)
         trees->buildCommandBuffers(commandBuffer);
@@ -162,6 +170,9 @@ void SceneMyTown::update(void)
     if (scenePradnya)
         scenePradnya->update();
 
+    if (scenePradnya_Sky)
+        scenePradnya_Sky->update_sky();
+
     if (buildings)
         buildings->update();
 
@@ -174,12 +185,16 @@ void SceneMyTown::onResize(int width, int height)
 {
     // createPipeline();
 
+    if (scenePradnya_Sky)
+        scenePradnya_Sky->resize(width, height);
+
     if (scenePradnya)
         scenePradnya->resize(width, height);
 
     if (buildings)
-        buildings->resize(width, height); 
-        
+        buildings->resize(width, height);
+
     if (trees)
         trees->resize(width, height);
+
 }

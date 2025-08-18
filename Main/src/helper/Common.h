@@ -76,11 +76,23 @@ namespace TSM
     extern unsigned int selectedScene;
 }
 
+
+extern float objX;
+extern float objY;
+extern float objZ;
+extern float objIncrement;
+
+extern float scaleX;
+extern float scaleY;
+extern float scaleZ;
+extern float scaleIncrement;
+
 typedef struct
 {
     glm::mat4 modelMatrix;
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
 } MVP_UniformData;
+
 
 #endif // COMMON_H
