@@ -36,15 +36,18 @@ void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     switch (TSM::selectedScene)
     {
     case TSM::SCENE::INTRO:
-        sceneIntro->initialCommandBuffer(commandBuffer);
+        if(sceneIntro)
+            sceneIntro->initialCommandBuffer(commandBuffer);
         break;
 
     case TSM::SCENE::MAIN:
-        sceneMyTown->initialCommandBuffer(commandBuffer);
+        if (sceneMyTown)
+            sceneMyTown->initialCommandBuffer(commandBuffer);
         break;
 
     case TSM::SCENE::END_CREDITS:
-        sceneEndCredit->initialCommandBuffer(commandBuffer);
+        if (sceneEndCredit)
+            sceneEndCredit->initialCommandBuffer(commandBuffer);
         break;
     }
 }
@@ -54,15 +57,18 @@ void SceneMain::update(void)
     switch (TSM::selectedScene)
     {
     case TSM::SCENE::INTRO:
+        if(sceneIntro)
         sceneIntro->update();
         break;
 
     case TSM::SCENE::MAIN:
-        sceneMyTown->update();
+        if (sceneMyTown)
+            sceneMyTown->update();
         break;
 
     case TSM::SCENE::END_CREDITS:
-        sceneEndCredit->update();
+        if (sceneEndCredit)
+            sceneEndCredit->update();
         break;
     }
 }

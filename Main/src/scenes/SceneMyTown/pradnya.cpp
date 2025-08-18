@@ -860,15 +860,6 @@ VkResult ScenePradnya::updateColorVertexBuffer(void)
         }
     }
 
-    // (Vertex Buffer) Step 10 : Now we have our required device memory handle and vkBuffer handle.
-    // Bind this device memory handle to the Vulkan Buffer handle using vkBindBufferMemory()
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_color.vkBuffer, vertexData_color.vkDeviceMemory, 0);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() : vkBindBufferMemory() Failed For Vertex Color Buffer.\n", __func__);
-        return (vkResult);
-    }
-
     // (Vertex Buffer) Step 11 : Declare a local void * buffer, say 'data', and call vkMapMemory() to map our device memory object handle to this void * data
     // This will allow us to do MMIO.
     // Means - when we write on to void *data, it will automatically be written / copied to the device memory represented by device memory object handle.
