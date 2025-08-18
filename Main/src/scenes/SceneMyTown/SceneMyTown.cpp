@@ -21,9 +21,6 @@ SceneMyTown::SceneMyTown(/* args */)
     scenePradnya = new ScenePradnya();
     scenePradnya->initialize();
 
-    texturedQuad = new TexturedQuad();
-    texturedQuad->initialize("resources\\textures\\Smiley.png");
-
     sdkCreateTimer(&timer);
 }
 
@@ -104,19 +101,12 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
-    if (scenePradnya)
-    {
-        scenePradnya->uninitialize();
-        delete scenePradnya;
-        scenePradnya = nullptr;
-    }
-
-    if (texturedQuad)
-    {
-        delete texturedQuad;
-        texturedQuad = nullptr;
-        fprintf(gpFile, "%s() => Textured Quad Destroyed Successully\n", __func__);
-    }
+    // if (scenePradnya)
+    // {
+    //     scenePradnya->uninitialize();
+    //     delete scenePradnya;
+    //     scenePradnya = nullptr;
+    // }
 
     if (quad)
     {
@@ -154,7 +144,6 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 
     // scenePradnya->buildCommandBuffers(commandBuffer);
 
-    texturedQuad->buildCommandBuffers(commandBuffer);
 }
 
 void SceneMyTown::update(void)
@@ -167,15 +156,11 @@ void SceneMyTown::update(void)
         completed = true;
     }
 
-    if (scenePradnya)
-    {
-        scenePradnya->update();
-    }
+    // if (scenePradnya)
+    // {
+    //     scenePradnya->update();
+    // }
 
-    if (texturedQuad)
-    {
-        texturedQuad->updateUniformBuffer();
-    }
 }
 
 void SceneMyTown::onResize(int width, int height)
@@ -189,9 +174,9 @@ void SceneMyTown::onResize(int width, int height)
 
     createPipeline();
 
-    if (scenePradnya)
-    {
-        scenePradnya->resize(width, height);
-    }
+    // if (scenePradnya)
+    // {
+    //     scenePradnya->resize(width, height);
+    // }
     
 }
