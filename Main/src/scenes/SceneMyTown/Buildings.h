@@ -2,8 +2,6 @@
 #define BUILDINGS_H
 
 #include "../../helper/Common.h"
-#include "../../helper/Geometry.h"
-#include "../../helper/PipelineBuilder.h"
 #include "../../helper/ShaderModule.h"
 
 class Buildings
@@ -42,6 +40,12 @@ class Buildings
             PushData modelData;
         } BuildingData;
 
+        VkDescriptorSet vkDescriptorSet_Buildings = VK_NULL_HANDLE;
+        VkDescriptorSetLayout vkDescriptorSetLayout_Buildings = VK_NULL_HANDLE;
+        VkDescriptorPool vkDescriptorPool_Buildings = VK_NULL_HANDLE;
+        VkPipeline vkPipeline_Buildings = VK_NULL_HANDLE;
+        VkPipelineLayout vkPipelineLayout_Buildings = VK_NULL_HANDLE;
+
         UniformData uniformData;
         BuildingData buildings[7];
 
@@ -51,13 +55,22 @@ class Buildings
     private:
         VkResult __createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize);
         VkResult createVertexBuffer();
+        VkResult createUniformBuffer();
+        VkResult createDescriptorSetLayout();
+        VkResult createPipelineLayout();
+        VkResult createDescriptorPool();
+        VkResult createDescriptorSet();
+        VkResult createPipeline();
+        VkResult updateUniformBuffer();
 
     public:
         Buildings();
         ~Buildings();
 
-        VkResult updateUniformBuffer();
+        VkResult initialize();
+        void update();
         void buildCommandBuffers(VkCommandBuffer& commandBuffer);
+        VkResult resize(int width, int height);
 };
 
 

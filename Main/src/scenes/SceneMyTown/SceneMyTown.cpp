@@ -6,23 +6,22 @@ SceneMyTown::SceneMyTown(/* args */)
     VkResult vkResult = VK_SUCCESS;
 
     // CODE
-    quad = new Quad();
+    // quad = new Quad();
 
-    // ///////////////////////////// PIPELINE RELATED CODE ////////////////////////////////
-    vkShaderModule_Vertex = ShaderModuleHelper::LoadShaderModule("bin\\shader.vert.spv");
-    vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader_red.frag.spv");
+    // // ///////////////////////////// PIPELINE RELATED CODE ////////////////////////////////
+    // vkShaderModule_Vertex = ShaderModuleHelper::LoadShaderModule("bin\\shader.vert.spv");
+    // vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader_red.frag.spv");
 
-    textureQuadPipelineBuilder = new VulkanPipelineBuilder();
-
-    createPipeline();
+    // createPipeline();
 
     ////////////////////////////////////////////////////////////////////////////////////
 
-    scenePradnya = new ScenePradnya();
-    scenePradnya->initialize();
+    // scenePradnya = new ScenePradnya();
+    // scenePradnya->initialize();
 
-    texturedQuad = new TexturedQuad();
-    texturedQuad->initialize("resources\\textures\\Smiley.png");
+    buildings = new Buildings();
+    buildings->initialize();
+
 
     sdkCreateTimer(&timer);
 }
@@ -104,18 +103,17 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
+    if (buildings)
+    {
+        delete buildings;
+        buildings = nullptr;
+    }
+
     if (scenePradnya)
     {
         scenePradnya->uninitialize();
         delete scenePradnya;
         scenePradnya = nullptr;
-    }
-
-    if (texturedQuad)
-    {
-        delete texturedQuad;
-        texturedQuad = nullptr;
-        fprintf(gpFile, "%s() => Textured Quad Destroyed Successully\n", __func__);
     }
 
     if (quad)
@@ -125,36 +123,19 @@ SceneMyTown::~SceneMyTown()
         fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
     }
 
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
-
-    if (textureQuadPipelineBuilder)
-    {
-        delete textureQuadPipelineBuilder;
-        textureQuadPipelineBuilder = nullptr;
-    }
-
     ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
     ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
 }
 
 void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
-
-    // // BIND WITH THE PIPELINE
-    //vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineTexture);
-
-    // // BIND OUR DESCRIPTOR SET TO PIPELINE
-    //vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
-
     // quad->initialCommandBuffer(commandBuffer);
 
     // scenePradnya->buildCommandBuffers(commandBuffer);
 
-    texturedQuad->buildCommandBuffers(commandBuffer);
+    if (buildings)
+        buildings->buildCommandBuffers(commandBuffer);
+
 }
 
 void SceneMyTown::update(void)
@@ -168,30 +149,20 @@ void SceneMyTown::update(void)
     }
 
     if (scenePradnya)
-    {
         scenePradnya->update();
-    }
 
-    if (texturedQuad)
-    {
-        texturedQuad->updateUniformBuffer();
-    }
+    if (buildings)
+        buildings->update();
+        
 }
 
 void SceneMyTown::onResize(int width, int height)
 {
-
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
-
-    createPipeline();
+    // createPipeline();
 
     if (scenePradnya)
-    {
         scenePradnya->resize(width, height);
-    }
-    
+
+    if (buildings)
+        buildings->resize(width, height);  
 }

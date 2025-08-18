@@ -7,6 +7,7 @@
 #include "../../helper/TexturedQuad.h"
 
 #include "pradnya.h"
+#include "Buildings.h"
 
 class SceneMyTown
 {
@@ -24,7 +25,8 @@ private:
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
     ScenePradnya *scenePradnya = nullptr;
-    TexturedQuad* texturedQuad = nullptr;
+    Buildings *buildings = nullptr;
+    TexturedQuad* tq = nullptr;
 
 public:
     SceneMyTown(/* args */);
