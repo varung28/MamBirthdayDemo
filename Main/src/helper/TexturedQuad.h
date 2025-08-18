@@ -29,10 +29,11 @@ class TexturedQuad
 
         UniformData uniformData;
 
-        VkDescriptorSet vkDescriptorSet = VK_NULL_HANDLE;
-        VkDescriptorSetLayout vkDescriptorSetLayout = VK_NULL_HANDLE;
-        VkDescriptorPool vkDescriptorPool = VK_NULL_HANDLE;
-        VkPipeline vkPipeline = VK_NULL_HANDLE;
+        VkDescriptorSet vkDescriptorSet_Texture = VK_NULL_HANDLE;
+        VkDescriptorSetLayout vkDescriptorSetLayout_Texture = VK_NULL_HANDLE;
+        VkDescriptorPool vkDescriptorPool_Texture = VK_NULL_HANDLE;
+        VkPipeline vkPipeline_Texture = VK_NULL_HANDLE;
+        VkPipelineLayout vkPipelineLayout_Texture = VK_NULL_HANDLE;
 
         VkResult createUniformBuffer();
         VkResult createDescriptorSetLayout();
@@ -40,7 +41,8 @@ class TexturedQuad
         VkResult createDescriptorPool();
         VkResult createDescriptorSet();
         VkResult createPipeline();
-
+        VkResult updateUniformBuffer(MVP_UniformData& mvpUniformData);
+        
 
     public:
         TexturedQuad();
@@ -48,7 +50,9 @@ class TexturedQuad
 
         VkResult initialize(std::string filePath);
         void buildCommandBuffers(VkCommandBuffer& commandBuffer);
-        VkResult updateUniformBuffer();
+        void update(MVP_UniformData& mvpUniformData);
+        VkResult resize(int width, int height);
+        
 };
 
 #endif // TEXTUREDQUAD_H

@@ -155,20 +155,23 @@ void SceneIntro::update(void)
         completed = true;
     }
 
-    if (texturedQuad)
-    {
-        texturedQuad->updateUniformBuffer();
-    }
+//     if (texturedQuad)
+//     {
+//         texturedQuad->update();
+//     }
 }
 
 void SceneIntro::onResize(int width, int height)
 {
 
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
+    // if (vkPipelineTexture)
+    // {
+    //     vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
+    //     vkPipelineTexture = VK_NULL_HANDLE;
+    // }
 
-    createPipeline();
+    // createPipeline();
+
+    if (texturedQuad)
+        texturedQuad->resize(width, height);
 }

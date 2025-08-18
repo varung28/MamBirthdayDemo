@@ -173,20 +173,28 @@ VkResult TexturedQuad::createUniformBuffer()
     return vkResult;
 }
 
-VkResult TexturedQuad::updateUniformBuffer()
+void TexturedQuad::update(MVP_UniformData& mvpUniformData)
+{
+    VkResult vkResult = updateUniformBuffer(mvpUniformData);
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+    }
+}
+
+VkResult TexturedQuad::updateUniformBuffer(MVP_UniformData& mvpUniformData)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
 
-    // Code
     MVP_UniformData mvp_UniformData;
     memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
 
     //! Update Matrices
     mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)) *  glm::scale(glm::mat4(1.0),glm::vec3(3.0f,1.5f,1.0f));
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
-    
+
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
     perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f),
@@ -196,6 +204,7 @@ VkResult TexturedQuad::updateUniformBuffer()
     );
     //! 2D Matrix with Column Major (Like OpenGL)
     perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
+    // mvpUniformData.projectionMatrix = perspectiveProjectionMatrix;
     mvp_UniformData.projectionMatrix = perspectiveProjectionMatrix;
 
     //! Map Uniform Buffer
@@ -208,6 +217,7 @@ VkResult TexturedQuad::updateUniformBuffer()
     }
 
     //! Copy the data to the mapped buffer (present on device memory)
+    // memcpy(data, &mvpUniformData, sizeof(MVP_UniformData));
     memcpy(data, &mvp_UniformData, sizeof(MVP_UniformData));
 
     //! Unmap memory
@@ -247,7 +257,7 @@ VkResult TexturedQuad::createDescriptorSetLayout()
     vkDescriptorSetLayoutCreateInfo.pBindings = vkDescriptorSetLayoutBinding;
 
     //* Step - 4
-    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout);
+    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout_Texture);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
     else
@@ -268,12 +278,12 @@ VkResult TexturedQuad::createPipelineLayout()
     vkPipelineLayoutCreateInfo.pNext = NULL;
     vkPipelineLayoutCreateInfo.flags = 0;
     vkPipelineLayoutCreateInfo.setLayoutCount = 1;
-    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout;
+    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout_Texture;
     vkPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
     vkPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
 
     //* Step - 4
-    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout);
+    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout_Texture);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
     else
@@ -309,7 +319,7 @@ VkResult TexturedQuad::createDescriptorPool(void)
     vkDescriptorPoolCreateInfo.pPoolSizes = vkDescriptorPoolSize;
     vkDescriptorPoolCreateInfo.maxSets = 2;
 
-    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool);
+    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Texture);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
     else
@@ -330,11 +340,11 @@ VkResult TexturedQuad::createDescriptorSet(void)
     memset((void*)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
     vkDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     vkDescriptorSetAllocateInfo.pNext = NULL;
-    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool;
+    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Texture;
     vkDescriptorSetAllocateInfo.descriptorSetCount = 1;
-    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout;
+    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout_Texture;
 
-    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet);
+    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet_Texture);
     if (vkResult != VK_SUCCESS)
     {
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
@@ -367,7 +377,7 @@ VkResult TexturedQuad::createDescriptorSet(void)
 
     vkWriteDescriptorSet[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     vkWriteDescriptorSet[0].pNext = NULL;
-    vkWriteDescriptorSet[0].dstSet = vkDescriptorSet;
+    vkWriteDescriptorSet[0].dstSet = vkDescriptorSet_Texture;
     vkWriteDescriptorSet[0].dstArrayElement = 0;
     vkWriteDescriptorSet[0].dstBinding = 0;
     vkWriteDescriptorSet[0].descriptorCount = 1;
@@ -378,7 +388,7 @@ VkResult TexturedQuad::createDescriptorSet(void)
 
     vkWriteDescriptorSet[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     vkWriteDescriptorSet[1].pNext = NULL;
-    vkWriteDescriptorSet[1].dstSet = vkDescriptorSet;
+    vkWriteDescriptorSet[1].dstSet = vkDescriptorSet_Texture;
     vkWriteDescriptorSet[1].dstArrayElement = 0;
     vkWriteDescriptorSet[1].descriptorCount = 1;
     vkWriteDescriptorSet[1].dstBinding = 1;
@@ -428,57 +438,57 @@ VkResult TexturedQuad::createPipeline(void)
     vkVertexInputAttributeDescription_array[1].format = VK_FORMAT_R32G32_SFLOAT;
     vkVertexInputAttributeDescription_array[1].offset = 0;
 
-    VkPipelineVertexInputStateCreateInfo vkPipelineVertexInputStateCreateInfo;
-    memset((void*)&vkPipelineVertexInputStateCreateInfo, 0, sizeof(VkPipelineVertexInputStateCreateInfo));
-    vkPipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vkPipelineVertexInputStateCreateInfo.pNext = NULL;
-    vkPipelineVertexInputStateCreateInfo.flags = 0;
-    vkPipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = _ARRAYSIZE(vkVertexInputBindingDescription_array);
-    vkPipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vkVertexInputBindingDescription_array;
-    vkPipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = _ARRAYSIZE(vkVertexInputAttributeDescription_array);
-    vkPipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vkVertexInputAttributeDescription_array;
+    VkPipelineVertexInputStateCreateInfo vkPipeline_TextureVertexInputStateCreateInfo;
+    memset((void*)&vkPipeline_TextureVertexInputStateCreateInfo, 0, sizeof(VkPipelineVertexInputStateCreateInfo));
+    vkPipeline_TextureVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vkPipeline_TextureVertexInputStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureVertexInputStateCreateInfo.flags = 0;
+    vkPipeline_TextureVertexInputStateCreateInfo.vertexBindingDescriptionCount = _ARRAYSIZE(vkVertexInputBindingDescription_array);
+    vkPipeline_TextureVertexInputStateCreateInfo.pVertexBindingDescriptions = vkVertexInputBindingDescription_array;
+    vkPipeline_TextureVertexInputStateCreateInfo.vertexAttributeDescriptionCount = _ARRAYSIZE(vkVertexInputAttributeDescription_array);
+    vkPipeline_TextureVertexInputStateCreateInfo.pVertexAttributeDescriptions = vkVertexInputAttributeDescription_array;
     
     //! Input Assembly State
-    VkPipelineInputAssemblyStateCreateInfo vkPipelineInputAssemblyStateCreateInfo;
-    memset((void*)&vkPipelineInputAssemblyStateCreateInfo, 0, sizeof(VkPipelineInputAssemblyStateCreateInfo));
-    vkPipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    vkPipelineInputAssemblyStateCreateInfo.pNext = NULL;
-    vkPipelineInputAssemblyStateCreateInfo.flags = 0;
-    vkPipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    VkPipelineInputAssemblyStateCreateInfo vkPipeline_TextureInputAssemblyStateCreateInfo;
+    memset((void*)&vkPipeline_TextureInputAssemblyStateCreateInfo, 0, sizeof(VkPipelineInputAssemblyStateCreateInfo));
+    vkPipeline_TextureInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    vkPipeline_TextureInputAssemblyStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureInputAssemblyStateCreateInfo.flags = 0;
+    vkPipeline_TextureInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
     //! Rasterization State
-    VkPipelineRasterizationStateCreateInfo vkPipelineRasterizationStateCreateInfo;
-    memset((void*)&vkPipelineRasterizationStateCreateInfo, 0, sizeof(VkPipelineRasterizationStateCreateInfo));
-    vkPipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    vkPipelineRasterizationStateCreateInfo.pNext = NULL;
-    vkPipelineRasterizationStateCreateInfo.flags = 0;
-    vkPipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-    vkPipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_NONE;
-    vkPipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    vkPipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
+    VkPipelineRasterizationStateCreateInfo vkPipeline_TextureRasterizationStateCreateInfo;
+    memset((void*)&vkPipeline_TextureRasterizationStateCreateInfo, 0, sizeof(VkPipelineRasterizationStateCreateInfo));
+    vkPipeline_TextureRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    vkPipeline_TextureRasterizationStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureRasterizationStateCreateInfo.flags = 0;
+    vkPipeline_TextureRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
+    vkPipeline_TextureRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_NONE;
+    vkPipeline_TextureRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    vkPipeline_TextureRasterizationStateCreateInfo.lineWidth = 1.0f;
 
     //! Color Blend State
-    VkPipelineColorBlendAttachmentState vkPipelineColorBlendAttachmentState_array[1];
-    memset((void*)vkPipelineColorBlendAttachmentState_array, 0, sizeof(VkPipelineColorBlendAttachmentState) * _ARRAYSIZE(vkPipelineColorBlendAttachmentState_array));
-    vkPipelineColorBlendAttachmentState_array[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    vkPipelineColorBlendAttachmentState_array[0].blendEnable = VK_FALSE;
+    VkPipelineColorBlendAttachmentState vkPipeline_TextureColorBlendAttachmentState_array[1];
+    memset((void*)vkPipeline_TextureColorBlendAttachmentState_array, 0, sizeof(VkPipelineColorBlendAttachmentState) * _ARRAYSIZE(vkPipeline_TextureColorBlendAttachmentState_array));
+    vkPipeline_TextureColorBlendAttachmentState_array[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    vkPipeline_TextureColorBlendAttachmentState_array[0].blendEnable = VK_FALSE;
 
-    VkPipelineColorBlendStateCreateInfo vkPipelineColorBlendStateCreateInfo;
-    memset((void*)&vkPipelineColorBlendStateCreateInfo, 0, sizeof(VkPipelineColorBlendStateCreateInfo));
-    vkPipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    vkPipelineColorBlendStateCreateInfo.pNext = NULL;
-    vkPipelineColorBlendStateCreateInfo.flags = 0;
-    vkPipelineColorBlendStateCreateInfo.attachmentCount = _ARRAYSIZE(vkPipelineColorBlendAttachmentState_array);
-    vkPipelineColorBlendStateCreateInfo.pAttachments = vkPipelineColorBlendAttachmentState_array;
+    VkPipelineColorBlendStateCreateInfo vkPipeline_TextureColorBlendStateCreateInfo;
+    memset((void*)&vkPipeline_TextureColorBlendStateCreateInfo, 0, sizeof(VkPipelineColorBlendStateCreateInfo));
+    vkPipeline_TextureColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    vkPipeline_TextureColorBlendStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureColorBlendStateCreateInfo.flags = 0;
+    vkPipeline_TextureColorBlendStateCreateInfo.attachmentCount = _ARRAYSIZE(vkPipeline_TextureColorBlendAttachmentState_array);
+    vkPipeline_TextureColorBlendStateCreateInfo.pAttachments = vkPipeline_TextureColorBlendAttachmentState_array;
 
     //! Viewport Scissor State
-    VkPipelineViewportStateCreateInfo vkPipelineViewportStateCreateInfo;
-    memset((void*)&vkPipelineViewportStateCreateInfo, 0, sizeof(VkPipelineViewportStateCreateInfo));
-    vkPipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-    vkPipelineViewportStateCreateInfo.pNext = NULL;
-    vkPipelineViewportStateCreateInfo.flags = 0;
-    vkPipelineViewportStateCreateInfo.viewportCount = 1;    //* We can specify multiple viewports here
-    vkPipelineViewportStateCreateInfo.scissorCount = 1;
+    VkPipelineViewportStateCreateInfo vkPipeline_TextureViewportStateCreateInfo;
+    memset((void*)&vkPipeline_TextureViewportStateCreateInfo, 0, sizeof(VkPipelineViewportStateCreateInfo));
+    vkPipeline_TextureViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    vkPipeline_TextureViewportStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureViewportStateCreateInfo.flags = 0;
+    vkPipeline_TextureViewportStateCreateInfo.viewportCount = 1;    //* We can specify multiple viewports here
+    vkPipeline_TextureViewportStateCreateInfo.scissorCount = 1;
 
     //! Viewport Info     
     memset((void*)&vkViewport, 0, sizeof(VkViewport));
@@ -489,7 +499,7 @@ VkResult TexturedQuad::createPipeline(void)
     vkViewport.minDepth = 0.0f;
     vkViewport.maxDepth = 1.0f;
 
-    vkPipelineViewportStateCreateInfo.pViewports = &vkViewport;
+    vkPipeline_TextureViewportStateCreateInfo.pViewports = &vkViewport;
     
     //! Scissor Info
     memset((void*)&vkRect2D_Scissor, 0, sizeof(VkRect2D));
@@ -498,67 +508,67 @@ VkResult TexturedQuad::createPipeline(void)
     vkRect2D_Scissor.extent.width = vkExtent2D_swapchain.width;
     vkRect2D_Scissor.extent.height = vkExtent2D_swapchain.height;
    
-    vkPipelineViewportStateCreateInfo.pScissors = &vkRect2D_Scissor;
+    vkPipeline_TextureViewportStateCreateInfo.pScissors = &vkRect2D_Scissor;
 
     //! Depth Stencil State !//
-    VkPipelineDepthStencilStateCreateInfo vkPipelineDepthStencilCreateInfo;
-    memset((void*)&vkPipelineDepthStencilCreateInfo, 0, sizeof(VkPipelineDepthStencilStateCreateInfo));
-    vkPipelineDepthStencilCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    vkPipelineDepthStencilCreateInfo.flags = 0;
-    vkPipelineDepthStencilCreateInfo.pNext = NULL;
-    vkPipelineDepthStencilCreateInfo.depthTestEnable = VK_TRUE;
-    vkPipelineDepthStencilCreateInfo.depthWriteEnable = VK_TRUE;
-    vkPipelineDepthStencilCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
-    vkPipelineDepthStencilCreateInfo.depthBoundsTestEnable = VK_FALSE;
-    vkPipelineDepthStencilCreateInfo.back.failOp = VK_STENCIL_OP_KEEP;
-    vkPipelineDepthStencilCreateInfo.back.passOp = VK_STENCIL_OP_KEEP;
-    vkPipelineDepthStencilCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
-    vkPipelineDepthStencilCreateInfo.stencilTestEnable = VK_FALSE;
-    vkPipelineDepthStencilCreateInfo.front = vkPipelineDepthStencilCreateInfo.back;
+    VkPipelineDepthStencilStateCreateInfo vkPipeline_TextureDepthStencilCreateInfo;
+    memset((void*)&vkPipeline_TextureDepthStencilCreateInfo, 0, sizeof(VkPipelineDepthStencilStateCreateInfo));
+    vkPipeline_TextureDepthStencilCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    vkPipeline_TextureDepthStencilCreateInfo.flags = 0;
+    vkPipeline_TextureDepthStencilCreateInfo.pNext = NULL;
+    vkPipeline_TextureDepthStencilCreateInfo.depthTestEnable = VK_TRUE;
+    vkPipeline_TextureDepthStencilCreateInfo.depthWriteEnable = VK_TRUE;
+    vkPipeline_TextureDepthStencilCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+    vkPipeline_TextureDepthStencilCreateInfo.depthBoundsTestEnable = VK_FALSE;
+    vkPipeline_TextureDepthStencilCreateInfo.back.failOp = VK_STENCIL_OP_KEEP;
+    vkPipeline_TextureDepthStencilCreateInfo.back.passOp = VK_STENCIL_OP_KEEP;
+    vkPipeline_TextureDepthStencilCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
+    vkPipeline_TextureDepthStencilCreateInfo.stencilTestEnable = VK_FALSE;
+    vkPipeline_TextureDepthStencilCreateInfo.front = vkPipeline_TextureDepthStencilCreateInfo.back;
 
     //! Dynamic State !//
 
     //! Multi-Sample State
-    VkPipelineMultisampleStateCreateInfo vkPipelineMultisampleStateCreateInfo;
-    memset((void*)&vkPipelineMultisampleStateCreateInfo, 0, sizeof(VkPipelineMultisampleStateCreateInfo));
-    vkPipelineMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-    vkPipelineMultisampleStateCreateInfo.pNext = NULL;
-    vkPipelineMultisampleStateCreateInfo.flags = 0;
-    vkPipelineMultisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    VkPipelineMultisampleStateCreateInfo vkPipeline_TextureMultisampleStateCreateInfo;
+    memset((void*)&vkPipeline_TextureMultisampleStateCreateInfo, 0, sizeof(VkPipelineMultisampleStateCreateInfo));
+    vkPipeline_TextureMultisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    vkPipeline_TextureMultisampleStateCreateInfo.pNext = NULL;
+    vkPipeline_TextureMultisampleStateCreateInfo.flags = 0;
+    vkPipeline_TextureMultisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
     //! Shader Stage State
-    VkPipelineShaderStageCreateInfo vkPipelineShaderStageCreateInfo_array[2];
-    memset((void*)vkPipelineShaderStageCreateInfo_array, 0, sizeof(VkPipelineShaderStageCreateInfo) * _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array));
+    VkPipelineShaderStageCreateInfo vkPipeline_TextureShaderStageCreateInfo_array[2];
+    memset((void*)vkPipeline_TextureShaderStageCreateInfo_array, 0, sizeof(VkPipelineShaderStageCreateInfo) * _ARRAYSIZE(vkPipeline_TextureShaderStageCreateInfo_array));
     
     //* Vertex Shader
-    vkPipelineShaderStageCreateInfo_array[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vkPipelineShaderStageCreateInfo_array[0].pNext = NULL;
-    vkPipelineShaderStageCreateInfo_array[0].flags = 0;
-    vkPipelineShaderStageCreateInfo_array[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vkPipelineShaderStageCreateInfo_array[0].module = vkShaderModule_vertex;
-    vkPipelineShaderStageCreateInfo_array[0].pName = "main";
-    vkPipelineShaderStageCreateInfo_array[0].pSpecializationInfo = NULL;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].pNext = NULL;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].flags = 0;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].module = vkShaderModule_vertex;
+    vkPipeline_TextureShaderStageCreateInfo_array[0].pName = "main";
+    vkPipeline_TextureShaderStageCreateInfo_array[0].pSpecializationInfo = NULL;
 
     //* Fragment Shader
-    vkPipelineShaderStageCreateInfo_array[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vkPipelineShaderStageCreateInfo_array[1].pNext = NULL;
-    vkPipelineShaderStageCreateInfo_array[1].flags = 0;
-    vkPipelineShaderStageCreateInfo_array[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    vkPipelineShaderStageCreateInfo_array[1].module = vkShaderModule_fragment;
-    vkPipelineShaderStageCreateInfo_array[1].pName = "main";
-    vkPipelineShaderStageCreateInfo_array[1].pSpecializationInfo = NULL;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].pNext = NULL;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].flags = 0;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].module = vkShaderModule_fragment;
+    vkPipeline_TextureShaderStageCreateInfo_array[1].pName = "main";
+    vkPipeline_TextureShaderStageCreateInfo_array[1].pSpecializationInfo = NULL;
 
     //! Tessellation State !//
 
-    //! As pipelines are created from pipeline caches, we will create VkPipelineCache Object
-    VkPipelineCacheCreateInfo vkPipelineCacheCreateInfo;
-    memset((void*)&vkPipelineCacheCreateInfo, 0, sizeof(VkPipelineCacheCreateInfo));
-    vkPipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-    vkPipelineCacheCreateInfo.pNext = NULL;
-    vkPipelineCacheCreateInfo.flags = 0;
+    //! As pipelines are created from pipeline caches, we will create vkPipeline_TextureCache Object
+    VkPipelineCacheCreateInfo vkPipeline_TextureCacheCreateInfo;
+    memset((void*)&vkPipeline_TextureCacheCreateInfo, 0, sizeof(VkPipelineCacheCreateInfo));
+    vkPipeline_TextureCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+    vkPipeline_TextureCacheCreateInfo.pNext = NULL;
+    vkPipeline_TextureCacheCreateInfo.flags = 0;
     
-    VkPipelineCache vkPipelineCache = VK_NULL_HANDLE;
-    vkResult = vkCreatePipelineCache(vkDevice, &vkPipelineCacheCreateInfo, NULL, &vkPipelineCache);
+    VkPipelineCache vkPipeline_TextureCache = VK_NULL_HANDLE;
+    vkResult = vkCreatePipelineCache(vkDevice, &vkPipeline_TextureCacheCreateInfo, NULL, &vkPipeline_TextureCache);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
     else
@@ -570,34 +580,34 @@ VkResult TexturedQuad::createPipeline(void)
     vkGraphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     vkGraphicsPipelineCreateInfo.pNext = NULL;
     vkGraphicsPipelineCreateInfo.flags = 0;
-    vkGraphicsPipelineCreateInfo.pVertexInputState = &vkPipelineVertexInputStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.pInputAssemblyState = &vkPipelineInputAssemblyStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.pRasterizationState = &vkPipelineRasterizationStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.pColorBlendState = &vkPipelineColorBlendStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.pViewportState = &vkPipelineViewportStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.pDepthStencilState = &vkPipelineDepthStencilCreateInfo;
+    vkGraphicsPipelineCreateInfo.pVertexInputState = &vkPipeline_TextureVertexInputStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.pInputAssemblyState = &vkPipeline_TextureInputAssemblyStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.pRasterizationState = &vkPipeline_TextureRasterizationStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.pColorBlendState = &vkPipeline_TextureColorBlendStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.pViewportState = &vkPipeline_TextureViewportStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.pDepthStencilState = &vkPipeline_TextureDepthStencilCreateInfo;
     vkGraphicsPipelineCreateInfo.pDynamicState = NULL;
-    vkGraphicsPipelineCreateInfo.pMultisampleState = &vkPipelineMultisampleStateCreateInfo;
-    vkGraphicsPipelineCreateInfo.stageCount = _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array);
-    vkGraphicsPipelineCreateInfo.pStages = vkPipelineShaderStageCreateInfo_array;
+    vkGraphicsPipelineCreateInfo.pMultisampleState = &vkPipeline_TextureMultisampleStateCreateInfo;
+    vkGraphicsPipelineCreateInfo.stageCount = _ARRAYSIZE(vkPipeline_TextureShaderStageCreateInfo_array);
+    vkGraphicsPipelineCreateInfo.pStages = vkPipeline_TextureShaderStageCreateInfo_array;
     vkGraphicsPipelineCreateInfo.pTessellationState = NULL;
-    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout;
+    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout_Texture;
     vkGraphicsPipelineCreateInfo.renderPass = vkRenderPass;
     vkGraphicsPipelineCreateInfo.subpass = 0;
     vkGraphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     vkGraphicsPipelineCreateInfo.basePipelineIndex = 0;
 
-    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline);
+    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipeline_TextureCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Texture);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
     else
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateGraphicsPipelines() Succeeded\n", __func__);
 
     //* Destroy Pipeline Cache
-    if (vkPipelineCache)
+    if (vkPipeline_TextureCache)
     {
-        vkDestroyPipelineCache(vkDevice, vkPipelineCache, NULL);
-        vkPipelineCache = VK_NULL_HANDLE;
+        vkDestroyPipelineCache(vkDevice, vkPipeline_TextureCache, NULL);
+        vkPipeline_TextureCache = VK_NULL_HANDLE;
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipelineCache() Succeeded\n", __func__);
     }
 
@@ -607,16 +617,16 @@ VkResult TexturedQuad::createPipeline(void)
 void TexturedQuad::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     //! Bind with Pipeline
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline_Texture);
 
     //! Bind the Descriptor Set to the Pipeline
     vkCmdBindDescriptorSets(
         commandBuffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
-        vkPipelineLayout,
+        vkPipelineLayout_Texture,
         0,
         1,
-        &vkDescriptorSet,
+        &vkDescriptorSet_Texture,
         0,
         NULL
     );
@@ -624,29 +634,93 @@ void TexturedQuad::buildCommandBuffers(VkCommandBuffer& commandBuffer)
     quad->initialCommandBuffer(commandBuffer);
 }
 
+VkResult TexturedQuad::resize(int width, int height)
+{
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
+
+    //? DESTROY
+    //?--------------------------------------------------------------------------------------------------
+    //* Wait for device to complete in-hand tasks
+    if (vkDevice)
+        vkDeviceWaitIdle(vkDevice);
+
+    //* Destroy PipelineLayout
+    if (vkPipelineLayout_Texture)
+    {
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Texture, NULL);
+        vkPipelineLayout_Texture = VK_NULL_HANDLE;
+    }
+
+    //* Destroy Pipeline
+    if (vkPipeline_Texture)
+    {
+        vkDestroyPipeline(vkDevice, vkPipeline_Texture, NULL);
+        vkPipeline_Texture = VK_NULL_HANDLE;
+    }
+    //?--------------------------------------------------------------------------------------------------
+    
+    //? RECREATE FOR RESIZE
+    //?--------------------------------------------------------------------------------------------------
+    //* Create Pipeline Layout
+    vkResult = createPipelineLayout();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
+    //* Create Pipeline
+    vkResult = createPipeline();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+    //?--------------------------------------------------------------------------------------------------
+
+    return vkResult;
+}
+
 TexturedQuad::~TexturedQuad()
 {
-    if (vkPipeline)
+    if (vkDevice)
+        vkDeviceWaitIdle(vkDevice);
+
+    if (vkPipelineLayout_Texture)
     {
-        vkDestroyPipeline(vkDevice, vkPipeline, NULL);
-        vkPipeline = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Texture, NULL);
+        vkPipelineLayout_Texture = VK_NULL_HANDLE;
+    }
+
+    if (vkPipeline_Texture)
+    {
+        vkDestroyPipeline(vkDevice, vkPipeline_Texture, NULL);
+        vkPipeline_Texture = VK_NULL_HANDLE;
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipeline() Succeeded\n", __func__);
     }
 
-    if (vkDescriptorPool)
+    if (vkDescriptorPool_Texture)
     {
-        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool, NULL);
-        vkDescriptorPool = VK_NULL_HANDLE;
-        vkDescriptorSet = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyDescriptorPool() => Destroyed vkDescriptorPool and vkDescriptorSet Successfully\n", __func__);
+        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Texture, NULL);
+        vkDescriptorPool_Texture = VK_NULL_HANDLE;
+        vkDescriptorSet_Texture = VK_NULL_HANDLE;
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyDescriptorPool() => Destroyed vkDescriptorPool_Texture and vkDescriptorSet Successfully\n", __func__);
     }
 
-    if (vkPipelineLayout)
+    if (vkPipelineLayout_Texture)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout, NULL);
-        vkPipelineLayout = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Texture, NULL);
+        vkPipelineLayout_Texture = VK_NULL_HANDLE;
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipelineLayout() Succeeded\n", __func__);
     }
+
+    if (vkDescriptorSetLayout_Texture)
+	{
+		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Texture, NULL);
+		vkDescriptorSetLayout_Texture = VK_NULL_HANDLE;
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyDescriptorSetLayout() Succeeded\n", __func__);
+	}
 
     if (uniformData.vkDeviceMemory)
     {
@@ -674,4 +748,6 @@ TexturedQuad::~TexturedQuad()
         quad = nullptr;
     }
 
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_fragment);
 }
