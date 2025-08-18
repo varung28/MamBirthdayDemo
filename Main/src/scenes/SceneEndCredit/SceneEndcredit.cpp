@@ -15,8 +15,16 @@ SceneEndCredit::SceneEndCredit(/* args */)
     textureQuadPipelineBuilder = new VulkanPipelineBuilder();
 
     createPipeline();
-    
+
     ////////////////////////////////////////////////////////////////////////////////////
+    
+    texQuadEndCreditSlide_1 = new TexturedQuad();
+    texQuadEndCreditSlide_1->initialize("resources\\textures\\EndCreditSlide_1.png");
+
+    texQuadEndCreditSlide_2 = new TexturedQuad();
+    texQuadEndCreditSlide_2->initialize("resources\\textures\\EndCreditSlide_2.png");
+
+
 
     sdkCreateTimer(&timer);
 }
@@ -130,7 +138,9 @@ void SceneEndCredit::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     // BIND OUR DESCRIPTOR SET TO PIPELINE
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
 
-    quad->initialCommandBuffer(commandBuffer);
+    //quad->initialCommandBuffer(commandBuffer);
+    texQuadEndCreditSlide_1->buildCommandBuffers(commandBuffer);
+    texQuadEndCreditSlide_2->buildCommandBuffers(commandBuffer);
 }
 
 void SceneEndCredit::update(void)
@@ -142,6 +152,21 @@ void SceneEndCredit::update(void)
     {
         completed = true;
     }
+
+    
+    static float xPos = 0.0f;
+    static float yPos = -6.5f;
+
+
+    if (yPos < 5.0f)
+        yPos += 0.00005f;
+
+    if (texQuadEndCreditSlide_1)
+        texQuadEndCreditSlide_1->updateUniformBuffer(xPos,yPos + 3.0f,0.0f);
+
+    if (texQuadEndCreditSlide_2)
+       texQuadEndCreditSlide_2->updateUniformBuffer(xPos,yPos,0.0f);
+
 }
 
 void SceneEndCredit::onResize(int width, int height)
@@ -154,4 +179,5 @@ void SceneEndCredit::onResize(int width, int height)
     }
 
     createPipeline();
+
 }

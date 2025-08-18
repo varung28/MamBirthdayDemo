@@ -17,12 +17,22 @@ SceneIntro::SceneIntro(/* args */)
 
     createPipeline();
 
+    texturedQuad = new TexturedQuad();
+    texturedQuad->initialize("resources\\textures\\Intro_slide_1.png");
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
 SceneIntro::~SceneIntro()
 {
-     if (pyramid)
+
+    if (texturedQuad)
+    {
+        delete texturedQuad;
+        texturedQuad = nullptr;
+        fprintf(gpFile, "%s() => Textured Quad Destroyed Successully\n", __func__);
+    }
+
+    if (pyramid)
     {
         delete pyramid;
         pyramid = nullptr;
@@ -55,7 +65,9 @@ void SceneIntro::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     // BIND OUR DESCRIPTOR SET TO PIPELINE
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
 
-    pyramid->initialCommandBuffer(commandBuffer);
+    //pyramid->initialCommandBuffer(commandBuffer);
+
+    texturedQuad->buildCommandBuffers(commandBuffer);
 }
 
 void SceneIntro::createPipeline(void)
@@ -141,6 +153,11 @@ void SceneIntro::update(void)
     if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
     {
         completed = true;
+    }
+
+    if (texturedQuad)
+    {
+        texturedQuad->updateUniformBuffer();
     }
 }
 

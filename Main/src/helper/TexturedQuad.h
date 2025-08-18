@@ -49,6 +49,7 @@ class TexturedQuad
         VkResult initialize(std::string filePath);
         void buildCommandBuffers(VkCommandBuffer& commandBuffer);
         VkResult updateUniformBuffer();
+        VkResult updateUniformBuffer(float x,float y,float z);
 };
 
 #endif // TEXTUREDQUAD_H

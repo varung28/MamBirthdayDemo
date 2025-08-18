@@ -184,7 +184,50 @@ VkResult TexturedQuad::updateUniformBuffer()
 
     //! Update Matrices
     mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)) *  glm::scale(glm::mat4(1.0),glm::vec3(4.0f,2.0f,1.0f));
+    mvp_UniformData.viewMatrix = glm::mat4(1.0f);
+    
+    glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
+    perspectiveProjectionMatrix = glm::perspective(
+        glm::radians(45.0f),
+        (float)winWidth / (float)winHeight,
+        0.1f,
+        100.0f
+    );
+    //! 2D Matrix with Column Major (Like OpenGL)
+    perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
+    mvp_UniformData.projectionMatrix = perspectiveProjectionMatrix;
+
+    //! Map Uniform Buffer
+    void* data = NULL;
+    vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(MVP_UniformData), 0, &data);
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkMapMemory() Failed For Uniform Buffer : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
+    //! Copy the data to the mapped buffer (present on device memory)
+    memcpy(data, &mvp_UniformData, sizeof(MVP_UniformData));
+
+    //! Unmap memory
+    vkUnmapMemory(vkDevice, uniformData.vkDeviceMemory);
+
+    return vkResult;
+}
+
+VkResult TexturedQuad::updateUniformBuffer(float x, float y, float z)
+{
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
+
+    // Code
+    MVP_UniformData mvp_UniformData;
+    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+
+    //! Update Matrices
+    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
+    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, -5.0f)) *  glm::scale(glm::mat4(1.0),glm::vec3(3.0f,1.5f,1.0f));
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
     
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);

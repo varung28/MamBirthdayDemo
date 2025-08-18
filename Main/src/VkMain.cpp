@@ -749,9 +749,9 @@ VkResult initialize(void)
 	// INTIALIZE CLEAR COLOR VALUE
 	memset((void *)&vkClearColorValue, 0, sizeof(VkClearColorValue));
 
-	vkClearColorValue.float32[0] = 0.0f;
-	vkClearColorValue.float32[1] = 0.0f;
-	vkClearColorValue.float32[2] = 0.3f;
+	vkClearColorValue.float32[0] = 0.1490f;
+	vkClearColorValue.float32[1] = 0.1921f;
+	vkClearColorValue.float32[2] = 0.2352f;
 	vkClearColorValue.float32[3] = 1.0f;
 
 	// INTIALIZE CLEAR DEPTH VALUE
@@ -784,9 +784,9 @@ VkResult initialize(void)
 	fprintf(gpFile, "===========================================================================================\n");
 	bInitialized = TRUE;
 
-	//openal = new OpenAL();
-	//openal->InitializeAudio();
-	//openal->Play();
+	openal = new OpenAL();
+	openal->InitializeAudio();
+	// openal->Play();
 
 	return (vkResult);
 }

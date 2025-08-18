@@ -2,6 +2,7 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
+#include "../../helper/TexturedQuad.h"
 
 class SceneIntro
 {
@@ -18,6 +19,7 @@ private:
     VulkanPipelineBuilder *textureQuadPipelineBuilder = nullptr;
     VkPipeline vkPipelineTexture = VK_NULL_HANDLE;
 
+    TexturedQuad* texturedQuad = nullptr;
 public:
     SceneIntro(/* args */);
     ~SceneIntro();
