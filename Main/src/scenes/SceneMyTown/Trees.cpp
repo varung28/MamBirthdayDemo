@@ -984,6 +984,18 @@ Trees::~Trees()
         fprintf(gpFile, "TREES::%s() => vkDestroyDescriptorSetLayout() Succeeded\n", __func__);
 	}
 
+    if (uniformData.vkDeviceMemory)
+    {
+        vkFreeMemory(vkDevice, uniformData.vkDeviceMemory, NULL);
+        uniformData.vkDeviceMemory = VK_NULL_HANDLE;
+    }
+
+    if (uniformData.vkBuffer)
+    {
+        vkDestroyBuffer(vkDevice, uniformData.vkBuffer, NULL);
+        uniformData.vkBuffer = VK_NULL_HANDLE;
+    }
+
     for (int i = TREES_COUNT - 1; i >= 0; i--)
     {
         if (trees[i].vertexData_color.vkDeviceMemory)
