@@ -19,8 +19,8 @@ extern BOOL gbFullScreen;
 extern BOOL bWindowMinimized;
 extern FILE *gpFile;
 
-extern int winWidth ;
-extern int winHeight ;
+extern int winWidth;
+extern int winHeight;
 
 // INSTANCE EXTENSION RELATED VARIABLES
 extern uint32_t enabledInstanceExtensionCount;
@@ -50,13 +50,13 @@ extern VkDevice vkDevice;
 // DEVICE QUEUE
 extern VkQueue vkQueue;
 
-extern VkDescriptorSetLayout vkDescriptorSetLayout;
+// extern VkDescriptorSetLayout vkDescriptorSetLayout;
 extern VkViewport vkViewport;
 extern VkRect2D vkRect2D_Scissor;
 extern VkExtent2D vkExtent2D_swapchain;
-extern VkPipelineLayout vkPipelineLayout;
+// extern VkPipelineLayout vkPipelineLayout;
 extern VkRenderPass vkRenderPass;
-extern VkDescriptorSet vkDescriptorSet;
+// extern VkDescriptorSet vkDescriptorSet;
 
 namespace TSM
 {
@@ -75,7 +75,6 @@ namespace TSM
     extern double g_delta_time;
     extern unsigned int selectedScene;
 }
-
 
 extern float objX;
 extern float objY;

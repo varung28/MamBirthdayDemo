@@ -23,6 +23,7 @@ private:
     
     TexturedQuad* texQuadEndCreditSlide_1 = nullptr;
     TexturedQuad* texQuadEndCreditSlide_2 = nullptr;
+    TexturedQuad* texQuadBirthdaySlide_1 = nullptr;
 
 public:
     SceneEndCredit(/* args */);
