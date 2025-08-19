@@ -819,6 +819,9 @@ VkResult Trees::updateUniformBuffer()
 void Trees::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
+    //! Bind with Pipeline
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline_Trees);
+
     vkCmdBindDescriptorSets(
         commandBuffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,

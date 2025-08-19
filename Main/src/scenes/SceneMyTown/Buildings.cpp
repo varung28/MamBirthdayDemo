@@ -292,12 +292,12 @@ VkResult Buildings::createVertexBuffer(void)
 
     float rectangle_3_color[] =
     {
-        0.890f, 0.835f, 0.784f,
-        0.890f, 0.835f, 0.784f,
-        0.890f, 0.835f, 0.784f,
-        0.890f, 0.835f, 0.784f,
-        0.890f, 0.835f, 0.784f,
-        0.890f, 0.835f, 0.784f
+        0.349f, 0.349f, 0.349f,
+        0.349f, 0.349f, 0.349f,
+        0.349f, 0.349f, 0.349f,
+        0.349f, 0.349f, 0.349f,
+        0.349f, 0.349f, 0.349f,
+        0.349f, 0.349f, 0.349f
     };
 
     float rectangle_4_color[] =
@@ -844,7 +844,7 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 2
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, -0.8f + 1.500000f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-4.4f, -0.8f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.9f, 0.7f, 0.3f));
     buildings[2].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[2].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -852,7 +852,7 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 3
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -0.5f + 1.500000f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.9f, -0.5f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f, 1.0f, 0.3f));
     buildings[3].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[3].modelData.modelMatrix = translationMatrix * scaleMatrix;
@@ -873,10 +873,38 @@ VkResult Buildings::updateUniformBuffer()
 
     //* Building 5
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -0.8f + 1.500000f, -12.0f));
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(6.2f, -0.8f + 1.500000f, -12.0f));
     scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.2f, 0.7f, 0.3f));
     buildings[6].modelData.modelMatrix = glm::mat4(1.0f);
     buildings[6].modelData.modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Quads For Buildings 3
+    //* ----------------------------------------------------------------------------------------
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 1.7f, -12.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.05f, 0.3f));
+    buildings[7].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[7].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 1.4f, -12.5f));
+    buildings[8].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[8].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 1.1f, -12.5f));
+    buildings[9].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[9].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 0.8f, -12.5f));
+    buildings[10].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[10].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 0.5f, -12.5f));
+    buildings[11].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[11].modelData.modelMatrix = translationMatrix * scaleMatrix;
+
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-1.95f, 0.2f, -12.5f));
+    buildings[12].modelData.modelMatrix = glm::mat4(1.0f);
+    buildings[12].modelData.modelMatrix = translationMatrix * scaleMatrix;
     //* ----------------------------------------------------------------------------------------
 
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
@@ -1062,7 +1090,8 @@ void Buildings::buildCommandBuffers(VkCommandBuffer &commandBuffer)
         VK_SHADER_STAGE_VERTEX_BIT,
         0,
         sizeof(PushData),
-        &buildings[4].modelData);
+        &buildings[4].modelData
+    );
 
     //! Bind with Vertex Position Buffer
     memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
@@ -1071,7 +1100,8 @@ void Buildings::buildCommandBuffers(VkCommandBuffer &commandBuffer)
         0,
         1,
         &buildings[4].vertexData_position.vkBuffer,
-        vkDeviceSize_offset_position);
+        vkDeviceSize_offset_position
+    );
 
     //! Bind with Vertex Color Buffer
     memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
@@ -1080,7 +1110,8 @@ void Buildings::buildCommandBuffers(VkCommandBuffer &commandBuffer)
         1,
         1,
         &buildings[4].vertexData_color.vkBuffer,
-        vkDeviceSize_offset_color);
+        vkDeviceSize_offset_color
+    );
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1148,6 +1179,41 @@ void Buildings::buildCommandBuffers(VkCommandBuffer &commandBuffer)
 
     //! Vulkan Drawing Function
     vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    //* ----------------------------------------------------------------------------------------
+
+    //* Quads For Building 3
+    //* ----------------------------------------------------------------------------------------
+    for (int i = BUILDING_GEOMETRY_COUNT; i < 13; i++)
+    {
+        vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout_Buildings,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &buildings[i].modelData);
+
+        //! Bind with Vertex Position Buffer
+        memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        vkCmdBindVertexBuffers(
+            commandBuffer,
+            0,
+            1,
+            &buildings[3].vertexData_position.vkBuffer,
+            vkDeviceSize_offset_position);
+
+        //! Bind with Vertex Color Buffer
+        memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        vkCmdBindVertexBuffers(
+            commandBuffer,
+            1,
+            1,
+            &buildings[3].vertexData_color.vkBuffer,
+            vkDeviceSize_offset_color);
+
+        //! Vulkan Drawing Function
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    }
     //* ----------------------------------------------------------------------------------------
 }
 

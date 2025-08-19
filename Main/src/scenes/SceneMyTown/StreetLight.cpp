@@ -745,33 +745,188 @@ VkResult StreetLight::updateUniformBuffer()
 
     //* Light 1
     //* ----------------------------------------------------------------------------------------
-    //! Middle Bar
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.35f, 3.0f, 0.4f));
-    lightsModelData[0].modelMatrix = glm::mat4(1.0f);
-    lightsModelData[0].modelMatrix = translationMatrix * scaleMatrix;
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5.8f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[0][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[0][0].modelMatrix = translationMatrix * scaleMatrix;
 
     //! Lamp 1
     translationMatrix = glm::mat4(1.0f);
     scaleMatrix = glm::mat4(1.0f);
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 3.0f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.8f, 0.0f));
-    lightsModelData[1].modelMatrix = glm::mat4(1.0f);
-    lightsModelData[1].modelMatrix = translationMatrix * scaleMatrix;
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5.7f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[0][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[0][1].modelMatrix = translationMatrix * scaleMatrix;
 
     //! Lamp 2
     translationMatrix = glm::mat4(1.0f);
     scaleMatrix = glm::mat4(1.0f);
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.8f, 0.0f));
-    lightsModelData[2].modelMatrix = glm::mat4(1.0f);
-    lightsModelData[2].modelMatrix = translationMatrix * scaleMatrix;
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5.4f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[0][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[0][2].modelMatrix = translationMatrix * scaleMatrix;
 
-    //! Top Bar
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 0.2f, 0.0f));
-    lightsModelData[3].modelMatrix = glm::mat4(1.0f);
-    lightsModelData[3].modelMatrix = translationMatrix * scaleMatrix;
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5.8f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[0][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[0][3].modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Light 2
+    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.2f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[1][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[1][0].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.93f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[1][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[1][1].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.23f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[1][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[1][2].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.2f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[1][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[1][3].modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Light 3
+    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[2][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[2][0].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.65f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[2][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[2][1].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.33f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[2][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[2][2].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[2][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[2][3].modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Light 4
+    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[3][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[3][0].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[3][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[3][1].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.75f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[3][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[3][2].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.6f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[3][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[3][3].modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Light 5
+    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.6f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[4][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[4][0].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.59f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[4][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[4][1].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.29f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[4][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[4][2].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.6f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[4][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[4][3].modelMatrix = translationMatrix * scaleMatrix;
+    //* ----------------------------------------------------------------------------------------
+
+    //* Light 6
+    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar (Vertical)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 0.25f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.02f, 0.25f, 0.4f));
+    lightsModelData[5][0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[5][0].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.49f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[5][1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[5][1].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.16f, 0.5f, -11.5f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.06f, 0.0f));
+    lightsModelData[5][2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[5][2].modelMatrix = translationMatrix * scaleMatrix;
+
+    //! Top Bar (Horizontal)
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 0.52f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.12f, 0.02f, 0.0f));
+    lightsModelData[5][3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[5][3].modelMatrix = translationMatrix * scaleMatrix;
     //* ----------------------------------------------------------------------------------------
 
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
@@ -808,6 +963,10 @@ VkResult StreetLight::updateUniformBuffer()
 void StreetLight::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
+    
+    //! Bind with Pipeline
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline_Lights);
+
     vkCmdBindDescriptorSets(
         commandBuffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -819,139 +978,142 @@ void StreetLight::buildCommandBuffers(VkCommandBuffer& commandBuffer)
         NULL
     );
 
-    //! Middle Bar
-    vkCmdPushConstants(
-        commandBuffer,
-        vkPipelineLayout_Lights,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &lightsModelData[0]
-    );
+    for (int i = 0; i < LIGHT_GEOMETRY_COUNT; i++)
+    {
+        //! Middle Bar
+        vkCmdPushConstants(
+            commandBuffer,
+            vkPipelineLayout_Lights,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(PushData),
+            &lightsModelData[i][0]
+        );
 
-    //! Bind with Vertex Position Buffer
-    VkDeviceSize vkDeviceSize_offset_position[1];
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &lightData[0].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        //! Bind with Vertex Position Buffer
+        VkDeviceSize vkDeviceSize_offset_position[1];
+        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            0, 
+            1, 
+            &lightData[0].vertexData_position.vkBuffer, 
+            vkDeviceSize_offset_position
+        );
 
-    //! Bind with Vertex Color Buffer
-    VkDeviceSize vkDeviceSize_offset_color[1];
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &lightData[0].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        //! Bind with Vertex Color Buffer
+        VkDeviceSize vkDeviceSize_offset_color[1];
+        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            1, 
+            1, 
+            &lightData[0].vertexData_color.vkBuffer, 
+            vkDeviceSize_offset_color
+        );
 
-    //! Vulkan Drawing Function
-    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+        //! Vulkan Drawing Function
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 
-    //! Lamp
-    vkCmdPushConstants(
-        commandBuffer,
-        vkPipelineLayout_Lights,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &lightsModelData[1]
-    );
+        //! Lamp
+        vkCmdPushConstants(
+            commandBuffer,
+            vkPipelineLayout_Lights,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(PushData),
+            &lightsModelData[i][1]
+        );
 
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &lightData[1].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        //! Bind with Vertex Position Buffer
+        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            0, 
+            1, 
+            &lightData[1].vertexData_position.vkBuffer, 
+            vkDeviceSize_offset_position
+        );
 
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &lightData[1].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        //! Bind with Vertex Color Buffer
+        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            1, 
+            1, 
+            &lightData[1].vertexData_color.vkBuffer, 
+            vkDeviceSize_offset_color
+        );
 
-    //! Vulkan Drawing Function
-    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+        //! Vulkan Drawing Function
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 
-    //! Lamp
-    vkCmdPushConstants(
-        commandBuffer,
-        vkPipelineLayout_Lights,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &lightsModelData[2]
-    );
+        //! Lamp
+        vkCmdPushConstants(
+            commandBuffer,
+            vkPipelineLayout_Lights,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(PushData),
+            &lightsModelData[i][2]
+        );
 
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &lightData[1].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        //! Bind with Vertex Position Buffer
+        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            0, 
+            1, 
+            &lightData[1].vertexData_position.vkBuffer, 
+            vkDeviceSize_offset_position
+        );
 
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &lightData[1].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        //! Bind with Vertex Color Buffer
+        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            1, 
+            1, 
+            &lightData[1].vertexData_color.vkBuffer, 
+            vkDeviceSize_offset_color
+        );
 
-    //! Vulkan Drawing Function
-    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+        //! Vulkan Drawing Function
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 
-    //! Top Bar
-    vkCmdPushConstants(
-        commandBuffer,
-        vkPipelineLayout_Lights,
-        VK_SHADER_STAGE_VERTEX_BIT,
-        0,
-        sizeof(PushData),
-        &lightsModelData[3]
-    );
+        //! Top Bar
+        vkCmdPushConstants(
+            commandBuffer,
+            vkPipelineLayout_Lights,
+            VK_SHADER_STAGE_VERTEX_BIT,
+            0,
+            sizeof(PushData),
+            &lightsModelData[i][3]
+        );
 
-    //! Bind with Vertex Position Buffer
-    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        0, 
-        1, 
-        &lightData[0].vertexData_position.vkBuffer, 
-        vkDeviceSize_offset_position
-    );
+        //! Bind with Vertex Position Buffer
+        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            0, 
+            1, 
+            &lightData[0].vertexData_position.vkBuffer, 
+            vkDeviceSize_offset_position
+        );
 
-    //! Bind with Vertex Color Buffer
-    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-    vkCmdBindVertexBuffers(
-        commandBuffer, 
-        1, 
-        1, 
-        &lightData[0].vertexData_color.vkBuffer, 
-        vkDeviceSize_offset_color
-    );
+        //! Bind with Vertex Color Buffer
+        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        vkCmdBindVertexBuffers(
+            commandBuffer, 
+            1, 
+            1, 
+            &lightData[0].vertexData_color.vkBuffer, 
+            vkDeviceSize_offset_color
+        );
 
-    //! Vulkan Drawing Function
-    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+        //! Vulkan Drawing Function
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+    }
 }
 
 VkResult StreetLight::resize(int width, int height)

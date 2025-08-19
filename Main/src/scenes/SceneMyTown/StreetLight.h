@@ -8,6 +8,7 @@ class StreetLight
 {
     private:
         static const int LIGHT_COUNT = 4;
+        static const int LIGHT_GEOMETRY_COUNT = 6;
 
         typedef struct
         {
@@ -47,7 +48,7 @@ class StreetLight
         LightData lightData[2]; // Middle Bar = 0, Light Lamp = 1
         UniformData uniformData;
 
-        PushData lightsModelData[LIGHT_COUNT];
+        PushData lightsModelData[LIGHT_GEOMETRY_COUNT][LIGHT_COUNT];
 
         VkShaderModule vkShaderModule_vertex = VK_NULL_HANDLE;
         VkShaderModule vkShaderModule_fragment = VK_NULL_HANDLE;

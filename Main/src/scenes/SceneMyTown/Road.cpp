@@ -390,6 +390,13 @@ VkResult Road::createUniformBuffer()
         return vkResult;
     }
 
+    vkResult = updateUniformBuffer();
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "ROAD::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
     return vkResult;
 }
 
@@ -814,6 +821,20 @@ VkResult Road::updateUniformBuffer()
 void Road::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
+
+    //! Bind with Pipeline
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipeline_Road);
+
+    vkCmdBindDescriptorSets(
+        commandBuffer,
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        vkPipelineLayout_Road,
+        0,
+        1,
+        &vkDescriptorSet_Road,
+        0,
+        NULL
+    );
 
     for (int i = 0; i < ROAD_GEOMETRY_COUNT; i++)
     {

@@ -47,7 +47,7 @@ class Buildings
         VkPipelineLayout vkPipelineLayout_Buildings = VK_NULL_HANDLE;
 
         UniformData uniformData;
-        BuildingData buildings[7];
+        BuildingData buildings[13];
 
         VkShaderModule vkShaderModule_vertex = VK_NULL_HANDLE;
         VkShaderModule vkShaderModule_fragment = VK_NULL_HANDLE;
