@@ -26,7 +26,8 @@ class TexturedQuad
         VkDescriptorSetLayout vkDescriptorSetLayout = VK_NULL_HANDLE;
         VkDescriptorPool vkDescriptorPool = VK_NULL_HANDLE;
         VkPipeline vkPipeline = VK_NULL_HANDLE;
-
+        VkPipelineLayout vkPipelineLayout;
+        
         VkResult createUniformBuffer();
         VkResult createDescriptorSetLayout();
         VkResult createPipelineLayout();
