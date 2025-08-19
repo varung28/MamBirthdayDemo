@@ -135,8 +135,8 @@ SceneMyTown::~SceneMyTown()
         fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
     }
 
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
 }
 
 void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
