@@ -1,6 +1,6 @@
 #include "PipelineBuilder.h"
 
-VkPipeline VulkanPipelineBuilder::BuildPipeline(VkDevice device, VkRenderPass pass)
+VkPipeline VulkanPipelineBuilder::BuildPipeline(VkDevice device, VkRenderPass pass, const bool enableBlending)
 {
     VkResult vkResult = VK_SUCCESS;
 
@@ -25,10 +25,23 @@ VkPipeline VulkanPipelineBuilder::BuildPipeline(VkDevice device, VkRenderPass pa
     vkPipelineRasterizationStateCreateInfo.lineWidth = 1.0f;
 
     // COLOR BLEND STATE
+
     VkPipelineColorBlendAttachmentState vkPipelineColorBlendAttachmentState_array[1];
     memset((void *)vkPipelineColorBlendAttachmentState_array, 0, sizeof(VkPipelineColorBlendAttachmentState) * _ARRAYSIZE(vkPipelineColorBlendAttachmentState_array));
 
-    vkPipelineColorBlendAttachmentState_array[0].blendEnable = VK_FALSE;
+    if (enableBlending) {
+        vkPipelineColorBlendAttachmentState_array[0].blendEnable = VK_TRUE;
+        vkPipelineColorBlendAttachmentState_array[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        vkPipelineColorBlendAttachmentState_array[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        vkPipelineColorBlendAttachmentState_array[0].colorBlendOp = VK_BLEND_OP_ADD;
+        vkPipelineColorBlendAttachmentState_array[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        vkPipelineColorBlendAttachmentState_array[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        vkPipelineColorBlendAttachmentState_array[0].alphaBlendOp = VK_BLEND_OP_ADD;    
+    }
+    else {
+        vkPipelineColorBlendAttachmentState_array[0].blendEnable = VK_FALSE;
+    }
+    
     vkPipelineColorBlendAttachmentState_array[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     VkPipelineColorBlendStateCreateInfo vkPipelineColorBlendStateCreateInfo;

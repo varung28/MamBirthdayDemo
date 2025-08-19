@@ -1,6 +1,8 @@
 #ifndef GEOMTRY_H
 #define GEOMTRY_H
 
+#include <array>
+
 #include "Common.h"
 
 typedef struct
@@ -34,6 +36,7 @@ private:
 
 public:
     Quad();
+    Quad(const std::array<float, 18>&, const std::array<float, 24>&);
     Quad(bool isTextureEnabled);
     ~Quad();
 

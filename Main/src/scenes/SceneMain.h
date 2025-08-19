@@ -5,6 +5,7 @@
 #include "SceneEndCredit/SceneEndcredit.h"
 #include "SceneMyTown/SceneMyTown.h"
 #include "SceneIntro/SceneIntro.h"
+#include "../effects/FadeInFadeOut.h"
 
 class SceneMain
 {
@@ -14,6 +15,7 @@ private:
     SceneMyTown *sceneMyTown = nullptr;
     SceneIntro *sceneIntro = nullptr;
     StopWatchInterface *timer = NULL;
+    FadeInFadeOut *fadeInFadeOut{nullptr};
 
 public:
     SceneMain(/* args */);

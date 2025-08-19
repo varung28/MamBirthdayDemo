@@ -50,11 +50,11 @@ extern VkDevice vkDevice;
 // DEVICE QUEUE
 extern VkQueue vkQueue;
 
-// extern VkDescriptorSetLayout vkDescriptorSetLayout;
+extern VkDescriptorPool vkDescriptorPool;
 extern VkViewport vkViewport;
 extern VkRect2D vkRect2D_Scissor;
 extern VkExtent2D vkExtent2D_swapchain;
-// extern VkPipelineLayout vkPipelineLayout;
+extern VkPipelineLayout vkPipelineLayout;
 extern VkRenderPass vkRenderPass;
 // extern VkDescriptorSet vkDescriptorSet;
 
