@@ -285,9 +285,8 @@ void Pyramid::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 Quad::Quad()
 {
     // VARIABLE DECLARATIONS
-    VkResult vkResult = VK_SUCCESS;
 
-    float quadVertices[] = {
+    const std::array<float, 18> quadVertices = {
         // FIRST TRIANGLE
         1.0f, 1.0f, 0.0f,   // TOP-RIGHT
         -1.0f, 1.0f, 0.0f,  // TOP-LEFT
@@ -300,18 +299,31 @@ Quad::Quad()
 
     };
 
-    float quadColors[] = {
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
+    const std::array<float, 24> quadColors = {
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
 
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f
 
     };
 
     // CODE
+
+    Quad(quadVertices, quadColors);
+
+}
+
+Quad::Quad(const std::array<float, 18>& vertices, const std::array<float, 24>& colors)
+{
+    // variable declarations
+
+    VkResult vkResult = VK_SUCCESS;
+    
+    // code
+
     // VERTEX POSITION BUFFER
     memset((void *)&vertexData_position, 0, sizeof(VertexData));
 
@@ -321,7 +333,7 @@ Quad::Quad()
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     vkBufferCreateInfo.pNext = NULL;
     vkBufferCreateInfo.flags = 0; // VALID FLAGS ARE USED IN SCATTERED/SPARSE BUFFERS
-    vkBufferCreateInfo.size = sizeof(quadVertices);
+    vkBufferCreateInfo.size = sizeof(vertices);
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_position.vkBuffer);
@@ -398,7 +410,7 @@ Quad::Quad()
     }
 
     // ACTUAL MMIO
-    memcpy(data, quadVertices, sizeof(quadVertices)); // THIS MEMORY IS INTEGRAL ALLIGNED
+    memcpy(data, vertices.data(), sizeof(vertices)); // THIS MEMORY IS INTEGRAL ALLIGNED
 
     // UNMAP
     vkUnmapMemory(vkDevice, vertexData_position.vkDeviceMemory);
@@ -413,7 +425,7 @@ Quad::Quad()
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     vkBufferCreateInfo.pNext = NULL;
     vkBufferCreateInfo.flags = 0; // VALID FLAGS ARE USED IN SCATTERED/SPARSE BUFFERS
-    vkBufferCreateInfo.size = sizeof(quadColors);
+    vkBufferCreateInfo.size = sizeof(colors);
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_color.vkBuffer);
@@ -488,7 +500,7 @@ Quad::Quad()
     }
 
     // ACTUAL MMIO
-    memcpy(data_color, quadColors, sizeof(quadColors)); // THIS MEMORY IS INTEGRAL ALLIGNED
+    memcpy(data_color, colors.data(), sizeof(colors)); // THIS MEMORY IS INTEGRAL ALLIGNED
 
     // UNMAP
     vkUnmapMemory(vkDevice, vertexData_color.vkDeviceMemory);

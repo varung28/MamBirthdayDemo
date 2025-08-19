@@ -3204,7 +3204,7 @@ VkResult createDescriptorPool(void)
 	vkDescriptorPoolCreateInfo.flags = 0;
 	vkDescriptorPoolCreateInfo.poolSizeCount = 1;
 	vkDescriptorPoolCreateInfo.pPoolSizes = &vkDescriptorPoolSize;
-	vkDescriptorPoolCreateInfo.maxSets = 1;
+	vkDescriptorPoolCreateInfo.maxSets = 2;
 
 	vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool);
 	if (vkResult != VK_SUCCESS)
