@@ -1,15 +1,15 @@
-#include "Trees.h"
+#include "Road.h"
 
 extern int winWidth;
 extern int winHeight;
 
-Trees::Trees()
+Road::Road()
 {
     vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
     vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv"); 
 }
 
-VkResult Trees::initialize()
+VkResult Road::initialize()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -18,7 +18,7 @@ VkResult Trees::initialize()
     vkResult = createVertexBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createVertexBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createVertexBuffer() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -26,7 +26,7 @@ VkResult Trees::initialize()
     vkResult = createUniformBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -34,7 +34,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorSetLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -42,7 +42,7 @@ VkResult Trees::initialize()
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -50,7 +50,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorPool();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorPool() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createDescriptorPool() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -58,7 +58,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorSet();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorSet() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createDescriptorSet() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -66,7 +66,7 @@ VkResult Trees::initialize()
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::ERROR : %s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -74,124 +74,45 @@ VkResult Trees::initialize()
     return vkResult;
 }
 
-VkResult Trees::createVertexBuffer(void)
+VkResult Road::__createVertexBuffer(int index, float *position, int positionSize, float *color, int colorSize)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
     VkBufferCreateInfo vkBufferCreateInfo;
     VkMemoryRequirements vkMemoryRequirements;
     VkMemoryAllocateInfo vkMemoryAllocateInfo;
-    void* data = NULL;
-
-    // Code
-    float triangle_position[] =
-    {
-        0.0f, 0.8f, 0.0f,
-        -1.6f, -1.0f, 0.0f,
-        1.6f, -1.0f, 0.0f,
-
-        0.8f, -1.0f, 0.0f,
-        -0.8f, -1.0f, 0.0f, 
-        -1.7f, -2.0f, 0.0f,
-
-        0.8f, -1.0f, 0.0f,
-        -1.7f, -2.0f, 0.0f,
-        1.7f, -2.0f, 0.0f,
-
-        1.0f, -2.0f, 0.0f,
-        -1.0f, -2.0f, 0.0f,
-        -1.9f, -3.0f, 0.0f,
-
-        1.0f, -2.0f, 0.0f,
-        -1.9f, -3.0f, 0.0f,
-        1.9f, -3.0f, 0.0f,
-
-        1.2f, -3.0f, 0.0f,
-        -1.2f, -3.0f, 0.0f,
-        -2.1f, -4.0f, 0.0f,
-
-        1.2f, -3.0f, 0.0f,
-        -2.1f, -4.0f, 0.0f,
-        2.1f, -4.0f, 0.0f,
-
-        0.3f, -4.0f, 0.0f,
-        -0.3f, -4.0f, 0.0f,
-        -0.3f, -6.0f, 0.0f,
-
-        0.3f, -4.0f, 0.0f,
-        -0.3f, -6.0f, 0.0f,
-        0.3f, -6.0f, 0.0f
-    };
-
-    float triangle_color[] =
-    {
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f
-    };
+    void *data = NULL;
 
     //! Vertex Position
     //! ---------------------------------------------------------------------------------------------------------------------------------
     //* Step - 4
-    memset((void*)&vertexData_position_tree, 0, sizeof(VertexData));
+    memset((void *)&roadObject[index].vertexData_position, 0, sizeof(VertexData));
 
     //* Step - 5
-    
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = sizeof(triangle_position);
+    vkBufferCreateInfo.size = positionSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
+
     //* Step - 6
-    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_position_tree.vkBuffer);
+    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &roadObject[index].vertexData_position.vkBuffer);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Vertex Position Buffer For Tree : %d !!!\n", __func__, vkResult);
-    
+        fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Position Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
     //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
-    vkGetBufferMemoryRequirements(vkDevice, vertexData_position_tree.vkBuffer, &vkMemoryRequirements);
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    vkGetBufferMemoryRequirements(vkDevice, roadObject[index].vertexData_position.vkBuffer, &vkMemoryRequirements);
 
     //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
     vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     vkMemoryAllocateInfo.pNext = NULL;
     vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
     vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
+
     //* Step - 8.1
     for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
@@ -212,57 +133,57 @@ VkResult Trees::createVertexBuffer(void)
     }
 
     //* Step - 9
-    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &vertexData_position_tree.vkDeviceMemory);
+    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &roadObject[index].vertexData_position.vkDeviceMemory);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Vertex Position Buffer For Tree : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkAllocateMemory() Failed For Vertex Position Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 10
     //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_position_tree.vkBuffer, vertexData_position_tree.vkDeviceMemory, 0);
+    vkResult = vkBindBufferMemory(vkDevice, roadObject[index].vertexData_position.vkBuffer, roadObject[index].vertexData_position.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Vertex Position Buffer For Tree Index : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkBindBufferMemory() Failed For Vertex Position Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 11
-    vkResult = vkMapMemory(vkDevice, vertexData_position_tree.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
+    vkResult = vkMapMemory(vkDevice, roadObject[index].vertexData_position.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Vertex Position Buffer For Tree Index : %d!!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkMapMemory() Failed For Vertex Position Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 12
-    memcpy(data, triangle_position, sizeof(triangle_position));
+    memcpy(data, position, positionSize);
 
     //* Step - 13
-    vkUnmapMemory(vkDevice, vertexData_position_tree.vkDeviceMemory);
+    vkUnmapMemory(vkDevice, roadObject[index].vertexData_position.vkDeviceMemory);
     //! ---------------------------------------------------------------------------------------------------------------------------------
 
     //! Vertex Color
     //! ---------------------------------------------------------------------------------------------------------------------------------
     //* Step - 4
-    memset((void*)&vertexData_color_tree, 0, sizeof(VertexData));
+    memset((void *)&roadObject[index].vertexData_color, 0, sizeof(VertexData));
 
     //* Step - 5
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
     vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
     vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = sizeof(triangle_color);
+    vkBufferCreateInfo.size = colorSize;
     vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
+
     //* Step - 6
-    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_color_tree.vkBuffer);
+    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &roadObject[index].vertexData_color.vkBuffer);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
-    
+        fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Color Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
     //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
-    vkGetBufferMemoryRequirements(vkDevice, vertexData_color_tree.vkBuffer, &vkMemoryRequirements);
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    vkGetBufferMemoryRequirements(vkDevice, roadObject[index].vertexData_color.vkBuffer, &vkMemoryRequirements);
 
     //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
     vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     vkMemoryAllocateInfo.pNext = NULL;
     vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
     vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
+
     //* Step - 8.1
     for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
@@ -283,33 +204,131 @@ VkResult Trees::createVertexBuffer(void)
     }
 
     //* Step - 9
-    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &vertexData_color_tree.vkDeviceMemory);
+    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &roadObject[index].vertexData_color.vkDeviceMemory);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkAllocateMemory() Failed For Vertex Color Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 10
     //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_color_tree.vkBuffer, vertexData_color_tree.vkDeviceMemory, 0);
+    vkResult = vkBindBufferMemory(vkDevice, roadObject[index].vertexData_color.vkBuffer, roadObject[index].vertexData_color.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkBindBufferMemory() Failed For Vertex Color Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 11
     data = NULL;
-    vkResult = vkMapMemory(vkDevice, vertexData_color_tree.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
+    vkResult = vkMapMemory(vkDevice, roadObject[index].vertexData_color.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "%s() => vkMapMemory() Failed For Vertex Color Buffer For Road Object Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
 
     //* Step - 12
-    memcpy(data, triangle_color, sizeof(triangle_color));
+    memcpy(data, color, colorSize);
 
     //* Step - 13
-    vkUnmapMemory(vkDevice, vertexData_color_tree.vkDeviceMemory);
+    vkUnmapMemory(vkDevice, roadObject[index].vertexData_color.vkDeviceMemory);
     //! ---------------------------------------------------------------------------------------------------------------------------------
+
+    return vkResult;
+}
+
+VkResult Road::createVertexBuffer(void)
+{
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
+
+    float border_position[] = 
+    {
+        // First Triangle
+        -0.05f,1.0f,0.0f,	// Left-Top
+        -1.0f,-1.0f,0.0f,	// Left-Bottom
+        1.0f,-1.0f,0.0f,	// Right-Bottom
+        // Second Triangle
+        0.05f,1.0f,0.0f,		// Right-Top
+        -0.05f,1.0f,0.0f,	// Left-Top
+        1.0f,-1.0f,0.0f		// Right-Bottom
+	};
+
+    float border_color[] = 
+    {
+        0.2f,0.2f,0.2f,
+        0.2f,0.2f,0.2f,
+        0.2f,0.2f,0.2f,
+
+        0.2f,0.2f,0.2f,
+        0.2f,0.2f,0.2f,
+        0.2f,0.2f,0.2f,
+    };
+
+    float main_road_position[] = 
+    {
+        // First Triangle
+        -0.05f,1.0f,0.0f,	// Left-Top
+        -1.0f,-1.0f,0.0f,	// Left-Bottom
+        1.0f,-1.0f,0.0f,	// Right-Bottom
+        // Second Triangle
+        0.05f,1.0f,0.0f,		// Right-Top
+        -0.05f,1.0f,0.0f,	// Left-Top
+        1.0f,-1.0f,0.0f		// Right-Bottom
+	};
+
+    float main_road_color[] = 
+    {
+        0.0f,0.0f,0.0f,
+        0.0f,0.0f,0.0f,
+        0.0f,0.0f,0.0f,
+
+        0.0f,0.0f,0.0f,
+        0.0f,0.0f,0.0f,
+        0.0f,0.0f,0.0f,
+    };
+
+    float zebra_crossing_position[] = 
+    {
+        // First Triangle
+        -0.25f,1.0f,0.0f,	// Left-Top
+        -1.0f,-1.0f,0.0f,	// Left-Bottom
+        1.0f,-1.0f,0.0f,	// Right-Bottom
+        // Second Triangle
+        0.25f,1.0f,0.0f,		// Right-Top
+        -0.25f,1.0f,0.0f,	// Left-Top
+        1.0f,-1.0f,0.0f		// Right-Bottom
+	};
+
+	float zebra_crossing_color[] = 
+    {
+		1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+        1.0f,1.0f,1.0f,
+    };
+
+    vkResult = __createVertexBuffer(0, border_position, sizeof(border_position), border_color, sizeof(border_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Road Border : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
+    vkResult = __createVertexBuffer(1, main_road_position, sizeof(main_road_position), main_road_color, sizeof(main_road_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Main Road : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+
+    vkResult = __createVertexBuffer(2, zebra_crossing_position, sizeof(zebra_crossing_position), zebra_crossing_color, sizeof(zebra_crossing_color));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Zebra Crossing : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
     
     return vkResult;
 }
 
-VkResult Trees::createUniformBuffer(void)
+VkResult Road::createUniformBuffer()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -328,7 +347,7 @@ VkResult Trees::createUniformBuffer(void)
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &uniformData.vkBuffer);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
     
@@ -360,28 +379,21 @@ VkResult Trees::createUniformBuffer(void)
     vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &uniformData.vkDeviceMemory);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }     
 
     vkResult = vkBindBufferMemory(vkDevice, uniformData.vkBuffer, uniformData.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
-        return vkResult;
-    }
-
-    vkResult = updateUniformBuffer();
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "TREES::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkBindBufferMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorSetLayout(void)
+VkResult Road::createDescriptorSetLayout(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -405,14 +417,14 @@ VkResult Trees::createDescriptorSetLayout(void)
     vkDescriptorSetLayoutCreateInfo.pBindings = &vkDescriptorSetLayoutBinding;
 
     //* Step - 4
-    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout_Trees);
+    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout_Road);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
 
     return vkResult;
 }
 
-VkResult Trees::createPipelineLayout(void)
+VkResult Road::createPipelineLayout(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -430,19 +442,19 @@ VkResult Trees::createPipelineLayout(void)
     vkPipelineLayoutCreateInfo.pNext = NULL;
     vkPipelineLayoutCreateInfo.flags = 0;
     vkPipelineLayoutCreateInfo.setLayoutCount = 1;
-    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout_Trees;
+    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout_Road;
     vkPipelineLayoutCreateInfo.pushConstantRangeCount = 1;
     vkPipelineLayoutCreateInfo.pPushConstantRanges = &vkPushConstantRange;
 
     //* Step - 4
-    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout_Trees);
+    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout_Road);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorPool(void)
+VkResult Road::createDescriptorPool(void)
 {
     // Variable Declarations
     VkResult vkResult;
@@ -465,14 +477,14 @@ VkResult Trees::createDescriptorPool(void)
     vkDescriptorPoolCreateInfo.pPoolSizes = &vkDescriptorPoolSize;
     vkDescriptorPoolCreateInfo.maxSets = 1;
 
-    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Trees);
+    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Road);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
+        fprintf(gpFile, "ROAD::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorSet(void)
+VkResult Road::createDescriptorSet(void)
 {
     // Variable Declarations
     VkResult vkResult;
@@ -484,14 +496,14 @@ VkResult Trees::createDescriptorSet(void)
     memset((void*)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
     vkDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     vkDescriptorSetAllocateInfo.pNext = NULL;
-    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Trees;
+    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Road;
     vkDescriptorSetAllocateInfo.descriptorSetCount = 1;
-    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout_Trees;
+    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout_Road;
 
-    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet_Trees);
+    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet_Road);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }  
     
@@ -511,7 +523,7 @@ VkResult Trees::createDescriptorSet(void)
     memset((void*)&vkWriteDescriptorSet, 0, sizeof(VkWriteDescriptorSet));
     vkWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     vkWriteDescriptorSet.pNext = NULL;
-    vkWriteDescriptorSet.dstSet = vkDescriptorSet_Trees;
+    vkWriteDescriptorSet.dstSet = vkDescriptorSet_Road;
     vkWriteDescriptorSet.dstArrayElement = 0;
     vkWriteDescriptorSet.descriptorCount = 1;
     vkWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -525,7 +537,7 @@ VkResult Trees::createDescriptorSet(void)
     return vkResult;
 }
 
-VkResult Trees::createPipeline(void)
+VkResult Road::createPipeline(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -693,7 +705,7 @@ VkResult Trees::createPipeline(void)
     VkPipelineCache vkPipelineCache = VK_NULL_HANDLE;
     vkResult = vkCreatePipelineCache(vkDevice, &vkPipelineCacheCreateInfo, NULL, &vkPipelineCache);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
 
     //! Create actual Graphics Pipeline
     VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo;
@@ -712,15 +724,15 @@ VkResult Trees::createPipeline(void)
     vkGraphicsPipelineCreateInfo.stageCount = _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array);
     vkGraphicsPipelineCreateInfo.pStages = vkPipelineShaderStageCreateInfo_array;
     vkGraphicsPipelineCreateInfo.pTessellationState = NULL;
-    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout_Trees;
+    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout_Road;
     vkGraphicsPipelineCreateInfo.renderPass = vkRenderPass;
     vkGraphicsPipelineCreateInfo.subpass = 0;
     vkGraphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     vkGraphicsPipelineCreateInfo.basePipelineIndex = 0;
 
-    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Trees);
+    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Road);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
 
     //* Destroy Pipeline Cache
     if (vkPipelineCache)
@@ -732,16 +744,16 @@ VkResult Trees::createPipeline(void)
     return vkResult;
 }
 
-void Trees::update()
+void Road::update()
 {
     VkResult vkResult = updateUniformBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
     }
 }
 
-VkResult Trees::updateUniformBuffer()
+VkResult Road::updateUniformBuffer()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -750,39 +762,22 @@ VkResult Trees::updateUniformBuffer()
     VP_UniformData mvp_UniformData;
     memset((void*)&mvp_UniformData, 0, sizeof(VP_UniformData));
 
-    glm::mat4 translationMatrix = glm::mat4(1.0f);
-    glm::mat4 scaleMatrix = glm::mat4(1.0f);
-
-    //* Tree 1
+    //* Road Border
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, -2.8f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.4f, 0.4f, 0.4f));
-    treesModelData[0].modelMatrix = glm::mat4(1.0f);
-    treesModelData[0].modelMatrix = translationMatrix * scaleMatrix;
+    roadModelData[0].modelMatrix = glm::mat4(1.0f);
+	roadModelData[0].modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.25, -6.0)) * glm::scale(glm::mat4(1.0), glm::vec3(2.75, 1.25, 1.0));
     //* ----------------------------------------------------------------------------------------
 
-    //* Tree 2
+    //* Main Road
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.6f, -0.5f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.275f, 0.275f, 0.275f));
-    treesModelData[1].modelMatrix = glm::mat4(1.0f);
-    treesModelData[1].modelMatrix = translationMatrix * scaleMatrix;
+    roadModelData[1].modelMatrix = glm::mat4(1.0f);
+	roadModelData[1].modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.25, -6.0)) * glm::scale(glm::mat4(1.0), glm::vec3(2.25, 1.25, 1.0));
     //* ----------------------------------------------------------------------------------------
 
-    //* Tree 3
+    //* Zebra Crossing
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.62f, -0.5f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.275f, 0.275f, 0.275f));
-    treesModelData[2].modelMatrix = glm::mat4(1.0f);
-    treesModelData[2].modelMatrix = translationMatrix * scaleMatrix;
-    //* ----------------------------------------------------------------------------------------
-
-    //* Tree 4
-    //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -2.8f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.4f, 0.4f, 0.4f));
-    treesModelData[3].modelMatrix = glm::mat4(1.0f);
-    treesModelData[3].modelMatrix = translationMatrix * scaleMatrix;
+    roadModelData[2].modelMatrix = glm::mat4(1.0f);
+	roadModelData[2].modelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.25, -6.0)) * glm::scale(glm::mat4(1.0), glm::vec3(0.03, 1.25, 1.0));
     //* ----------------------------------------------------------------------------------------
 
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
@@ -803,7 +798,7 @@ VkResult Trees::updateUniformBuffer()
     vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(VP_UniformData), 0, &data);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Uniform Buffer For Buildings : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => vkMapMemory() Failed For Uniform Buffer For Buildings : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
@@ -816,59 +811,50 @@ VkResult Trees::updateUniformBuffer()
     return vkResult;
 }
 
-void Trees::buildCommandBuffers(VkCommandBuffer& commandBuffer)
+void Road::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
-    vkCmdBindDescriptorSets(
-        commandBuffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        vkPipelineLayout_Trees,
-        0,
-        1,
-        &vkDescriptorSet_Trees,
-        0,
-        NULL
-    );
 
-    for (int i = 0; i < TREES_COUNT; i++)
+    for (int i = 0; i < ROAD_GEOMETRY_COUNT; i++)
     {
         vkCmdPushConstants(
             commandBuffer,
-            vkPipelineLayout_Trees,
+            vkPipelineLayout_Road,
             VK_SHADER_STAGE_VERTEX_BIT,
             0,
             sizeof(PushData),
-            &treesModelData[i]
+            &roadModelData[i]
         );
 
         //! Bind with Vertex Position Buffer
         VkDeviceSize vkDeviceSize_offset_position[1];
-        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+        memset((void *)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
         vkCmdBindVertexBuffers(
-            commandBuffer, 
-            0, 
-            1, 
-            &vertexData_position_tree.vkBuffer, 
+            commandBuffer,
+            0,
+            1,
+            &roadObject[i].vertexData_position.vkBuffer,
             vkDeviceSize_offset_position
         );
 
         //! Bind with Vertex Color Buffer
         VkDeviceSize vkDeviceSize_offset_color[1];
-        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+        memset((void *)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
         vkCmdBindVertexBuffers(
-            commandBuffer, 
-            1, 
-            1, 
-            &vertexData_color_tree.vkBuffer, 
+            commandBuffer,
+            1,
+            1,
+            &roadObject[i].vertexData_color.vkBuffer,
             vkDeviceSize_offset_color
         );
 
         //! Vulkan Drawing Function
-        vkCmdDraw(commandBuffer, TREES_DRAW_VERTEX_COUNT, 1, 0, 0);
+        vkCmdDraw(commandBuffer, 6, 1, 0, 0);
     }
+    
 }
 
-VkResult Trees::resize(int width, int height)
+VkResult Road::resize(int width, int height)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -880,17 +866,17 @@ VkResult Trees::resize(int width, int height)
         vkDeviceWaitIdle(vkDevice);
 
     //* Destroy PipelineLayout
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Road)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Road, NULL);
+        vkPipelineLayout_Road = VK_NULL_HANDLE;
     }
 
     //* Destroy Pipeline
-    if (vkPipeline_Trees)
+    if (vkPipeline_Road)
     {
-        vkDestroyPipeline(vkDevice, vkPipeline_Trees, NULL);
-        vkPipeline_Trees = VK_NULL_HANDLE;
+        vkDestroyPipeline(vkDevice, vkPipeline_Road, NULL);
+        vkPipeline_Road = VK_NULL_HANDLE;
     }
     //?--------------------------------------------------------------------------------------------------
     
@@ -900,7 +886,7 @@ VkResult Trees::resize(int width, int height)
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
@@ -908,7 +894,7 @@ VkResult Trees::resize(int width, int height)
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "ROAD::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
     //?--------------------------------------------------------------------------------------------------
@@ -916,40 +902,40 @@ VkResult Trees::resize(int width, int height)
     return vkResult;
 }
 
-Trees::~Trees()
+Road::~Road()
 {
     if (vkDevice)
         vkDeviceWaitIdle(vkDevice);
 
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Road)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Road, NULL);
+        vkPipelineLayout_Road = VK_NULL_HANDLE;
     }
 
-    if (vkPipeline_Trees)
+    if (vkPipeline_Road)
     {
-        vkDestroyPipeline(vkDevice, vkPipeline_Trees, NULL);
-        vkPipeline_Trees = VK_NULL_HANDLE;
+        vkDestroyPipeline(vkDevice, vkPipeline_Road, NULL);
+        vkPipeline_Road = VK_NULL_HANDLE;
     }
 
-    if (vkDescriptorPool_Trees)
+    if (vkDescriptorPool_Road)
     {
-        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Trees, NULL);
-        vkDescriptorPool_Trees = VK_NULL_HANDLE;
-        vkDescriptorSet_Trees = VK_NULL_HANDLE;
+        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Road, NULL);
+        vkDescriptorPool_Road = VK_NULL_HANDLE;
+        vkDescriptorSet_Road = VK_NULL_HANDLE;
     }
 
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Road)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Road, NULL);
+        vkPipelineLayout_Road = VK_NULL_HANDLE;
     }
 
-    if (vkDescriptorSetLayout_Trees)
+    if (vkDescriptorSetLayout_Road)
 	{
-		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Trees, NULL);
-		vkDescriptorSetLayout_Trees = VK_NULL_HANDLE;
+		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Road, NULL);
+		vkDescriptorSetLayout_Road = VK_NULL_HANDLE;
 	}
 
     if (uniformData.vkDeviceMemory)
@@ -964,28 +950,31 @@ Trees::~Trees()
         uniformData.vkBuffer = VK_NULL_HANDLE;
     }
 
-    if (vertexData_color_tree.vkDeviceMemory)
+    for (int i = ROAD_GEOMETRY_COUNT - 1; i >= 0; i--)
     {
-        vkFreeMemory(vkDevice, vertexData_color_tree.vkDeviceMemory, NULL);
-        vertexData_color_tree.vkDeviceMemory = VK_NULL_HANDLE;
-    }
+        if (roadObject[i].vertexData_color.vkDeviceMemory)
+        {
+            vkFreeMemory(vkDevice, roadObject[i].vertexData_color.vkDeviceMemory, NULL);
+            roadObject[i].vertexData_color.vkDeviceMemory = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_color_tree.vkBuffer)
-    {
-        vkDestroyBuffer(vkDevice, vertexData_color_tree.vkBuffer, NULL);
-        vertexData_color_tree.vkBuffer = VK_NULL_HANDLE;
-    }
+        if (roadObject[i].vertexData_color.vkBuffer)
+        {
+            vkDestroyBuffer(vkDevice, roadObject[i].vertexData_color.vkBuffer, NULL);
+            roadObject[i].vertexData_color.vkBuffer = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_position_tree.vkDeviceMemory)
-    {
-        vkFreeMemory(vkDevice, vertexData_position_tree.vkDeviceMemory, NULL);
-        vertexData_position_tree.vkDeviceMemory = VK_NULL_HANDLE;
-    }
+        if (roadObject[i].vertexData_position.vkDeviceMemory)
+        {
+            vkFreeMemory(vkDevice, roadObject[i].vertexData_position.vkDeviceMemory, NULL);
+            roadObject[i].vertexData_position.vkDeviceMemory = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_position_tree.vkBuffer)
-    {
-        vkDestroyBuffer(vkDevice, vertexData_position_tree.vkBuffer, NULL);
-        vertexData_position_tree.vkBuffer = VK_NULL_HANDLE;
+        if (roadObject[i].vertexData_position.vkBuffer)
+        {
+            vkDestroyBuffer(vkDevice, roadObject[i].vertexData_position.vkBuffer, NULL);
+            roadObject[i].vertexData_position.vkBuffer = VK_NULL_HANDLE;
+        }
     }
 
     ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);

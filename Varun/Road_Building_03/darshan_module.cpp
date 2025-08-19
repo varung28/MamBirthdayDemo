@@ -881,7 +881,6 @@ VkResult createUniformBuffer_by_darshan(void)
 }
 
 
-
 VkResult updateUniformBuffer_by_darshan(void)
 {
 	// code

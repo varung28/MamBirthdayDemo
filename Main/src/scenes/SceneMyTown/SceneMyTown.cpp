@@ -25,9 +25,14 @@ SceneMyTown::SceneMyTown(/* args */)
     buildings = new Buildings();
     buildings->initialize();
 
-
     trees = new Trees();
     trees->initialize();
+
+    road = new Road();
+    road->initialize();
+
+    streetLight = new StreetLight();
+    streetLight->initialize();
 
     sdkCreateTimer(&timer);
 }
@@ -109,6 +114,18 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
+    if (streetLight)
+    {
+        delete streetLight;
+        streetLight = nullptr;
+    }
+
+    if (road)
+    {
+        delete road;
+        road = nullptr;
+    }
+
     if (buildings)
     {
         delete buildings;
@@ -135,8 +152,8 @@ SceneMyTown::~SceneMyTown()
         fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
     }
 
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
 }
 
 void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
@@ -146,15 +163,20 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     if (buildings)
         buildings->buildCommandBuffers(commandBuffer);
 
+    if (streetLight)
+        streetLight->buildCommandBuffers(commandBuffer);
+
+    if (road)
+        road->buildCommandBuffers(commandBuffer);
+
+    if (trees)
+        trees->buildCommandBuffers(commandBuffer);
+
     if (scenePradnya)
         scenePradnya->buildCommandBuffers(commandBuffer);
 
     if (scenePradnya_Sky)
         scenePradnya_Sky->buildCommandBuffers(commandBuffer);
-
-    if (trees)
-        trees->buildCommandBuffers(commandBuffer);
-
 }
 
 void SceneMyTown::update(void)
@@ -167,34 +189,45 @@ void SceneMyTown::update(void)
         completed = true;
     }
 
-    if (scenePradnya)
-        scenePradnya->update();
+    if (road)
+        road->update();
 
-    if (scenePradnya_Sky)
-        scenePradnya_Sky->update_sky();
+    if (streetLight)
+        streetLight->update();
 
     if (buildings)
         buildings->update();
 
     if (trees)
         trees->update();
-        
+
+    if (scenePradnya)
+        scenePradnya->update();
+
+    if (scenePradnya_Sky)
+        scenePradnya_Sky->update_sky();
 }
 
 void SceneMyTown::onResize(int width, int height)
 {
     // createPipeline();
 
+    if (road)
+        road->resize(width, height);
+
+    if (streetLight)
+        streetLight->resize(width, height);
+
+    if (trees)
+        trees->resize(width, height);
+    
+    if (buildings)
+        buildings->resize(width, height);
+
     if (scenePradnya_Sky)
         scenePradnya_Sky->resize(width, height);
 
     if (scenePradnya)
         scenePradnya->resize(width, height);
-
-    if (buildings)
-        buildings->resize(width, height);
-
-    if (trees)
-        trees->resize(width, height);
 
 }

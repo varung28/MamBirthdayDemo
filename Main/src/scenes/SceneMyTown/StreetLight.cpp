@@ -1,15 +1,171 @@
-#include "Trees.h"
+#include "StreetLight.h"
 
 extern int winWidth;
 extern int winHeight;
 
-Trees::Trees()
+StreetLight::StreetLight()
 {
     vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
     vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv"); 
 }
 
-VkResult Trees::initialize()
+VkResult StreetLight::__createVertexBuffer(int index, float *position, int positionSize, float *color, int colorSize)
+{
+    // Variable Declarations
+    VkResult vkResult = VK_SUCCESS;
+    VkBufferCreateInfo vkBufferCreateInfo;
+    VkMemoryRequirements vkMemoryRequirements;
+    VkMemoryAllocateInfo vkMemoryAllocateInfo;
+    void *data = NULL;
+
+    //! Vertex Position
+    //! ---------------------------------------------------------------------------------------------------------------------------------
+    //* Step - 4
+    memset((void *)&lightData[index].vertexData_position, 0, sizeof(VertexData));
+
+    //* Step - 5
+
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+    vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.pNext = NULL;
+    vkBufferCreateInfo.size = positionSize;
+    vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+    //* Step - 6
+    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &lightData[index].vertexData_position.vkBuffer);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Position Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 7
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    vkGetBufferMemoryRequirements(vkDevice, lightData[index].vertexData_position.vkBuffer, &vkMemoryRequirements);
+
+    //* Step - 8
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    vkMemoryAllocateInfo.pNext = NULL;
+    vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
+    vkMemoryAllocateInfo.memoryTypeIndex = 0;
+
+    //* Step - 8.1
+    for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
+    {
+        //* Step - 8.2
+        if ((vkMemoryRequirements.memoryTypeBits & 1) == 1)
+        {
+            //* Step - 8.3
+            if (vkPhysicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+            {
+                //* Step - 8.4
+                vkMemoryAllocateInfo.memoryTypeIndex = i;
+                break;
+            }
+        }
+
+        //* Step - 8.5
+        vkMemoryRequirements.memoryTypeBits >>= 1;
+    }
+
+    //* Step - 9
+    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &lightData[index].vertexData_position.vkDeviceMemory);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkAllocateMemory() Failed For Vertex Position Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 10
+    //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
+    vkResult = vkBindBufferMemory(vkDevice, lightData[index].vertexData_position.vkBuffer, lightData[index].vertexData_position.vkDeviceMemory, 0);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkBindBufferMemory() Failed For Vertex Position Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 11
+    vkResult = vkMapMemory(vkDevice, lightData[index].vertexData_position.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkMapMemory() Failed For Vertex Position Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 12
+    memcpy(data, position, positionSize);
+
+    //* Step - 13
+    vkUnmapMemory(vkDevice, lightData[index].vertexData_position.vkDeviceMemory);
+    //! ---------------------------------------------------------------------------------------------------------------------------------
+
+    //! Vertex Color
+    //! ---------------------------------------------------------------------------------------------------------------------------------
+    //* Step - 4
+    memset((void *)&lightData[index].vertexData_color, 0, sizeof(VertexData));
+
+    //* Step - 5
+    memset((void *)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
+    vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    vkBufferCreateInfo.flags = 0; //! Valid Flags are used in sparse(scattered) buffers
+    vkBufferCreateInfo.pNext = NULL;
+    vkBufferCreateInfo.size = colorSize;
+    vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+    //* Step - 6
+    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &lightData[index].vertexData_color.vkBuffer);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkCreateBuffer() Failed For Vertex Color Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 7
+    memset((void *)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
+    vkGetBufferMemoryRequirements(vkDevice, lightData[index].vertexData_color.vkBuffer, &vkMemoryRequirements);
+
+    //* Step - 8
+    memset((void *)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
+    vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    vkMemoryAllocateInfo.pNext = NULL;
+    vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
+    vkMemoryAllocateInfo.memoryTypeIndex = 0;
+
+    //* Step - 8.1
+    for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
+    {
+        //* Step - 8.2
+        if ((vkMemoryRequirements.memoryTypeBits & 1) == 1)
+        {
+            //* Step - 8.3
+            if (vkPhysicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+            {
+                //* Step - 8.4
+                vkMemoryAllocateInfo.memoryTypeIndex = i;
+                break;
+            }
+        }
+
+        //* Step - 8.5
+        vkMemoryRequirements.memoryTypeBits >>= 1;
+    }
+
+    //* Step - 9
+    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &lightData[index].vertexData_color.vkDeviceMemory);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkAllocateMemory() Failed For Vertex Color Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 10
+    //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
+    vkResult = vkBindBufferMemory(vkDevice, lightData[index].vertexData_color.vkBuffer, lightData[index].vertexData_color.vkDeviceMemory, 0);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkBindBufferMemory() Failed For Vertex Color Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 11
+    data = NULL;
+    vkResult = vkMapMemory(vkDevice, lightData[index].vertexData_color.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
+    if (vkResult != VK_SUCCESS)
+        fprintf(gpFile, "%s() => vkMapMemory() Failed For Vertex Color Buffer For Light Object Index Index : %d, Reason : %d !!!\n", __func__, index, vkResult);
+
+    //* Step - 12
+    memcpy(data, color, colorSize);
+
+    //* Step - 13
+    vkUnmapMemory(vkDevice, lightData[index].vertexData_color.vkDeviceMemory);
+    //! ---------------------------------------------------------------------------------------------------------------------------------
+
+    return vkResult;
+}
+
+VkResult StreetLight::initialize()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -18,7 +174,7 @@ VkResult Trees::initialize()
     vkResult = createVertexBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createVertexBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createVertexBuffer() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -26,7 +182,7 @@ VkResult Trees::initialize()
     vkResult = createUniformBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -34,7 +190,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorSetLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -42,7 +198,7 @@ VkResult Trees::initialize()
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -50,7 +206,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorPool();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorPool() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createDescriptorPool() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -58,7 +214,7 @@ VkResult Trees::initialize()
     vkResult = createDescriptorSet();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createDescriptorSet() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createDescriptorSet() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -66,7 +222,7 @@ VkResult Trees::initialize()
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::ERROR : %s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::ERROR : %s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
@@ -74,242 +230,76 @@ VkResult Trees::initialize()
     return vkResult;
 }
 
-VkResult Trees::createVertexBuffer(void)
+VkResult StreetLight::createVertexBuffer(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
-    VkBufferCreateInfo vkBufferCreateInfo;
-    VkMemoryRequirements vkMemoryRequirements;
-    VkMemoryAllocateInfo vkMemoryAllocateInfo;
-    void* data = NULL;
 
-    // Code
-    float triangle_position[] =
+    float street_lamp_middle_bar_position[] = 
     {
-        0.0f, 0.8f, 0.0f,
-        -1.6f, -1.0f, 0.0f,
-        1.6f, -1.0f, 0.0f,
+        1.0f,  1.0f, 0.0f, // right top 
+        -1.0f,  1.0f, 0.0f, // left top
+        -1.0f, -1.0f, 0.0f, // left bottom
 
-        0.8f, -1.0f, 0.0f,
-        -0.8f, -1.0f, 0.0f, 
-        -1.7f, -2.0f, 0.0f,
+        // second triangle
+        -1.0f, -1.0f, 0.0f, // left bottom
+        1.0f, -1.0f, 0.0f, // right bottom
+        1.0f,  1.0f, 0.0f // right top
+	};
 
-        0.8f, -1.0f, 0.0f,
-        -1.7f, -2.0f, 0.0f,
-        1.7f, -2.0f, 0.0f,
-
-        1.0f, -2.0f, 0.0f,
-        -1.0f, -2.0f, 0.0f,
-        -1.9f, -3.0f, 0.0f,
-
-        1.0f, -2.0f, 0.0f,
-        -1.9f, -3.0f, 0.0f,
-        1.9f, -3.0f, 0.0f,
-
-        1.2f, -3.0f, 0.0f,
-        -1.2f, -3.0f, 0.0f,
-        -2.1f, -4.0f, 0.0f,
-
-        1.2f, -3.0f, 0.0f,
-        -2.1f, -4.0f, 0.0f,
-        2.1f, -4.0f, 0.0f,
-
-        0.3f, -4.0f, 0.0f,
-        -0.3f, -4.0f, 0.0f,
-        -0.3f, -6.0f, 0.0f,
-
-        0.3f, -4.0f, 0.0f,
-        -0.3f, -6.0f, 0.0f,
-        0.3f, -6.0f, 0.0f
-    };
-
-    float triangle_color[] =
+	float street_lamp_middle_bar_color[] = 
     {
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+	};
 
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
+	float street_lamp_light_position[] = 
+    {
+        // first triangle
+        1.0f,  1.0f, 0.0f, // right top 
+        -1.0f,  1.0f, 0.0f, // left top
+        -1.0f, -1.0f, 0.0f, // left bottom
 
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
+        // second triangle
+        -1.0f, -1.0f, 0.0f, // left bottom
+        1.0f, -1.0f, 0.0f, // right bottom
+        1.0f,  1.0f, 0.0f // right top
+	};
 
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
+	float street_lamp_light_color[] = 
+    {
+        0.5098f, 0.4863f, 0.5059f,					  
+        0.5098f, 0.4863f, 0.5059f,					  
+        0.5098f, 0.4863f, 0.5059f,					  
+        0.5098f, 0.4863f, 0.5059f,					  
+        0.5098f, 0.4863f, 0.5059f,					  
+        0.5098f, 0.4863f, 0.5059f,
+	};
 
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.35f, 0.65f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-        0.25f, 0.45f, 0.0f,
-
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f,
-        0.42f, 0.22f, 0.0f
-    };
-
-    //! Vertex Position
-    //! ---------------------------------------------------------------------------------------------------------------------------------
-    //* Step - 4
-    memset((void*)&vertexData_position_tree, 0, sizeof(VertexData));
-
-    //* Step - 5
-    
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
-    vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
-    vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = sizeof(triangle_position);
-    vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
-    //* Step - 6
-    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_position_tree.vkBuffer);
+    vkResult = __createVertexBuffer(0, street_lamp_middle_bar_position, sizeof(street_lamp_middle_bar_position), street_lamp_middle_bar_color, sizeof(street_lamp_middle_bar_color));
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Vertex Position Buffer For Tree : %d !!!\n", __func__, vkResult);
-    
-    //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
-    vkGetBufferMemoryRequirements(vkDevice, vertexData_position_tree.vkBuffer, &vkMemoryRequirements);
-
-    //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
-    vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    vkMemoryAllocateInfo.pNext = NULL;
-    vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
-    vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
-    //* Step - 8.1
-    for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
-        //* Step - 8.2
-        if ((vkMemoryRequirements.memoryTypeBits & 1) == 1)
-        {
-            //* Step - 8.3
-            if (vkPhysicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-            {
-                //* Step - 8.4
-                vkMemoryAllocateInfo.memoryTypeIndex = i;
-                break;
-            }
-        }
-
-        //* Step - 8.5
-        vkMemoryRequirements.memoryTypeBits >>= 1;
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Middle Bar : %d !!!\n", __func__, vkResult);
+        return vkResult;
     }
 
-    //* Step - 9
-    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &vertexData_position_tree.vkDeviceMemory);
+    vkResult = __createVertexBuffer(1, street_lamp_light_position, sizeof(street_lamp_light_position), street_lamp_light_color, sizeof(street_lamp_light_color));
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Vertex Position Buffer For Tree : %d !!!\n", __func__, vkResult);
-
-    //* Step - 10
-    //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_position_tree.vkBuffer, vertexData_position_tree.vkDeviceMemory, 0);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Vertex Position Buffer For Tree Index : %d !!!\n", __func__, vkResult);
-
-    //* Step - 11
-    vkResult = vkMapMemory(vkDevice, vertexData_position_tree.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Vertex Position Buffer For Tree Index : %d!!!\n", __func__, vkResult);
-
-    //* Step - 12
-    memcpy(data, triangle_position, sizeof(triangle_position));
-
-    //* Step - 13
-    vkUnmapMemory(vkDevice, vertexData_position_tree.vkDeviceMemory);
-    //! ---------------------------------------------------------------------------------------------------------------------------------
-
-    //! Vertex Color
-    //! ---------------------------------------------------------------------------------------------------------------------------------
-    //* Step - 4
-    memset((void*)&vertexData_color_tree, 0, sizeof(VertexData));
-
-    //* Step - 5
-    memset((void*)&vkBufferCreateInfo, 0, sizeof(VkBufferCreateInfo));
-    vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vkBufferCreateInfo.flags = 0;   //! Valid Flags are used in sparse(scattered) buffers
-    vkBufferCreateInfo.pNext = NULL;
-    vkBufferCreateInfo.size = sizeof(triangle_color);
-    vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    
-    //* Step - 6
-    vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &vertexData_color_tree.vkBuffer);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
-    
-    //* Step - 7
-    memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
-    vkGetBufferMemoryRequirements(vkDevice, vertexData_color_tree.vkBuffer, &vkMemoryRequirements);
-
-    //* Step - 8
-    memset((void*)&vkMemoryAllocateInfo, 0, sizeof(VkMemoryAllocateInfo));
-    vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    vkMemoryAllocateInfo.pNext = NULL;
-    vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
-    vkMemoryAllocateInfo.memoryTypeIndex = 0;
-    
-    //* Step - 8.1
-    for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProperties.memoryTypeCount; i++)
     {
-        //* Step - 8.2
-        if ((vkMemoryRequirements.memoryTypeBits & 1) == 1)
-        {
-            //* Step - 8.3
-            if (vkPhysicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-            {
-                //* Step - 8.4
-                vkMemoryAllocateInfo.memoryTypeIndex = i;
-                break;
-            }
-        }
-
-        //* Step - 8.5
-        vkMemoryRequirements.memoryTypeBits >>= 1;
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Lamp Light : %d !!!\n", __func__, vkResult);
+        return vkResult;
     }
-
-    //* Step - 9
-    vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &vertexData_color_tree.vkDeviceMemory);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
-
-    //* Step - 10
-    //! Binds Vulkan Device Memory Object Handle with the Vulkan Buffer Object Handle
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_color_tree.vkBuffer, vertexData_color_tree.vkDeviceMemory, 0);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
-
-    //* Step - 11
-    data = NULL;
-    vkResult = vkMapMemory(vkDevice, vertexData_color_tree.vkDeviceMemory, 0, vkMemoryAllocateInfo.allocationSize, 0, &data);
-    if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Vertex Color Buffer For Tree : %d !!!\n", __func__, vkResult);
-
-    //* Step - 12
-    memcpy(data, triangle_color, sizeof(triangle_color));
-
-    //* Step - 13
-    vkUnmapMemory(vkDevice, vertexData_color_tree.vkDeviceMemory);
-    //! ---------------------------------------------------------------------------------------------------------------------------------
+    
     
     return vkResult;
 }
 
-VkResult Trees::createUniformBuffer(void)
+VkResult StreetLight::createUniformBuffer(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -328,7 +318,7 @@ VkResult Trees::createUniformBuffer(void)
     vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, NULL, &uniformData.vkBuffer);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
     
@@ -360,28 +350,28 @@ VkResult Trees::createUniformBuffer(void)
     vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, NULL, &uniformData.vkDeviceMemory);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }     
 
     vkResult = vkBindBufferMemory(vkDevice, uniformData.vkBuffer, uniformData.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkBindBufferMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkBindBufferMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
     vkResult = updateUniformBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorSetLayout(void)
+VkResult StreetLight::createDescriptorSetLayout(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -405,14 +395,14 @@ VkResult Trees::createDescriptorSetLayout(void)
     vkDescriptorSetLayoutCreateInfo.pBindings = &vkDescriptorSetLayoutBinding;
 
     //* Step - 4
-    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout_Trees);
+    vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout_Lights);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
 
     return vkResult;
 }
 
-VkResult Trees::createPipelineLayout(void)
+VkResult StreetLight::createPipelineLayout(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -430,19 +420,19 @@ VkResult Trees::createPipelineLayout(void)
     vkPipelineLayoutCreateInfo.pNext = NULL;
     vkPipelineLayoutCreateInfo.flags = 0;
     vkPipelineLayoutCreateInfo.setLayoutCount = 1;
-    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout_Trees;
+    vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout_Lights;
     vkPipelineLayoutCreateInfo.pushConstantRangeCount = 1;
     vkPipelineLayoutCreateInfo.pPushConstantRanges = &vkPushConstantRange;
 
     //* Step - 4
-    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout_Trees);
+    vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout_Lights);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorPool(void)
+VkResult StreetLight::createDescriptorPool(void)
 {
     // Variable Declarations
     VkResult vkResult;
@@ -465,14 +455,14 @@ VkResult Trees::createDescriptorPool(void)
     vkDescriptorPoolCreateInfo.pPoolSizes = &vkDescriptorPoolSize;
     vkDescriptorPoolCreateInfo.maxSets = 1;
 
-    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Trees);
+    vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool_Lights);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
 
     return vkResult;
 }
 
-VkResult Trees::createDescriptorSet(void)
+VkResult StreetLight::createDescriptorSet(void)
 {
     // Variable Declarations
     VkResult vkResult;
@@ -484,14 +474,14 @@ VkResult Trees::createDescriptorSet(void)
     memset((void*)&vkDescriptorSetAllocateInfo, 0, sizeof(VkDescriptorSetAllocateInfo));
     vkDescriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     vkDescriptorSetAllocateInfo.pNext = NULL;
-    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Trees;
+    vkDescriptorSetAllocateInfo.descriptorPool = vkDescriptorPool_Lights;
     vkDescriptorSetAllocateInfo.descriptorSetCount = 1;
-    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout_Trees;
+    vkDescriptorSetAllocateInfo.pSetLayouts = &vkDescriptorSetLayout_Lights;
 
-    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet_Trees);
+    vkResult = vkAllocateDescriptorSets(vkDevice, &vkDescriptorSetAllocateInfo, &vkDescriptorSet_Lights);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }  
     
@@ -511,7 +501,7 @@ VkResult Trees::createDescriptorSet(void)
     memset((void*)&vkWriteDescriptorSet, 0, sizeof(VkWriteDescriptorSet));
     vkWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     vkWriteDescriptorSet.pNext = NULL;
-    vkWriteDescriptorSet.dstSet = vkDescriptorSet_Trees;
+    vkWriteDescriptorSet.dstSet = vkDescriptorSet_Lights;
     vkWriteDescriptorSet.dstArrayElement = 0;
     vkWriteDescriptorSet.descriptorCount = 1;
     vkWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -525,7 +515,7 @@ VkResult Trees::createDescriptorSet(void)
     return vkResult;
 }
 
-VkResult Trees::createPipeline(void)
+VkResult StreetLight::createPipeline(void)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -693,7 +683,7 @@ VkResult Trees::createPipeline(void)
     VkPipelineCache vkPipelineCache = VK_NULL_HANDLE;
     vkResult = vkCreatePipelineCache(vkDevice, &vkPipelineCacheCreateInfo, NULL, &vkPipelineCache);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
 
     //! Create actual Graphics Pipeline
     VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo;
@@ -712,15 +702,15 @@ VkResult Trees::createPipeline(void)
     vkGraphicsPipelineCreateInfo.stageCount = _ARRAYSIZE(vkPipelineShaderStageCreateInfo_array);
     vkGraphicsPipelineCreateInfo.pStages = vkPipelineShaderStageCreateInfo_array;
     vkGraphicsPipelineCreateInfo.pTessellationState = NULL;
-    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout_Trees;
+    vkGraphicsPipelineCreateInfo.layout = vkPipelineLayout_Lights;
     vkGraphicsPipelineCreateInfo.renderPass = vkRenderPass;
     vkGraphicsPipelineCreateInfo.subpass = 0;
     vkGraphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     vkGraphicsPipelineCreateInfo.basePipelineIndex = 0;
 
-    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Trees);
+    vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Lights);
     if (vkResult != VK_SUCCESS)
-        fprintf(gpFile, "TREES::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
 
     //* Destroy Pipeline Cache
     if (vkPipelineCache)
@@ -732,16 +722,16 @@ VkResult Trees::createPipeline(void)
     return vkResult;
 }
 
-void Trees::update()
+void StreetLight::update()
 {
     VkResult vkResult = updateUniformBuffer();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
     }
 }
 
-VkResult Trees::updateUniformBuffer()
+VkResult StreetLight::updateUniformBuffer()
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -753,36 +743,35 @@ VkResult Trees::updateUniformBuffer()
     glm::mat4 translationMatrix = glm::mat4(1.0f);
     glm::mat4 scaleMatrix = glm::mat4(1.0f);
 
-    //* Tree 1
+    //* Light 1
     //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, -2.8f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.4f, 0.4f, 0.4f));
-    treesModelData[0].modelMatrix = glm::mat4(1.0f);
-    treesModelData[0].modelMatrix = translationMatrix * scaleMatrix;
-    //* ----------------------------------------------------------------------------------------
+    //! Middle Bar
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.35f, 3.0f, 0.4f));
+    lightsModelData[0].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[0].modelMatrix = translationMatrix * scaleMatrix;
 
-    //* Tree 2
-    //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-2.6f, -0.5f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.275f, 0.275f, 0.275f));
-    treesModelData[1].modelMatrix = glm::mat4(1.0f);
-    treesModelData[1].modelMatrix = translationMatrix * scaleMatrix;
-    //* ----------------------------------------------------------------------------------------
+    //! Lamp 1
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 3.0f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.8f, 0.0f));
+    lightsModelData[1].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[1].modelMatrix = translationMatrix * scaleMatrix;
 
-    //* Tree 3
-    //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.62f, -0.5f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.275f, 0.275f, 0.275f));
-    treesModelData[2].modelMatrix = glm::mat4(1.0f);
-    treesModelData[2].modelMatrix = translationMatrix * scaleMatrix;
-    //* ----------------------------------------------------------------------------------------
+    //! Lamp 2
+    translationMatrix = glm::mat4(1.0f);
+    scaleMatrix = glm::mat4(1.0f);
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.8f, 0.0f));
+    lightsModelData[2].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[2].modelMatrix = translationMatrix * scaleMatrix;
 
-    //* Tree 4
-    //* ----------------------------------------------------------------------------------------
-    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.8f, -2.8f, -12.0f));
-    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.4f, 0.4f, 0.4f));
-    treesModelData[3].modelMatrix = glm::mat4(1.0f);
-    treesModelData[3].modelMatrix = translationMatrix * scaleMatrix;
+    //! Top Bar
+    translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, -12.0f));
+    scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(2.5f, 0.2f, 0.0f));
+    lightsModelData[3].modelMatrix = glm::mat4(1.0f);
+    lightsModelData[3].modelMatrix = translationMatrix * scaleMatrix;
     //* ----------------------------------------------------------------------------------------
 
     mvp_UniformData.viewMatrix = glm::mat4(1.0f);
@@ -803,7 +792,7 @@ VkResult Trees::updateUniformBuffer()
     vkResult = vkMapMemory(vkDevice, uniformData.vkDeviceMemory, 0, sizeof(VP_UniformData), 0, &data);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => vkMapMemory() Failed For Uniform Buffer For Buildings : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => vkMapMemory() Failed For Uniform Buffer For Buildings : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
@@ -816,59 +805,156 @@ VkResult Trees::updateUniformBuffer()
     return vkResult;
 }
 
-void Trees::buildCommandBuffers(VkCommandBuffer& commandBuffer)
+void StreetLight::buildCommandBuffers(VkCommandBuffer& commandBuffer)
 {
     // Code
     vkCmdBindDescriptorSets(
         commandBuffer,
         VK_PIPELINE_BIND_POINT_GRAPHICS,
-        vkPipelineLayout_Trees,
+        vkPipelineLayout_Lights,
         0,
         1,
-        &vkDescriptorSet_Trees,
+        &vkDescriptorSet_Lights,
         0,
         NULL
     );
 
-    for (int i = 0; i < TREES_COUNT; i++)
-    {
-        vkCmdPushConstants(
-            commandBuffer,
-            vkPipelineLayout_Trees,
-            VK_SHADER_STAGE_VERTEX_BIT,
-            0,
-            sizeof(PushData),
-            &treesModelData[i]
-        );
+    //! Middle Bar
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout_Lights,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &lightsModelData[0]
+    );
 
-        //! Bind with Vertex Position Buffer
-        VkDeviceSize vkDeviceSize_offset_position[1];
-        memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
-        vkCmdBindVertexBuffers(
-            commandBuffer, 
-            0, 
-            1, 
-            &vertexData_position_tree.vkBuffer, 
-            vkDeviceSize_offset_position
-        );
+    //! Bind with Vertex Position Buffer
+    VkDeviceSize vkDeviceSize_offset_position[1];
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &lightData[0].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
 
-        //! Bind with Vertex Color Buffer
-        VkDeviceSize vkDeviceSize_offset_color[1];
-        memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-        vkCmdBindVertexBuffers(
-            commandBuffer, 
-            1, 
-            1, 
-            &vertexData_color_tree.vkBuffer, 
-            vkDeviceSize_offset_color
-        );
+    //! Bind with Vertex Color Buffer
+    VkDeviceSize vkDeviceSize_offset_color[1];
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &lightData[0].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
 
-        //! Vulkan Drawing Function
-        vkCmdDraw(commandBuffer, TREES_DRAW_VERTEX_COUNT, 1, 0, 0);
-    }
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+
+    //! Lamp
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout_Lights,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &lightsModelData[1]
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &lightData[1].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &lightData[1].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+
+    //! Lamp
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout_Lights,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &lightsModelData[2]
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &lightData[1].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &lightData[1].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
+
+    //! Top Bar
+    vkCmdPushConstants(
+        commandBuffer,
+        vkPipelineLayout_Lights,
+        VK_SHADER_STAGE_VERTEX_BIT,
+        0,
+        sizeof(PushData),
+        &lightsModelData[3]
+    );
+
+    //! Bind with Vertex Position Buffer
+    memset((void*)vkDeviceSize_offset_position, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_position));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        0, 
+        1, 
+        &lightData[0].vertexData_position.vkBuffer, 
+        vkDeviceSize_offset_position
+    );
+
+    //! Bind with Vertex Color Buffer
+    memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
+    vkCmdBindVertexBuffers(
+        commandBuffer, 
+        1, 
+        1, 
+        &lightData[0].vertexData_color.vkBuffer, 
+        vkDeviceSize_offset_color
+    );
+
+    //! Vulkan Drawing Function
+    vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 }
 
-VkResult Trees::resize(int width, int height)
+VkResult StreetLight::resize(int width, int height)
 {
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
@@ -880,17 +966,17 @@ VkResult Trees::resize(int width, int height)
         vkDeviceWaitIdle(vkDevice);
 
     //* Destroy PipelineLayout
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Lights)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Lights, NULL);
+        vkPipelineLayout_Lights = VK_NULL_HANDLE;
     }
 
     //* Destroy Pipeline
-    if (vkPipeline_Trees)
+    if (vkPipeline_Lights)
     {
-        vkDestroyPipeline(vkDevice, vkPipeline_Trees, NULL);
-        vkPipeline_Trees = VK_NULL_HANDLE;
+        vkDestroyPipeline(vkDevice, vkPipeline_Lights, NULL);
+        vkPipeline_Lights = VK_NULL_HANDLE;
     }
     //?--------------------------------------------------------------------------------------------------
     
@@ -900,7 +986,7 @@ VkResult Trees::resize(int width, int height)
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => createPipelineLayout() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
 
@@ -908,7 +994,7 @@ VkResult Trees::resize(int width, int height)
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TREES::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
+        fprintf(gpFile, "STREET_LIGHT::%s() => createPipeline() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
     //?--------------------------------------------------------------------------------------------------
@@ -916,40 +1002,40 @@ VkResult Trees::resize(int width, int height)
     return vkResult;
 }
 
-Trees::~Trees()
+StreetLight::~StreetLight()
 {
     if (vkDevice)
         vkDeviceWaitIdle(vkDevice);
 
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Lights)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Lights, NULL);
+        vkPipelineLayout_Lights = VK_NULL_HANDLE;
     }
 
-    if (vkPipeline_Trees)
+    if (vkPipeline_Lights)
     {
-        vkDestroyPipeline(vkDevice, vkPipeline_Trees, NULL);
-        vkPipeline_Trees = VK_NULL_HANDLE;
+        vkDestroyPipeline(vkDevice, vkPipeline_Lights, NULL);
+        vkPipeline_Lights = VK_NULL_HANDLE;
     }
 
-    if (vkDescriptorPool_Trees)
+    if (vkDescriptorPool_Lights)
     {
-        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Trees, NULL);
-        vkDescriptorPool_Trees = VK_NULL_HANDLE;
-        vkDescriptorSet_Trees = VK_NULL_HANDLE;
+        vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Lights, NULL);
+        vkDescriptorPool_Lights = VK_NULL_HANDLE;
+        vkDescriptorSet_Lights = VK_NULL_HANDLE;
     }
 
-    if (vkPipelineLayout_Trees)
+    if (vkPipelineLayout_Lights)
     {
-        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Trees, NULL);
-        vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Lights, NULL);
+        vkPipelineLayout_Lights = VK_NULL_HANDLE;
     }
 
-    if (vkDescriptorSetLayout_Trees)
+    if (vkDescriptorSetLayout_Lights)
 	{
-		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Trees, NULL);
-		vkDescriptorSetLayout_Trees = VK_NULL_HANDLE;
+		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Lights, NULL);
+		vkDescriptorSetLayout_Lights = VK_NULL_HANDLE;
 	}
 
     if (uniformData.vkDeviceMemory)
@@ -964,28 +1050,31 @@ Trees::~Trees()
         uniformData.vkBuffer = VK_NULL_HANDLE;
     }
 
-    if (vertexData_color_tree.vkDeviceMemory)
+    for (int i = 1; i >= 0; i--)
     {
-        vkFreeMemory(vkDevice, vertexData_color_tree.vkDeviceMemory, NULL);
-        vertexData_color_tree.vkDeviceMemory = VK_NULL_HANDLE;
-    }
+        if (lightData[i].vertexData_color.vkDeviceMemory)
+        {
+            vkFreeMemory(vkDevice, lightData[i].vertexData_color.vkDeviceMemory, NULL);
+            lightData[i].vertexData_color.vkDeviceMemory = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_color_tree.vkBuffer)
-    {
-        vkDestroyBuffer(vkDevice, vertexData_color_tree.vkBuffer, NULL);
-        vertexData_color_tree.vkBuffer = VK_NULL_HANDLE;
-    }
+        if (lightData[i].vertexData_color.vkBuffer)
+        {
+            vkDestroyBuffer(vkDevice, lightData[i].vertexData_color.vkBuffer, NULL);
+            lightData[i].vertexData_color.vkBuffer = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_position_tree.vkDeviceMemory)
-    {
-        vkFreeMemory(vkDevice, vertexData_position_tree.vkDeviceMemory, NULL);
-        vertexData_position_tree.vkDeviceMemory = VK_NULL_HANDLE;
-    }
+        if (lightData[i].vertexData_position.vkDeviceMemory)
+        {
+            vkFreeMemory(vkDevice, lightData[i].vertexData_position.vkDeviceMemory, NULL);
+            lightData[i].vertexData_position.vkDeviceMemory = VK_NULL_HANDLE;
+        }
 
-    if (vertexData_position_tree.vkBuffer)
-    {
-        vkDestroyBuffer(vkDevice, vertexData_position_tree.vkBuffer, NULL);
-        vertexData_position_tree.vkBuffer = VK_NULL_HANDLE;
+        if (lightData[i].vertexData_position.vkBuffer)
+        {
+            vkDestroyBuffer(vkDevice, lightData[i].vertexData_position.vkBuffer, NULL);
+            lightData[i].vertexData_position.vkBuffer = VK_NULL_HANDLE;
+        }
     }
 
     ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);

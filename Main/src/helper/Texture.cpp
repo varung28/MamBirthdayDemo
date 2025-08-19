@@ -41,13 +41,6 @@ VkResult Texture::createTexture(std::string filePath)
    
     imageSize = imageWidth * imageHeight * 4;
 
-    fprintf(gpFile, "\n%s Properties\n", textureFileName);
-    fprintf(gpFile, "-------------------------------------------\n");
-    fprintf(gpFile, "Image Width = %d\n", imageWidth);
-    fprintf(gpFile, "Image Height = %d\n", imageHeight);
-    fprintf(gpFile, "Image Size = %lld\n", imageSize);
-    fprintf(gpFile, "-------------------------------------------\n\n");   
-
     //! Step - 2
     VkBufferCreateInfo vkBufferCreateInfo_stagingBuffer;
     memset((void*)&vkBufferCreateInfo_stagingBuffer, 0, sizeof(VkBufferCreateInfo));
@@ -74,9 +67,6 @@ VkResult Texture::createTexture(std::string filePath)
 
         return vkResult;
     }
-        
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkCreateBuffer() Succeeded For Staging Buffer : %s\n", __func__, textureFileName);
 
     VkMemoryRequirements vkMemoryRequirements_stagingBuffer;
     memset((void*)&vkMemoryRequirements_stagingBuffer, 0, sizeof(VkMemoryRequirements));
@@ -113,19 +103,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
         if (imageData)
         {
             stbi_image_free(imageData);
             imageData = NULL;
-            fprintf(gpFile, "TEXTURE::%s() => stbi_image_free() Called For Texture : %s\n", __func__, textureFileName);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkAllocateMemory() Succeeded For Staging Buffer : %s\n", __func__, textureFileName);
 
     vkResult = vkBindBufferMemory(vkDevice, vkBuffer_stagingBuffer, vkDeviceMemory_stagingBuffer, 0);
     if (vkResult != VK_SUCCESS)
@@ -138,13 +124,11 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
         if (imageData)
         {
@@ -154,8 +138,6 @@ VkResult Texture::createTexture(std::string filePath)
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkBindBufferMemory() Succeeded For Staging Buffer : %s\n", __func__, textureFileName);
 
     void* data = NULL;
     vkResult = vkMapMemory(
@@ -176,25 +158,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
         if (imageData)
         {
             stbi_image_free(imageData);
             imageData = NULL;
-            fprintf(gpFile, "TEXTURE::%s() => stbi_image_free() Called For Texture : %s\n", __func__, textureFileName);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkMapMemory() Succeeded For Staging Buffer : %s\n", __func__, textureFileName);
 
     memcpy(data, imageData, imageSize);
 
@@ -203,7 +180,6 @@ VkResult Texture::createTexture(std::string filePath)
     //* Free the image data given by stb, as it is copied in image staging buffer
     stbi_image_free(imageData);
     imageData = NULL;
-    fprintf(gpFile, "TEXTURE::%s() => stbi_image_free() Called For Texture : %s\n", __func__, textureFileName);
 
     //! Step - 3
     VkImageCreateInfo vkImageCreateInfo;
@@ -235,19 +211,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }     
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkCreateImage() Succeeded For Texture : %s\n", __func__, textureFileName);
 
     VkMemoryRequirements vkMemoryRequirements_image;
     memset((void*)&vkMemoryRequirements_image, 0, sizeof(VkMemoryRequirements));
@@ -284,19 +256,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkAllocateMemory() Succeeded For Texture : %s\n", __func__, textureFileName);
 
     vkResult = vkBindImageMemory(vkDevice, vkImage_texture, vkDeviceMemory_texture, 0);
     if (vkResult != VK_SUCCESS)
@@ -309,25 +277,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
         if (imageData)
         {
             stbi_image_free(imageData);
             imageData = NULL;
-            fprintf(gpFile, "TEXTURE::%s() => stbi_image_free() Called For Texture : %s\n", __func__, textureFileName);
         }
 
         return vkResult;
     }      
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkBindImageMemory() Succeeded For Texture : %s\n", __func__, textureFileName);
 
     //! Step - 4
     //! ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -353,19 +316,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }   
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkAllocateCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 4.2
     VkCommandBufferBeginInfo vkCommandBufferBeginInfo_image_transition_layout;
@@ -385,25 +344,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkBeginCommandBuffer() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 4.3
     VkPipelineStageFlags vkPipelineStageFlags_source = 0;
@@ -448,19 +402,16 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
@@ -491,25 +442,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkEndCommandBuffer() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 4.5
     VkSubmitInfo vkSubmitInfo_transition_image_layout;
@@ -530,25 +476,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueSubmit() Succeeded For vkSubmitInfo_transition_image_layout\n", __func__);
 
     //* Step - 4.6
     vkResult = vkQueueWaitIdle(vkQueue);
@@ -562,32 +503,26 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueWaitIdle() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 4.7
     if (vkCommandBuffer_transition_image_layout)
     {
         vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
         vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
     }
     //! ----------------------------------------------------------------------------------------------------------------------------------------------------------
     
@@ -612,19 +547,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }    
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkAllocateCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
 
     VkCommandBufferBeginInfo vkCommandBufferBeginInfo_buffer_to_image_copy;
     memset((void*)&vkCommandBufferBeginInfo_buffer_to_image_copy, 0, sizeof(VkCommandBufferBeginInfo));
@@ -643,25 +574,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_buffer_to_image_copy);
             vkCommandBuffer_buffer_to_image_copy = VK_NULL_HANDLE;
-            fprintf(gpFile, "ERROR : TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkBeginCommandBuffer() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
 
     VkBufferImageCopy vkBufferImageCopy;
     memset((void*)&vkBufferImageCopy, 0, sizeof(VkBufferImageCopy));
@@ -699,37 +625,30 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_buffer_to_image_copy);
             vkCommandBuffer_buffer_to_image_copy = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
         }
         if (vkImage_texture)
         {
             vkDestroyImage(vkDevice, vkImage_texture, NULL);
             vkImage_texture = NULL;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyImage() Succeeded For vkImage_texture\n", __func__);
         }
         if (vkDeviceMemory_texture)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_texture, NULL);
             vkDeviceMemory_texture = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_texture\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkEndCommandBuffer() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
 
     VkSubmitInfo vkSubmitInfo_buffer_to_copy;
     memset((void*)&vkSubmitInfo_buffer_to_copy, 0, sizeof(VkSubmitInfo));
@@ -749,25 +668,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_buffer_to_image_copy);
             vkCommandBuffer_buffer_to_image_copy = VK_NULL_HANDLE;
-            fprintf(gpFile, "ERROR : TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueSubmit() Succeeded For vkSubmitInfo_buffer_to_copy\n", __func__);
 
     vkResult = vkQueueWaitIdle(vkQueue);
     if (vkResult != VK_SUCCESS)
@@ -780,31 +694,25 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_buffer_to_image_copy);
             vkCommandBuffer_buffer_to_image_copy = VK_NULL_HANDLE;
-            fprintf(gpFile, "ERROR : TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueWaitIdle() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
 
     if (vkCommandBuffer_buffer_to_image_copy)
     {
         vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_buffer_to_image_copy);
         vkCommandBuffer_buffer_to_image_copy = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_buffer_to_image_copy\n", __func__);
     }    
 
     //! Step - 6
@@ -830,19 +738,15 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }  
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkAllocateCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 6.2
     memset((void*)&vkCommandBufferBeginInfo_image_transition_layout, 0, sizeof(VkCommandBufferBeginInfo));
@@ -861,25 +765,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkBeginCommandBuffer() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 6.3
     vkPipelineStageFlags_source = 0;
@@ -923,19 +822,16 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
@@ -966,25 +862,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkEndCommandBuffer() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 6.5
     memset((void*)&vkSubmitInfo_transition_image_layout, 0, sizeof(VkSubmitInfo));
@@ -1004,25 +895,20 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueSubmit() Succeeded For vkSubmitInfo_transition_image_layout\n", __func__);
 
     //* Step - 6.6
     vkResult = vkQueueWaitIdle(vkQueue);
@@ -1036,32 +922,26 @@ VkResult Texture::createTexture(std::string filePath)
         {
             vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
             vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
         }
         if (vkDeviceMemory_stagingBuffer)
         {
             vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
             vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
         }
         if (vkBuffer_stagingBuffer)
         {
             vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
             vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-            fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
         }
 
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkQueueWaitIdle() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
 
     //* Step - 6.7
     if (vkCommandBuffer_transition_image_layout)
     {
         vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &vkCommandBuffer_transition_image_layout);
         vkCommandBuffer_transition_image_layout = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkFreeCommandBuffers() Succeeded For vkCommandBuffer_transition_image_layout\n", __func__);
     }
     //! ----------------------------------------------------------------------------------------------------------------------------------------------------------
     
@@ -1070,14 +950,12 @@ VkResult Texture::createTexture(std::string filePath)
     {
         vkDestroyBuffer(vkDevice, vkBuffer_stagingBuffer, NULL);
         vkBuffer_stagingBuffer = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkDestroyBuffer() Succeeded For vkBuffer_stagingBuffer\n", __func__);
     }
 
     if (vkDeviceMemory_stagingBuffer)
     {
         vkFreeMemory(vkDevice, vkDeviceMemory_stagingBuffer, NULL);
         vkDeviceMemory_stagingBuffer = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_stagingBuffer\n", __func__);
     }
 
     //! Step - 8
@@ -1106,8 +984,6 @@ VkResult Texture::createTexture(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }   
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkCreateImageView() Succeeded For Texture : %s\n", __func__, textureFileName);
 
     //! Step - 9
     VkSamplerCreateInfo vkSamplerCreateInfo;
@@ -1133,9 +1009,7 @@ VkResult Texture::createTexture(std::string filePath)
         fprintf(gpFile, "TEXTURE::%s() => vkCreateSampler() Failed For Texture : %s, Error Code : %d !!!\n", __func__, textureFileName, vkResult);
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
-    }    
-    else
-        fprintf(gpFile, "TEXTURE::%s() => vkCreateSampler() Succeeded For Texture : %s\n", __func__, textureFileName);
+    }   
 
     return vkResult;
 }
@@ -1156,28 +1030,24 @@ Texture::~Texture()
     {
         vkDestroySampler(vkDevice, vkSampler_texture, NULL);
         vkSampler_texture = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkDestroySampler() Succeeded For vkSampler_texture\n", __func__);
     }
 
     if (vkImageView_texture)
     {
         vkDestroyImageView(vkDevice, vkImageView_texture, NULL);
         vkImageView_texture = NULL;
-        fprintf(gpFile, "TEXTURE::%s() => vkDestroyImageView() Succeeded For vkImage_texture\n", __func__);
     }
 
     if (vkDeviceMemory_texture)
     {
         vkFreeMemory(vkDevice, vkDeviceMemory_texture, NULL);
         vkDeviceMemory_texture = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURE::%s() => vkFreeMemory() Succeeded For vkDeviceMemory_texture\n", __func__);
     }
 
     if (vkImage_texture)
     {
         vkDestroyImage(vkDevice, vkImage_texture, NULL);
         vkImage_texture = NULL;
-        fprintf(gpFile, "TEXTURE::%s() => vkDestroyImage() Succeeded For vkImage_texture\n", __func__);
     }
 
 }

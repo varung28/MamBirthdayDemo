@@ -7,15 +7,15 @@ SceneIntro::SceneIntro(/* args */)
     // CODE
     sdkCreateTimer(&timer);
 
-    pyramid = new Pyramid();
+    // pyramid = new Pyramid();
 
-    ///////////////////////////// PIPELINE RELATED CODE ////////////////////////////////
-    vkShaderModule_Vertex = ShaderModuleHelper::LoadShaderModule("bin\\shader.vert.spv");
-    vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader_yellow.frag.spv");
+    // ///////////////////////////// PIPELINE RELATED CODE ////////////////////////////////
+    // vkShaderModule_Vertex = ShaderModuleHelper::LoadShaderModule("bin\\shader.vert.spv");
+    // vkShaderModule_Fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader_yellow.frag.spv");
 
-    textureQuadPipelineBuilder = new VulkanPipelineBuilder();
+    // textureQuadPipelineBuilder = new VulkanPipelineBuilder();
 
-    createPipeline();
+    // createPipeline();
 
     texturedQuad = new TexturedQuad();
     texturedQuad->initialize("resources\\textures\\Intro_slide_1.png");
@@ -32,27 +32,27 @@ SceneIntro::~SceneIntro()
         fprintf(gpFile, "%s() => Textured Quad Destroyed Successully\n", __func__);
     }
 
-    if (pyramid)
-    {
-        delete pyramid;
-        pyramid = nullptr;
-        fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
-    }
+    // if (pyramid)
+    // {
+    //     delete pyramid;
+    //     pyramid = nullptr;
+    //     fprintf(gpFile, "%s => Quad Buffer DESTROYED SUCCESSFULLY.\n", __func__);
+    // }
 
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
+    // if (vkPipelineTexture)
+    // {
+    //     vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
+    //     vkPipelineTexture = VK_NULL_HANDLE;
+    // }
 
-    if (textureQuadPipelineBuilder)
-    {
-        delete textureQuadPipelineBuilder;
-        textureQuadPipelineBuilder = nullptr;
-    }
+    // if (textureQuadPipelineBuilder)
+    // {
+    //     delete textureQuadPipelineBuilder;
+    //     textureQuadPipelineBuilder = nullptr;
+    // }
 
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
-    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Vertex);
+    // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
 }
 
 
@@ -60,10 +60,10 @@ void SceneIntro::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
 
     // BIND WITH THE PIPELINE
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineTexture);
+    // vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineTexture);
 
-    // BIND OUR DESCRIPTOR SET TO PIPELINE
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
+    // // BIND OUR DESCRIPTOR SET TO PIPELINE
+    // vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vkPipelineLayout, 0, 1, &vkDescriptorSet, 0, NULL);
 
     //pyramid->initialCommandBuffer(commandBuffer);
 
@@ -154,32 +154,29 @@ void SceneIntro::update(void)
     {
         completed = true;
     }
-
-    MVP_UniformData mvp_UniformData;
-    memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
-
-    //! Update Matrices
-    mvp_UniformData.modelMatrix = glm::mat4(1.0f);
-    mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
-    mvp_UniformData.viewMatrix = glm::mat4(1.0f);
-
-
-
+    
     if (texturedQuad)
     {
+        MVP_UniformData mvp_UniformData;
+        memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+
+        mvp_UniformData.modelMatrix = glm::mat4(1.0f);
+        mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
+        mvp_UniformData.viewMatrix = glm::mat4(1.0f);
+
         texturedQuad->update(mvp_UniformData);
     }
 }
 
 void SceneIntro::onResize(int width, int height)
 {
+    // if (vkPipelineTexture)
+    // {
+    //     vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
+    //     vkPipelineTexture = VK_NULL_HANDLE;
+    // }
 
-    if (vkPipelineTexture)
-    {
-        vkDestroyPipeline(vkDevice, vkPipelineTexture, NULL);
-        vkPipelineTexture = VK_NULL_HANDLE;
-    }
+    // createPipeline();
 
-    createPipeline();
     texturedQuad->resize(width, height);
 }

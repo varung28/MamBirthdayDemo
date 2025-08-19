@@ -3,6 +3,12 @@
 extern int winWidth;
 extern int winHeight;
 
+Buildings::Buildings()
+{
+    vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
+    vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv");
+}
+
 VkResult Buildings::__createVertexBuffer(int index, float *position, int positionSize, float *color, int colorSize)
 {
     // Variable Declarations
@@ -159,12 +165,6 @@ VkResult Buildings::__createVertexBuffer(int index, float *position, int positio
     return vkResult;
 }
 
-Buildings::Buildings()
-{
-    vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
-    vkShaderModule_fragment = ShaderModuleHelper::LoadShaderModule("bin\\shader.frag.spv");
-}
-
 VkResult Buildings::initialize()
 {
     // Variable Declarations
@@ -178,8 +178,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = createUniformBuffer();
     if (vkResult != VK_SUCCESS)
@@ -188,8 +186,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createUniformBuffer() Succeeded\n", __func__);
 
     vkResult = createDescriptorSetLayout();
     if (vkResult != VK_SUCCESS)
@@ -198,8 +194,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createDescriptorSetLayout() Succeeded\n", __func__);
 
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
@@ -208,8 +202,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createPipelineLayout() Succeeded\n", __func__);
 
     vkResult = createDescriptorPool();
     if (vkResult != VK_SUCCESS)
@@ -218,8 +210,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createDescriptorPool() Succeeded\n", __func__);
 
     vkResult = createDescriptorSet();
     if (vkResult != VK_SUCCESS)
@@ -228,8 +218,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createDescriptorSet() Succeeded\n", __func__);
 
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
@@ -238,8 +226,6 @@ VkResult Buildings::initialize()
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => createPipeline() Succeeded\n", __func__);
 
     return vkResult;
 }
@@ -251,88 +237,98 @@ VkResult Buildings::createVertexBuffer(void)
 
     // Code
     float triangle_position[] =
-        {
-            0.0f, 1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f};
+    {
+        0.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f
+    };
 
     float triangle_color[] =
-        {
-            0.498f, 0.450f, 0.443f,
-            0.498f, 0.450f, 0.443f,
-            0.498f, 0.450f, 0.443f};
+    {
+        0.498f, 0.450f, 0.443f,
+        0.498f, 0.450f, 0.443f,
+        0.498f, 0.450f, 0.443f
+    };
 
     float rectangle_position[] =
-        {
-            1.0f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f};
+    {
+        1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f
+    };
 
     float rectangle_5_position[] =
-        {
-            0.1f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            1.1f, -1.0f, 0.0f,
-            0.1f, 1.0f, 0.0f};
+    {
+        0.1f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.1f, -1.0f, 0.0f,
+        0.1f, 1.0f, 0.0f
+    };
 
     float rectangle_1_color[] =
-        {
-            0.443f, 0.450f, 0.494f,
-            0.443f, 0.450f, 0.494f,
-            0.443f, 0.450f, 0.494f,
-            0.443f, 0.450f, 0.494f,
-            0.443f, 0.450f, 0.494f,
-            0.443f, 0.450f, 0.494f};
+    {
+        0.443f, 0.450f, 0.494f,
+        0.443f, 0.450f, 0.494f,
+        0.443f, 0.450f, 0.494f,
+        0.443f, 0.450f, 0.494f,
+        0.443f, 0.450f, 0.494f,
+        0.443f, 0.450f, 0.494f
+    };
 
     float rectangle_2_color[] =
-        {
-            0.396f, 0.4f, 0.541f,
-            0.396f, 0.4f, 0.541f,
-            0.396f, 0.4f, 0.541f,
-            0.396f, 0.4f, 0.541f,
-            0.396f, 0.4f, 0.541f,
-            0.396f, 0.4f, 0.541f};
+    {
+        0.396f, 0.4f, 0.541f,
+        0.396f, 0.4f, 0.541f,
+        0.396f, 0.4f, 0.541f,
+        0.396f, 0.4f, 0.541f,
+        0.396f, 0.4f, 0.541f,
+        0.396f, 0.4f, 0.541f
+    };
 
     float rectangle_3_color[] =
-        {
-            0.890f, 0.835f, 0.784f,
-            0.890f, 0.835f, 0.784f,
-            0.890f, 0.835f, 0.784f,
-            0.890f, 0.835f, 0.784f,
-            0.890f, 0.835f, 0.784f,
-            0.890f, 0.835f, 0.784f};
+    {
+        0.890f, 0.835f, 0.784f,
+        0.890f, 0.835f, 0.784f,
+        0.890f, 0.835f, 0.784f,
+        0.890f, 0.835f, 0.784f,
+        0.890f, 0.835f, 0.784f,
+        0.890f, 0.835f, 0.784f
+    };
 
     float rectangle_4_color[] =
-        {
-            0.647f, 0.647f, 0.647f,
-            0.647f, 0.647f, 0.647f,
-            0.647f, 0.647f, 0.647f,
-            0.647f, 0.647f, 0.647f,
-            0.647f, 0.647f, 0.647f,
-            0.647f, 0.647f, 0.647f};
+    {
+        0.647f, 0.647f, 0.647f,
+        0.647f, 0.647f, 0.647f,
+        0.647f, 0.647f, 0.647f,
+        0.647f, 0.647f, 0.647f,
+        0.647f, 0.647f, 0.647f,
+        0.647f, 0.647f, 0.647f
+    };
 
     float rectangle_5_color[] =
-        {
-            0.501f, 0.501f, 0.501f,
-            0.501f, 0.501f, 0.501f,
-            0.501f, 0.501f, 0.501f,
-            0.501f, 0.501f, 0.501f,
-            0.501f, 0.501f, 0.501f,
-            0.501f, 0.501f, 0.501f};
+    {
+        0.501f, 0.501f, 0.501f,
+        0.501f, 0.501f, 0.501f,
+        0.501f, 0.501f, 0.501f,
+        0.501f, 0.501f, 0.501f,
+        0.501f, 0.501f, 0.501f,
+        0.501f, 0.501f, 0.501f
+    };
 
     float rectangle_6_color[] =
-        {
-            0.345f, 0.345f, 0.345f,
-            0.345f, 0.345f, 0.345f,
-            0.345f, 0.345f, 0.345f,
-            0.345f, 0.345f, 0.345f,
-            0.345f, 0.345f, 0.345f,
-            0.345f, 0.345f, 0.345f};
+    {
+        0.345f, 0.345f, 0.345f,
+        0.345f, 0.345f, 0.345f,
+        0.345f, 0.345f, 0.345f,
+        0.345f, 0.345f, 0.345f,
+        0.345f, 0.345f, 0.345f,
+        0.345f, 0.345f, 0.345f
+    };
 
     // Code
     vkResult = __createVertexBuffer(0, triangle_position, sizeof(triangle_position), triangle_color, sizeof(triangle_color));
@@ -341,8 +337,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 0, Reason : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(1, rectangle_position, sizeof(rectangle_position), rectangle_1_color, sizeof(rectangle_1_color));
     if (vkResult != VK_SUCCESS)
@@ -350,8 +344,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 1 : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(2, rectangle_position, sizeof(rectangle_position), rectangle_2_color, sizeof(rectangle_2_color));
     if (vkResult != VK_SUCCESS)
@@ -359,8 +351,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 2: %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(3, rectangle_position, sizeof(rectangle_position), rectangle_3_color, sizeof(rectangle_3_color));
     if (vkResult != VK_SUCCESS)
@@ -368,8 +358,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 3: %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(4, rectangle_position, sizeof(rectangle_position), rectangle_4_color, sizeof(rectangle_4_color));
     if (vkResult != VK_SUCCESS)
@@ -377,8 +365,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 4: %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(5, rectangle_5_position, sizeof(rectangle_position), rectangle_5_color, sizeof(rectangle_5_color));
     if (vkResult != VK_SUCCESS)
@@ -386,8 +372,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 5: %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     vkResult = __createVertexBuffer(6, rectangle_position, sizeof(rectangle_position), rectangle_6_color, sizeof(rectangle_6_color));
     if (vkResult != VK_SUCCESS)
@@ -395,8 +379,6 @@ VkResult Buildings::createVertexBuffer(void)
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Index 6: %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "%s() => __createVertexBuffer() Succeeded\n", __func__);
 
     return vkResult;
 }
@@ -815,15 +797,12 @@ VkResult Buildings::createPipeline(void)
     vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline_Buildings);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "BUILDINGS::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
-    else
-        fprintf(gpFile, "BUILDINGS::%s() => vkCreateGraphicsPipelines() Succeeded\n", __func__);
 
     //* Destroy Pipeline Cache
     if (vkPipelineCache)
     {
         vkDestroyPipelineCache(vkDevice, vkPipelineCache, NULL);
         vkPipelineCache = VK_NULL_HANDLE;
-        fprintf(gpFile, "BUILDINGS::%s() => vkDestroyPipelineCache() Succeeded\n", __func__);
     }
 
     return vkResult;
@@ -1235,7 +1214,6 @@ Buildings::~Buildings()
     {
         vkDestroyPipeline(vkDevice, vkPipeline_Buildings, NULL);
         vkPipeline_Buildings = VK_NULL_HANDLE;
-        fprintf(gpFile, "BUILDINGS::%s() => vkDestroyPipeline() Succeeded\n", __func__);
     }
 
     if (vkDescriptorPool_Buildings)
@@ -1243,21 +1221,18 @@ Buildings::~Buildings()
         vkDestroyDescriptorPool(vkDevice, vkDescriptorPool_Buildings, NULL);
         vkDescriptorPool_Buildings = VK_NULL_HANDLE;
         vkDescriptorSet_Buildings = VK_NULL_HANDLE;
-        fprintf(gpFile, "BUILDINGS::%s() => vkDestroyDescriptorPool() => Destroyed vkDescriptorPool_Buildings and vkDescriptorSet_Buildings Successfully\n", __func__);
     }
 
     if (vkPipelineLayout_Buildings)
     {
         vkDestroyPipelineLayout(vkDevice, vkPipelineLayout_Buildings, NULL);
         vkPipelineLayout_Buildings = VK_NULL_HANDLE;
-        fprintf(gpFile, "BUILDINGS::%s() => vkDestroyPipelineLayout() Succeeded\n", __func__);
     }
 
     if (vkDescriptorSetLayout_Buildings)
     {
         vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout_Buildings, NULL);
         vkDescriptorSetLayout_Buildings = VK_NULL_HANDLE;
-        fprintf(gpFile, "BUILDINGS::%s() => vkDestroyDescriptorSetLayout() Succeeded\n", __func__);
     }
 
     for (int i = BUILDING_GEOMETRY_COUNT - 1; i >= 0; i--)

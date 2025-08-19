@@ -1,14 +1,13 @@
-#ifndef TREES_H
-#define TREES_H
+#ifndef ROAD_H
+#define ROAD_H
 
 #include "../../helper/Common.h"
 #include "../../helper/ShaderModule.h"
 
-class Trees
+class Road
 {
     private:
-        static const int TREES_COUNT = 4;
-        const int TREES_DRAW_VERTEX_COUNT = 81;
+        static const int ROAD_GEOMETRY_COUNT = 3;
 
         typedef struct
         {
@@ -33,22 +32,28 @@ class Trees
             VkDeviceMemory vkDeviceMemory;
         } UniformData;
 
-        VkDescriptorSet vkDescriptorSet_Trees = VK_NULL_HANDLE;
-        VkDescriptorSetLayout vkDescriptorSetLayout_Trees = VK_NULL_HANDLE;
-        VkDescriptorPool vkDescriptorPool_Trees = VK_NULL_HANDLE;
-        VkPipeline vkPipeline_Trees = VK_NULL_HANDLE;
-        VkPipelineLayout vkPipelineLayout_Trees = VK_NULL_HANDLE;
+        typedef struct
+        {
+            VertexData vertexData_position;
+            VertexData vertexData_color;
+        } RoadData;
 
-        VertexData vertexData_position_tree;
-        VertexData vertexData_color_tree;
+        VkDescriptorSet vkDescriptorSet_Road = VK_NULL_HANDLE;
+        VkDescriptorSetLayout vkDescriptorSetLayout_Road = VK_NULL_HANDLE;
+        VkDescriptorPool vkDescriptorPool_Road = VK_NULL_HANDLE;
+        VkPipeline vkPipeline_Road = VK_NULL_HANDLE;
+        VkPipelineLayout vkPipelineLayout_Road = VK_NULL_HANDLE;
+
         UniformData uniformData;
 
-        PushData treesModelData[TREES_COUNT];
+        RoadData roadObject[ROAD_GEOMETRY_COUNT];  // Border = 0, Main Road = 2, Zebra Crossing = 3
+        PushData roadModelData[ROAD_GEOMETRY_COUNT];
 
         VkShaderModule vkShaderModule_vertex = VK_NULL_HANDLE;
         VkShaderModule vkShaderModule_fragment = VK_NULL_HANDLE;
 
     private:
+        VkResult __createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize);
         VkResult createVertexBuffer();
         VkResult createUniformBuffer();
         VkResult createDescriptorSetLayout();
@@ -59,8 +64,8 @@ class Trees
         VkResult updateUniformBuffer();
 
     public:
-        Trees();
-        ~Trees();
+        Road();
+        ~Road();
 
         VkResult initialize();
         void update();
@@ -69,4 +74,4 @@ class Trees
 };
 
 
-#endif  // TREES_H
+#endif  // ROAD_H
