@@ -45,7 +45,7 @@ class StreetLight
         VkPipeline vkPipeline_Lights = VK_NULL_HANDLE;
         VkPipelineLayout vkPipelineLayout_Lights = VK_NULL_HANDLE;
 
-        LightData lightData[2]; // Middle Bar = 0, Light Lamp = 1
+        LightData lightData[3]; // Middle Bar = 0, Light Lamp = 1, Yellow Color Buffer = 2
         UniformData uniformData;
 
         PushData lightsModelData[LIGHT_GEOMETRY_COUNT][LIGHT_COUNT];

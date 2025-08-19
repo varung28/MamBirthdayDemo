@@ -94,5 +94,4 @@ typedef struct
     glm::mat4 projectionMatrix;
 } MVP_UniformData;
 
-
 #endif // COMMON_H

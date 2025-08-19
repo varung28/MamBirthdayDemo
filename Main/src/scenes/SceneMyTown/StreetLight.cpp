@@ -3,6 +3,8 @@
 extern int winWidth;
 extern int winHeight;
 
+bool updateColorAnimation = true;
+
 StreetLight::StreetLight()
 {
     vkShaderModule_vertex = ShaderModuleHelper::LoadShaderModule("bin\\PushConstant.vert.spv");
@@ -281,6 +283,16 @@ VkResult StreetLight::createVertexBuffer(void)
         0.5098f, 0.4863f, 0.5059f,
 	};
 
+	float street_lamp_light_color_yellow[] = 
+    {
+        0.949f, 0.980f, 0.0745f,					  
+        0.949f, 0.980f, 0.0745f,					  
+        0.949f, 0.980f, 0.0745f,					  
+        0.949f, 0.980f, 0.0745f,					  
+        0.949f, 0.980f, 0.0745f,					  
+        0.949f, 0.980f, 0.0745f,					  
+	};
+
     vkResult = __createVertexBuffer(0, street_lamp_middle_bar_position, sizeof(street_lamp_middle_bar_position), street_lamp_middle_bar_color, sizeof(street_lamp_middle_bar_color));
     if (vkResult != VK_SUCCESS)
     {
@@ -292,6 +304,13 @@ VkResult StreetLight::createVertexBuffer(void)
     if (vkResult != VK_SUCCESS)
     {
         fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Lamp Light : %d !!!\n", __func__, vkResult);
+        return vkResult;
+    }
+    
+    vkResult = __createVertexBuffer(2, street_lamp_light_position, sizeof(street_lamp_light_position), street_lamp_light_color_yellow, sizeof(street_lamp_light_color_yellow));
+    if (vkResult != VK_SUCCESS)
+    {
+        fprintf(gpFile, "%s() => __createVertexBuffer() Failed For Lamp Light Yellow Color : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
     
@@ -1035,15 +1054,28 @@ void StreetLight::buildCommandBuffers(VkCommandBuffer& commandBuffer)
             vkDeviceSize_offset_position
         );
 
-        //! Bind with Vertex Color Buffer
         memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-        vkCmdBindVertexBuffers(
-            commandBuffer, 
-            1, 
-            1, 
-            &lightData[1].vertexData_color.vkBuffer, 
-            vkDeviceSize_offset_color
-        );
+        if (updateColorAnimation)
+        {
+            //! Yellow Lights
+            vkCmdBindVertexBuffers(
+                commandBuffer, 
+                1, 
+                1, 
+                &lightData[2].vertexData_color.vkBuffer, 
+                vkDeviceSize_offset_color
+            );
+        }
+        else
+        {
+            vkCmdBindVertexBuffers(
+                commandBuffer, 
+                1, 
+                1, 
+                &lightData[1].vertexData_color.vkBuffer, 
+                vkDeviceSize_offset_color
+            );
+        }
 
         //! Vulkan Drawing Function
         vkCmdDraw(commandBuffer, 6, 1, 0, 0);
@@ -1068,15 +1100,28 @@ void StreetLight::buildCommandBuffers(VkCommandBuffer& commandBuffer)
             vkDeviceSize_offset_position
         );
 
-        //! Bind with Vertex Color Buffer
         memset((void*)vkDeviceSize_offset_color, 0, sizeof(VkDeviceSize) * _ARRAYSIZE(vkDeviceSize_offset_color));
-        vkCmdBindVertexBuffers(
-            commandBuffer, 
-            1, 
-            1, 
-            &lightData[1].vertexData_color.vkBuffer, 
-            vkDeviceSize_offset_color
-        );
+        if (updateColorAnimation)
+        {
+            //! Yellow Lights
+            vkCmdBindVertexBuffers(
+                commandBuffer, 
+                1, 
+                1, 
+                &lightData[2].vertexData_color.vkBuffer, 
+                vkDeviceSize_offset_color
+            );
+        }
+        else
+        {
+            vkCmdBindVertexBuffers(
+                commandBuffer, 
+                1, 
+                1, 
+                &lightData[1].vertexData_color.vkBuffer, 
+                vkDeviceSize_offset_color
+            );
+        }
 
         //! Vulkan Drawing Function
         vkCmdDraw(commandBuffer, 6, 1, 0, 0);

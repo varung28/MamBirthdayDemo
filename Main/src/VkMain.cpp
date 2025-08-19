@@ -832,7 +832,7 @@ VkResult initialize(void)
 
 	openal = new OpenAL();
 	openal->InitializeAudio();
-	// openal->Play();
+	openal->Play();
 
 	return (vkResult);
 }
