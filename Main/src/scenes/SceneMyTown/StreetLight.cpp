@@ -3,7 +3,7 @@
 extern int winWidth;
 extern int winHeight;
 
-bool updateColorAnimation = true;
+bool updateColorAnimation = false;
 
 StreetLight::StreetLight()
 {

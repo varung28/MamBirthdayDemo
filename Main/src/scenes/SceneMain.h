@@ -13,6 +13,7 @@ private:
     SceneEndCredit *sceneEndCredit = nullptr;
     SceneMyTown *sceneMyTown = nullptr;
     SceneIntro *sceneIntro = nullptr;
+    StopWatchInterface *timer = NULL;
 
 public:
     SceneMain(/* args */);

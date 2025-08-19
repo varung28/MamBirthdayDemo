@@ -55,7 +55,6 @@ SceneIntro::~SceneIntro()
     // ShaderModuleHelper::DestroyShaderModule(vkShaderModule_Fragment);
 }
 
-
 void SceneIntro::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 {
 
@@ -147,18 +146,26 @@ void SceneIntro::createPipeline(void)
 
 void SceneIntro::update(void)
 {
+    if (!timer->isRunning())
+        sdkStartTimer(&timer);
     elapsed_time = sdkGetTimerValue(&timer);
     elapsed_time = elapsed_time / 1000.0f;
 
-    if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
+    delta_time = elapsed_time - prev_time;
+    prev_time = elapsed_time;
+
+        printf("SceneIntro::update : %f\n", elapsed_time);
+    // printf("time : %f\n", elapsed_time);
+    if (elapsed_time >= TSM::SCENE_INTRO_TIME)
     {
+        printf("completed : %f\n", elapsed_time);
         completed = true;
     }
-    
+
     if (texturedQuad)
     {
         MVP_UniformData mvp_UniformData;
-        memset((void*)&mvp_UniformData, 0, sizeof(MVP_UniformData));
+        memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
 
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
         mvp_UniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
@@ -183,6 +190,6 @@ void SceneIntro::onResize(int width, int height)
     // }
 
     // createPipeline();
-    
+
     texturedQuad->resize(width, height);
 }

@@ -1146,6 +1146,7 @@ VkResult display(void)
 	// FUNCTION DECLARTIONS
 	VkResult resize(int width, int height);
 	VkResult updateUniformBuffer(void);
+	VkResult buildCommandBuffers(void);
 
 	// LOCAL VARIABLES
 	VkResult vkResult = VK_SUCCESS;
@@ -1246,9 +1247,14 @@ VkResult display(void)
 
 	updateUniformBuffer();
 
+	static int prevScene = TSM::selectedScene;
+
 	mainScene->update();
 
 	vkDeviceWaitIdle(vkDevice);
+
+	if(prevScene != TSM::selectedScene)
+		buildCommandBuffers();
 
 	return (vkResult);
 }
@@ -3521,10 +3527,7 @@ VkResult buildCommandBuffers(void)
 			fprintf(gpFile, "%s => vkResetCommandBuffer() IS FAILED FOR INDEX %d.\n", __func__, i);
 			return vkResult;
 		}
-		else
-		{
-			fprintf(gpFile, "%s => vkResetCommandBuffer() IS SUCCEEDED FOR INDEX %d.\n", __func__, i);
-		}
+
 
 		VkCommandBufferBeginInfo vkCommandBufferBeginInfo;
 
@@ -3540,10 +3543,7 @@ VkResult buildCommandBuffers(void)
 			fprintf(gpFile, "%s => vkBeginCommandBuffer() IS FAILED FOR INDEX %d.\n", __func__, i);
 			return vkResult;
 		}
-		else
-		{
-			fprintf(gpFile, "%s => vkBeginCommandBuffer() IS SUCCEEDED FOR INDEX %d.\n", __func__, i);
-		}
+
 
 		VkClearValue vkClearValue_Array[2];
 
@@ -3587,10 +3587,7 @@ VkResult buildCommandBuffers(void)
 			fprintf(gpFile, "%s => vkEndCommandBuffer() IS FAILED FOR INDEX %d.\n", __func__, i);
 			return vkResult;
 		}
-		else
-		{
-			fprintf(gpFile, "%s => vkEndCommandBuffer() IS SUCCEEDED FOR INDEX %d.\n", __func__, i);
-		}
+
 	}
 
 	return vkResult;

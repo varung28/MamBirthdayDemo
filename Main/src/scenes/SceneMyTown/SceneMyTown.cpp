@@ -1,5 +1,7 @@
 #include "SceneMyTown.h"
 
+extern bool updateColorAnimation;
+
 SceneMyTown::SceneMyTown(/* args */)
 {
     // VARIABLE DECLARATIONS
@@ -181,10 +183,17 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 
 void SceneMyTown::update(void)
 {
+    if (!timer->isRunning())
+        sdkStartTimer(&timer);
     elapsed_time = sdkGetTimerValue(&timer);
     elapsed_time = elapsed_time / 1000.0f;
 
-    if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
+    delta_time = elapsed_time - prev_time;
+    prev_time = elapsed_time;
+
+    printf("SceneMyTown::update : %f\n", elapsed_time);
+    // printf("time : %f\n", elapsed_time);
+    if (elapsed_time >= TSM::SCENE_MAIN_TIME)
     {
         completed = true;
     }
@@ -206,6 +215,12 @@ void SceneMyTown::update(void)
 
     if (scenePradnya_Sky)
         scenePradnya_Sky->update_sky();
+
+    if (elapsed_time >= TSM::SCENE_MAIN_TIME / 2.0)
+    {
+        if (elapsed_time >= (TSM::SCENE_MAIN_TIME / 2.0) + 5.0f)
+            updateColorAnimation = true;
+    }
 }
 
 void SceneMyTown::onResize(int width, int height)
@@ -220,7 +235,7 @@ void SceneMyTown::onResize(int width, int height)
 
     if (trees)
         trees->resize(width, height);
-    
+
     if (buildings)
         buildings->resize(width, height);
 
@@ -229,5 +244,4 @@ void SceneMyTown::onResize(int width, int height)
 
     if (scenePradnya)
         scenePradnya->resize(width, height);
-
 }

@@ -3,11 +3,14 @@
 SceneMain::SceneMain(/* args */)
 {
 
-    // TSM::selectedScene = TSM::SCENE::MAIN;
+    TSM::selectedScene = TSM::SCENE::INTRO;
+    TSM::E2D_DEMO = true; // if want timer based scene swicth
 
     sceneEndCredit = new SceneEndCredit();
     sceneMyTown = new SceneMyTown();
     sceneIntro = new SceneIntro();
+
+    sdkCreateTimer(&timer);
 }
 
 SceneMain::~SceneMain()
@@ -36,18 +39,19 @@ void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     switch (TSM::selectedScene)
     {
     case TSM::SCENE::INTRO:
-        if(sceneIntro)
+        if (sceneIntro && sceneIntro->isCompleted() == false)
             sceneIntro->initialCommandBuffer(commandBuffer);
         break;
 
     case TSM::SCENE::MAIN:
-        if (sceneMyTown)
+        if (sceneMyTown && !sceneMyTown->isCompleted())
             sceneMyTown->initialCommandBuffer(commandBuffer);
         break;
 
     case TSM::SCENE::END_CREDITS:
-        if (sceneEndCredit)
+        if (sceneEndCredit && !sceneEndCredit->isCompleted())
             sceneEndCredit->initialCommandBuffer(commandBuffer);
+
         break;
     }
 }
@@ -57,20 +61,36 @@ void SceneMain::update(void)
     switch (TSM::selectedScene)
     {
     case TSM::SCENE::INTRO:
-        if(sceneIntro)
-        sceneIntro->update();
+        if (sceneIntro)
+            sceneIntro->update();
+
+        if (sceneIntro->isCompleted() && TSM::E2D_DEMO)
+        {
+            TSM::selectedScene = TSM::SCENE::MAIN;
+            printf("Updatiiing :\n");
+        }
         break;
 
     case TSM::SCENE::MAIN:
         if (sceneMyTown)
             sceneMyTown->update();
+
+        if (sceneMyTown->isCompleted() && TSM::E2D_DEMO)
+            TSM::selectedScene = TSM::SCENE::END_CREDITS;
+
         break;
 
     case TSM::SCENE::END_CREDITS:
         if (sceneEndCredit)
             sceneEndCredit->update();
+
+        // if (sceneEndCredit->isCompleted() && TSM::E2D_DEMO)
+        //     TSM::selectedScene++;
+
         break;
     }
+
+    printf("TSM::selectedScene %d\n", TSM::selectedScene);
 }
 
 void SceneMain::onResize(int width, int height)

@@ -11,7 +11,7 @@
 #include "Road.h"
 #include "StreetLight.h"
 
-class SceneMyTown
+class SceneMyTown : public SCENE
 {
 private:
     /* data */
@@ -29,9 +29,9 @@ private:
     ScenePradnya *scenePradnya = nullptr;
     ScenePradnya *scenePradnya_Sky = nullptr;
     Buildings *buildings = nullptr;
-    Trees* trees = nullptr;
-    Road* road = nullptr;
-    StreetLight* streetLight = nullptr;
+    Trees *trees = nullptr;
+    Road *road = nullptr;
+    StreetLight *streetLight = nullptr;
 
 public:
     SceneMyTown(/* args */);

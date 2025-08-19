@@ -127,6 +127,7 @@ VkResult ScenePradnya::initialize(void)
         fprintf(gpFile, "%s() : createPipeline() Succeeded.\n", __func__);
     }
 
+
     // // Build Command Buffers
     // vkResult = buildCommandBuffers();
     // if (vkResult != VK_SUCCESS)
@@ -864,7 +865,7 @@ VkResult ScenePradnya::updateColorVertexBuffer(void)
                                                                    {0.0f, lighterGreen, 0.0f},
                                                                    {0.0f, lighterGreen, 0.0f}};
 
-    const float delta = 0.0001f;
+    const float delta = 0.05f * delta_time;
 
     // ****** RED TO BLUE ******
     if (rectangle_colors_2D_array[0][1] > darkerGreen)
@@ -950,7 +951,7 @@ VkResult ScenePradnya::updateColorVertexBuffer_sky(void)
                                                                    {beginning_skyBottom_R, beginning_skyBottom_G, beginning_skyBottom_B},
                                                                    {beginning_skyTop_R, beginning_skyTop_G, beginning_skyTop_B}};
 
-    const float delta = 0.0005f;
+    const float delta = 0.05f * delta_time;
 
     // ****** SKY QUAD TOP COLOR CHANGE ******
     if (rectangle_colors_2D_array[0][0] > end_skyTop_R)
@@ -1019,14 +1020,14 @@ VkResult ScenePradnya::updateColorVertexBuffer_sky(void)
         }
     }
 
-    // (Vertex Buffer) Step 10 : Now we have our required device memory handle and vkBuffer handle.
-    // Bind this device memory handle to the Vulkan Buffer handle using vkBindBufferMemory()
-    vkResult = vkBindBufferMemory(vkDevice, vertexData_color.vkBuffer, vertexData_color.vkDeviceMemory, 0);
-    if (vkResult != VK_SUCCESS)
-    {
-        fprintf(gpFile, "%s() : vkBindBufferMemory() Failed For Vertex Color Buffer.\n", __func__);
-        return (vkResult);
-    }
+    // // (Vertex Buffer) Step 10 : Now we have our required device memory handle and vkBuffer handle.
+    // // Bind this device memory handle to the Vulkan Buffer handle using vkBindBufferMemory()
+    // vkResult = vkBindBufferMemory(vkDevice, vertexData_color.vkBuffer, vertexData_color.vkDeviceMemory, 0);
+    // if (vkResult != VK_SUCCESS)
+    // {
+    //     fprintf(gpFile, "%s() : vkBindBufferMemory() Failed For Vertex Color Buffer.\n", __func__);
+    //     return (vkResult);
+    // }
 
     // (Vertex Buffer) Step 11 : Declare a local void * buffer, say 'data', and call vkMapMemory() to map our device memory object handle to this void * data
     // This will allow us to do MMIO.

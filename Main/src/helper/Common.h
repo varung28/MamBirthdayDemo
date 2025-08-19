@@ -70,6 +70,7 @@ namespace TSM
     extern double SCENE_INTRO_TIME;
     extern double SCENE_MAIN_TIME;
     extern double SCENE_ENDCREDITS_TIME;
+    extern bool E2D_DEMO;
 
     extern double g_current_scene_time;
     extern double g_delta_time;
@@ -92,5 +93,21 @@ typedef struct
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
 } MVP_UniformData;
+
+class SCENE
+{
+public:
+    SCENE()
+    {
+    }
+    ~SCENE()
+    {
+    }
+
+    virtual bool isCompleted(void) = 0;
+};
+
+extern float prev_time ;
+extern float delta_time;
 
 #endif // COMMON_H
