@@ -5,6 +5,7 @@ SceneMain::SceneMain(/* args */)
 
     // TSM::selectedScene = TSM::SCENE::MAIN;
 
+    //fadeInFadeOut = new FadeInFadeOut();
     sceneEndCredit = new SceneEndCredit();
     sceneMyTown = new SceneMyTown();
     sceneIntro = new SceneIntro();
@@ -12,6 +13,11 @@ SceneMain::SceneMain(/* args */)
 
 SceneMain::~SceneMain()
 {
+    if (fadeInFadeOut) {
+        delete fadeInFadeOut;
+        fadeInFadeOut = nullptr;
+    }
+
     if (sceneEndCredit)
     {
         delete sceneEndCredit;
@@ -50,10 +56,15 @@ void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
             sceneEndCredit->initialCommandBuffer(commandBuffer);
         break;
     }
+
+    // fadeInFadeOut->initialCommandBuffer(commandBuffer);
 }
 
 void SceneMain::update(void)
 {
+    // fadeInFadeOut->display();
+    // fadeInFadeOut->update();
+
     switch (TSM::selectedScene)
     {
     case TSM::SCENE::INTRO:
@@ -81,4 +92,7 @@ void SceneMain::onResize(int width, int height)
         sceneMyTown->onResize(width, height);
     if (sceneEndCredit)
         sceneEndCredit->onResize(width, height);
+
+    // if (fadeInFadeOut)
+    //     fadeInFadeOut->onResize(width, height);
 }
