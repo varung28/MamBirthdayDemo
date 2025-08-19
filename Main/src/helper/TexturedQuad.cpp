@@ -19,11 +19,9 @@ VkResult TexturedQuad::initialize(std::string filePath)
     vkResult = texture->createTexture(filePath);
     if (vkResult != VK_SUCCESS)
     {
-        fprintf(gpFile, "TEXTURED_QUAD::ERROR : %s() => createTexture() Failed To Load Smiley.png !!!\n", __func__);
+        fprintf(gpFile, "TEXTURED_QUAD::ERROR : %s() => createTexture() Failed To Load ", filePath.c_str(), " !!!\n", __func__);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => Smiley.png Loaded Successfully\n", __func__);
     
     vkResult = createUniformBuffer();
     if (vkResult != VK_SUCCESS)
@@ -32,8 +30,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createUniformBuffer() Succeeded\n", __func__);
 
     vkResult = createDescriptorSetLayout();
     if (vkResult != VK_SUCCESS)
@@ -42,8 +38,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createDescriptorSetLayout() Succeeded\n", __func__);
 
     vkResult = createPipelineLayout();
     if (vkResult != VK_SUCCESS)
@@ -52,8 +46,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipelineLayout() Succeeded\n", __func__);
 
     vkResult = createDescriptorPool();
     if (vkResult != VK_SUCCESS)
@@ -62,8 +54,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createDescriptorPool() Succeeded\n", __func__);
 
     vkResult = createDescriptorSet();
     if (vkResult != VK_SUCCESS)
@@ -72,8 +62,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createDescriptorSet() Succeeded\n", __func__);
 
     vkResult = createPipeline();
     if (vkResult != VK_SUCCESS)
@@ -82,9 +70,6 @@ VkResult TexturedQuad::initialize(std::string filePath)
         vkResult = VK_ERROR_INITIALIZATION_FAILED;
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => createPipeline() Succeeded\n", __func__);
-
 
     return vkResult;
 }
@@ -114,8 +99,6 @@ VkResult TexturedQuad::createUniformBuffer()
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateBuffer() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateBuffer() Succeeded For Uniform Data\n", __func__);
     
     VkMemoryRequirements vkMemoryRequirements;
     memset((void*)&vkMemoryRequirements, 0, sizeof(VkMemoryRequirements));
@@ -148,8 +131,6 @@ VkResult TexturedQuad::createUniformBuffer()
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkAllocateMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }     
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkAllocateMemory() Succeeded For Uniform Data\n", __func__);
 
     vkResult = vkBindBufferMemory(vkDevice, uniformData.vkBuffer, uniformData.vkDeviceMemory, 0);
     if (vkResult != VK_SUCCESS)
@@ -157,8 +138,6 @@ VkResult TexturedQuad::createUniformBuffer()
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkBindBufferMemory() Failed For Uniform Data : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkBindBufferMemory() Succeeded For Uniform Data\n", __func__);
 
     vkResult = updateUniformBuffer();
     if (vkResult != VK_SUCCESS)
@@ -166,13 +145,9 @@ VkResult TexturedQuad::createUniformBuffer()
         fprintf(gpFile, "TEXTURED_QUAD::%s() => updateUniformBuffer() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => updateUniformBuffer() Succeeded\n", __func__);
-
 
     return vkResult;
 }
-
 
 void TexturedQuad::update(MVP_UniformData& mvpUniformData)
 {
@@ -188,14 +163,6 @@ VkResult TexturedQuad::updateUniformBuffer(MVP_UniformData& mvpUniformData)
     // Variable Declarations
     VkResult vkResult = VK_SUCCESS;
 
-    //MVP_UniformData mvpUniformData;
-    //memset((void*)&mvpUniformData, 0, sizeof(MVP_UniformData));
-
-    ////! Update Matrices
-  /* mvpUniformData.modelMatrix = glm::mat4(1.0f);
-   mvpUniformData.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f)) * glm::scale(glm::mat4(1.0), glm::vec3(3.0f, 1.5f, 1.0f));
-    mvpUniformData.viewMatrix = glm::mat4(1.0f);*/
-
     glm::mat4 perspectiveProjectionMatrix = glm::mat4(1.0f);
     perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f),
@@ -205,7 +172,6 @@ VkResult TexturedQuad::updateUniformBuffer(MVP_UniformData& mvpUniformData)
     );
 
     //! 2D Matrix with Column Major (Like OpenGL)
-    //perspectiveProjectionMatrix[1][1] = perspectiveProjectionMatrix[1][1] * (-1.0f);
     mvpUniformData.projectionMatrix = perspectiveProjectionMatrix;
 
     //! Map Uniform Buffer
@@ -218,7 +184,6 @@ VkResult TexturedQuad::updateUniformBuffer(MVP_UniformData& mvpUniformData)
     }
 
     //! Copy the data to the mapped buffer (present on device memory)
-    // memcpy(data, &mvpUniformData, sizeof(MVP_UniformData));
     memcpy(data, &mvpUniformData, sizeof(MVP_UniformData));
 
     //! Unmap memory
@@ -261,8 +226,6 @@ VkResult TexturedQuad::createDescriptorSetLayout()
     vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutCreateInfo, NULL, &vkDescriptorSetLayout);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorSetLayout() Failed : %d !!!\n", __func__, vkResult);
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorSetLayout() Succeeded\n", __func__);
 
     return vkResult;
 }
@@ -287,8 +250,6 @@ VkResult TexturedQuad::createPipelineLayout()
     vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, NULL, &vkPipelineLayout);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineLayout() Failed : %d !!!\n", __func__, vkResult);
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineLayout() Succeeded\n", __func__);
 
     return vkResult;
 }
@@ -323,8 +284,6 @@ VkResult TexturedQuad::createDescriptorPool(void)
     vkResult = vkCreateDescriptorPool(vkDevice, &vkDescriptorPoolCreateInfo, NULL, &vkDescriptorPool);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorPool() Failed : %d !!!\n", __func__, vkResult);  
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateDescriptorPool() Succeeded\n", __func__);
 
     return vkResult;
 }
@@ -351,8 +310,6 @@ VkResult TexturedQuad::createDescriptorSet(void)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkAllocateDescriptorSets() Failed : %d !!!\n", __func__, vkResult);
         return vkResult;
     }  
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkAllocateDescriptorSets() Succeeded\n", __func__);
 
     //! Descriptor Image Info
     VkDescriptorImageInfo vkDescriptorImageInfo;
@@ -572,8 +529,6 @@ VkResult TexturedQuad::createPipeline(void)
     vkResult = vkCreatePipelineCache(vkDevice, &vkPipelineCacheCreateInfo, NULL, &vkPipelineCache);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineCache() Failed : %d !!!\n", __func__, vkResult);
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreatePipelineCache() Succeeded\n", __func__);
 
     //! Create actual Graphics Pipeline
     VkGraphicsPipelineCreateInfo vkGraphicsPipelineCreateInfo;
@@ -601,15 +556,12 @@ VkResult TexturedQuad::createPipeline(void)
     vkResult = vkCreateGraphicsPipelines(vkDevice, vkPipelineCache, 1, &vkGraphicsPipelineCreateInfo, NULL, &vkPipeline);
     if (vkResult != VK_SUCCESS)
         fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateGraphicsPipelines() Failed : %d !!!\n", __func__, vkResult);
-    else
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkCreateGraphicsPipelines() Succeeded\n", __func__);
 
     //* Destroy Pipeline Cache
     if (vkPipelineCache)
     {
         vkDestroyPipelineCache(vkDevice, vkPipelineCache, NULL);
         vkPipelineCache = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipelineCache() Succeeded\n", __func__);
     }
 
     return vkResult;
@@ -690,7 +642,6 @@ TexturedQuad::~TexturedQuad()
     {
         vkDestroyPipeline(vkDevice, vkPipeline, NULL);
         vkPipeline = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipeline() Succeeded\n", __func__);
     }
 
     if (vkDescriptorPool)
@@ -698,28 +649,24 @@ TexturedQuad::~TexturedQuad()
         vkDestroyDescriptorPool(vkDevice, vkDescriptorPool, NULL);
         vkDescriptorPool = VK_NULL_HANDLE;
         vkDescriptorSet = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyDescriptorPool() => Destroyed vkDescriptorPool and vkDescriptorSet Successfully\n", __func__);
     }
 
     if (vkPipelineLayout)
     {
         vkDestroyPipelineLayout(vkDevice, vkPipelineLayout, NULL);
         vkPipelineLayout = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyPipelineLayout() Succeeded\n", __func__);
     }
 
     if (uniformData.vkDeviceMemory)
     {
         vkFreeMemory(vkDevice, uniformData.vkDeviceMemory, NULL);
         uniformData.vkDeviceMemory = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkFreeMemory() Succeeded For uniformData.vkDeviceMemory\n", __func__);
     }
 
     if (uniformData.vkBuffer)
     {
         vkDestroyBuffer(vkDevice, uniformData.vkBuffer, NULL);
         uniformData.vkBuffer = VK_NULL_HANDLE;
-        fprintf(gpFile, "TEXTURED_QUAD::%s() => vkDestroyBuffer() Succedded For uniformData.vkBuffer\n", __func__);
     }
     
     if (texture)
@@ -733,5 +680,8 @@ TexturedQuad::~TexturedQuad()
         delete quad;
         quad = nullptr;
     }
+
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_vertex);
+    ShaderModuleHelper::DestroyShaderModule(vkShaderModule_fragment);
 
 }

@@ -20,13 +20,6 @@ class TexturedQuad
             VkDeviceMemory vkDeviceMemory;
         } UniformData;
 
-        /*typedef struct 
-        {
-            glm::mat4 modelMatrix;
-            glm::mat4 viewMatrix;
-            glm::mat4 projectionMatrix;
-        } MVP_UniformData;*/
-
         UniformData uniformData;
 
         VkDescriptorSet vkDescriptorSet = VK_NULL_HANDLE;

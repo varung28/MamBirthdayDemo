@@ -7,7 +7,7 @@
 class Trees
 {
     private:
-        const int TREES_COUNT = 1;
+        static const int TREES_COUNT = 4;
         const int TREES_DRAW_VERTEX_COUNT = 81;
 
         typedef struct
@@ -33,27 +33,22 @@ class Trees
             VkDeviceMemory vkDeviceMemory;
         } UniformData;
 
-        typedef struct
-        {
-            VertexData vertexData_position;
-            VertexData vertexData_color;
-            PushData modelData;
-        } TreeData;
-
         VkDescriptorSet vkDescriptorSet_Trees = VK_NULL_HANDLE;
         VkDescriptorSetLayout vkDescriptorSetLayout_Trees = VK_NULL_HANDLE;
         VkDescriptorPool vkDescriptorPool_Trees = VK_NULL_HANDLE;
         VkPipeline vkPipeline_Trees = VK_NULL_HANDLE;
         VkPipelineLayout vkPipelineLayout_Trees = VK_NULL_HANDLE;
 
+        VertexData vertexData_position_tree;
+        VertexData vertexData_color_tree;
         UniformData uniformData;
-        TreeData trees[7];
+
+        PushData treesModelData[TREES_COUNT];
 
         VkShaderModule vkShaderModule_vertex = VK_NULL_HANDLE;
         VkShaderModule vkShaderModule_fragment = VK_NULL_HANDLE;
 
     private:
-        VkResult __createVertexBuffer(int index, float* position, int positionSize, float* color, int colorSize);
         VkResult createVertexBuffer();
         VkResult createUniformBuffer();
         VkResult createDescriptorSetLayout();

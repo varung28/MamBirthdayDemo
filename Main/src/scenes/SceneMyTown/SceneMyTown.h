@@ -8,6 +8,8 @@
 #include "pradnya.h"
 #include "Buildings.h"
 #include "Trees.h"
+#include "Road.h"
+#include "StreetLight.h"
 
 class SceneMyTown
 {
@@ -28,6 +30,8 @@ private:
     ScenePradnya *scenePradnya_Sky = nullptr;
     Buildings *buildings = nullptr;
     Trees* trees = nullptr;
+    Road* road = nullptr;
+    StreetLight* streetLight = nullptr;
 
 public:
     SceneMyTown(/* args */);

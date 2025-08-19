@@ -7,8 +7,7 @@
 
 // VULKAN HEADERS
 #define VK_USE_PLATFORM_WIN32_KHR	
-//#include<vulkan/vulkan.h>
-#include"C:\\VulkanSDK\\VulkanSDK\\Include\\vulkan\\vulkan.h"
+#include <vulkan/vulkan.h>
 
 // GLM MACROS & HEADER FILES
 #define GLM_FORCE_RADIANCE
@@ -179,6 +178,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	void uninitialize(void);
 	VkResult display(void);
 	void update(void);
+	void ToggleFullScreen(void);
 
 	// VARIABLE DECLARATIONS
 	WNDCLASSEX wndclass;
@@ -262,6 +262,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		fprintf(gpFile, "%s => initialize() IS SUCCEEDED.\n", __func__);
 	}
 
+	ToggleFullScreen();
+
 	ShowWindow(hwnd, iCmdShow);
 
 	// FOREGROUNDING AND FOCUSING WINDOW
@@ -337,10 +339,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case 'F':
 			ToggleFullScreen();
 			break;
-		case 'i':
-		case 'I':
-
+		
+		case 49:
+			TSM::selectedScene = TSM::SCENE::INTRO; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
 			break;
+
+		case 50:
+			TSM::selectedScene = TSM::SCENE::MAIN; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
+			break;
+
+		case 51:
+			TSM::selectedScene = TSM::SCENE::END_CREDITS; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
+			buildCommandBuffers();
+			break;
+
 		case 27:
 			PostQuitMessage(0);
 		}

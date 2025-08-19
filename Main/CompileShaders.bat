@@ -14,7 +14,7 @@ echo [Cleaning] Done.
 echo.
 
 :: Set GLSLangValidator path (change this if Vulkan SDK is installed elsewhere)
-set GLSLANG_VALIDATOR="C:\VulkanSDK\VulkanSDK\Bin\glslangValidator.exe"
+set GLSLANG_VALIDATOR="C:\VulkanSDK\Vulkan\Bin\glslangValidator.exe"
 
 :: Check if glslangValidator exists
 if not exist %GLSLANG_VALIDATOR% (
