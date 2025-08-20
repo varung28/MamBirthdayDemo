@@ -3,7 +3,7 @@ namespace TSM
 {
     double SCENE_INTRO_TIME = 10.0f;
     double SCENE_MAIN_TIME = 20.0f;
-    double SCENE_ENDCREDITS_TIME = 10.0f;
+    double SCENE_ENDCREDITS_TIME = 35.0f;
 
     double g_current_scene_time = 10.0;
     double g_delta_time = 10.0;

@@ -79,6 +79,7 @@ void SceneMain::update(void)
         {
             TSM::selectedScene = TSM::SCENE::MAIN;
             printf("Updatiiing :\n");
+            prev_time = 0.0f;
         }
         break;
 
@@ -87,7 +88,10 @@ void SceneMain::update(void)
             sceneMyTown->update();
 
         if (sceneMyTown->isCompleted() && TSM::E2D_DEMO)
+        {
             TSM::selectedScene = TSM::SCENE::END_CREDITS;
+            prev_time = 0.0f;
+        }
 
         break;
 

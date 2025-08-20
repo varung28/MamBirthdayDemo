@@ -170,9 +170,14 @@ void SceneEndCredit::update(void)
     static float yPos = yAxis_start_point;
 
     if (yPos < -yAxis_start_point)
+    {
         yPos += 0.5f * delta_time;
+        //yPos += 0.0001f;
+        printf("SceneEndCredit::update : %f\n", yPos);
 
-    if (texQuadBirthdaySlide_1 && yPos < 5)
+    }
+
+    if (texQuadBirthdaySlide_1 )
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
@@ -182,7 +187,7 @@ void SceneEndCredit::update(void)
         texQuadBirthdaySlide_1->update(mvp_UniformData);
     }
 
-    if (texQuadEndCreditSlide_1 && yPos < 8)
+    if (texQuadEndCreditSlide_1 )
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
@@ -192,7 +197,7 @@ void SceneEndCredit::update(void)
         texQuadEndCreditSlide_1->update(mvp_UniformData);
     }
 
-    if (texQuadEndCreditSlide_2 && yPos < 10)
+    if (texQuadEndCreditSlide_2 )
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
