@@ -10,6 +10,7 @@
 #include "Trees.h"
 #include "Road.h"
 #include "StreetLight.h"
+#include "Stars.h"
 
 class SceneMyTown : public SCENE
 {
@@ -32,6 +33,7 @@ private:
     Trees *trees = nullptr;
     Road *road = nullptr;
     StreetLight *streetLight = nullptr;
+    Stars* stars = nullptr;
 
 public:
     SceneMyTown(/* args */);

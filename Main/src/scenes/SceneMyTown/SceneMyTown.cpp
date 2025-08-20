@@ -36,6 +36,9 @@ SceneMyTown::SceneMyTown(/* args */)
     streetLight = new StreetLight();
     streetLight->initialize();
 
+    stars = new Stars();
+    stars->initialize();
+
     sdkCreateTimer(&timer);
 }
 
@@ -116,6 +119,12 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
+    if (stars)
+    {
+        delete stars;
+        stars = nullptr;
+    }
+
     if (streetLight)
     {
         delete streetLight;
@@ -165,6 +174,9 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     if (buildings)
         buildings->buildCommandBuffers(commandBuffer);
 
+    if (stars)
+        stars->buildCommandBuffers(commandBuffer);
+
     if (streetLight)
         streetLight->buildCommandBuffers(commandBuffer);
 
@@ -204,6 +216,9 @@ void SceneMyTown::update(void)
     if (streetLight)
         streetLight->update();
 
+    if (stars)
+        stars->update();
+
     if (buildings)
         buildings->update();
 
@@ -232,6 +247,9 @@ void SceneMyTown::onResize(int width, int height)
 
     if (streetLight)
         streetLight->resize(width, height);
+
+    if (stars)
+        stars->resize(width,height);
 
     if (trees)
         trees->resize(width, height);
