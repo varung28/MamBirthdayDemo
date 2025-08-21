@@ -39,7 +39,7 @@ FadeInFadeOut::FadeInFadeOut()
         0.0f, 0.0f, 0.0f, 1.0f};
 
     // code
-    printf("quad == nullptr\n");
+    // printf("quad == nullptr\n");
     if (quad != nullptr)
         return;
 
@@ -73,9 +73,9 @@ FadeInFadeOut::FadeInFadeOut()
         return;
     }
 
-    printf("Before createPipeline \n");
+    // printf("Before createPipeline \n");
     createPipeline();
-    printf("after createPipeline \n");
+    // printf("after createPipeline \n");
 }
 
 FadeInFadeOut::~FadeInFadeOut()
@@ -203,9 +203,9 @@ void FadeInFadeOut::createPipeline()
     pipelineBuilder->mScissor = vkRect2D_Scissor;
     pipelineBuilder->mPipelineLayout = vkPipelineLayout;
 
-    printf("before BuildPipeline \n");
+    // printf("before BuildPipeline \n");
     vkPipeline = pipelineBuilder->BuildPipeline(vkDevice, vkRenderPass, true);
-    printf("after BuildPipeline \n");
+    // printf("after BuildPipeline \n");
 }
 
 VkResult FadeInFadeOut::createDescriptorSet()

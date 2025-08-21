@@ -247,7 +247,7 @@ void SceneMyTown::update(void)
     {
         if (elapsed_time >= (TSM::SCENE_MAIN_TIME / 2.0)){
             updateColorAnimation = true;
-            printf("updateColorAnimation\n");
+            // printf("updateColorAnimation\n");
         }
     }
 

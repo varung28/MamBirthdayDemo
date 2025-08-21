@@ -16,7 +16,7 @@ namespace TSM
 float objX = 0.0f;
 float objY = 0.0f;
 float objZ = 0.0f;
-float objIncrement = 0.1f;
+float objIncrement = 0.01f;
 
 float scaleX = 0.0f;
 float scaleY = 0.0f;

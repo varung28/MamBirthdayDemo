@@ -184,19 +184,19 @@ void SceneIntro::update(void)
 
         texturedQuad->update(mvp_UniformData);
     }
-    if (fadeInFadeOut && elapsed_time >= TSM::SCENE_INTRO_TIME - 5.0f)
+    if (fadeInFadeOut && elapsed_time >= TSM::SCENE_INTRO_TIME - 4.0f)
     {
         fadeInFadeOut->display();
 
         if (fadeInFadeOut->alpha <= 1.0f)
-            fadeInFadeOut->alpha = fadeInFadeOut->alpha + (0.2 * delta_time);
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha + (0.25 * delta_time);
     }
     else if (fadeInFadeOut)
     {
         fadeInFadeOut->display();
 
         if (fadeInFadeOut->alpha >= 0.0f)
-            fadeInFadeOut->alpha = fadeInFadeOut->alpha - (0.2 * delta_time);
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha - (0.25 * delta_time);
         // fadeInFadeOut->update();
     }
 }

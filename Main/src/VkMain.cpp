@@ -398,12 +398,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			// case VK_NUMPAD5:
 			// 	objY -= objIncrement;
 			// 	break;
-			// case VK_NUMPAD4:
-			// 	objX -= objIncrement;
-			// 	break;
-			// case VK_NUMPAD6:
-			// 	objX += objIncrement;
-			// 	break;
+			case VK_NUMPAD4:
+				objX -= objIncrement;
+				break;
+			case VK_NUMPAD6:
+				objX += objIncrement;
+				break;
 			// case VK_NUMPAD7:
 			// 	objZ -= objIncrement;
 			// 	break;
