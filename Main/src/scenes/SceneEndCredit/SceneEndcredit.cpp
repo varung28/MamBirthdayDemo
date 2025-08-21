@@ -24,6 +24,8 @@ SceneEndCredit::SceneEndCredit(/* args */)
     texQuadBirthdaySlide_1 = new TexturedQuad();
     texQuadBirthdaySlide_1->initialize("resources\\textures\\birthday_slide.png");
 
+    fadeInFadeOut = new FadeInFadeOut();
+    fadeInFadeOut->alpha = 1.0f;
     sdkCreateTimer(&timer);
 }
 
@@ -104,6 +106,12 @@ void SceneEndCredit::createPipeline(void)
 
 SceneEndCredit::~SceneEndCredit()
 {
+    if (fadeInFadeOut)
+    {
+        delete fadeInFadeOut;
+        fadeInFadeOut = nullptr;
+    }
+
     if (texQuadBirthdaySlide_1)
     {
         delete texQuadBirthdaySlide_1;
@@ -144,6 +152,9 @@ void SceneEndCredit::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     texQuadEndCreditSlide_1->buildCommandBuffers(commandBuffer);
     texQuadEndCreditSlide_2->buildCommandBuffers(commandBuffer);
     texQuadBirthdaySlide_1->buildCommandBuffers(commandBuffer);
+
+    if (fadeInFadeOut)
+        fadeInFadeOut->initialCommandBuffer(commandBuffer);
 }
 
 void SceneEndCredit::update(void)
@@ -158,10 +169,10 @@ void SceneEndCredit::update(void)
     delta_time = elapsed_time - prev_time;
     prev_time = elapsed_time;
 
-    printf("SceneEndCredit::update : %f\n", elapsed_time);
+    // printf("SceneEndCredit::update : %f\n", elapsed_time);
     if (elapsed_time >= TSM::SCENE_ENDCREDITS_TIME)
     {
-        printf("completed : %f\n", elapsed_time);
+        // printf("completed : %f\n", elapsed_time);
         completed = true;
     }
 
@@ -172,12 +183,11 @@ void SceneEndCredit::update(void)
     if (yPos < -yAxis_start_point)
     {
         yPos += 0.5f * delta_time;
-        //yPos += 0.0001f;
-        printf("SceneEndCredit::update : %f\n", yPos);
-
+        // yPos += 0.0001f;
+        // printf("SceneEndCredit::update : %f\n", yPos);
     }
 
-    if (texQuadBirthdaySlide_1 )
+    if (texQuadBirthdaySlide_1)
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
@@ -187,7 +197,7 @@ void SceneEndCredit::update(void)
         texQuadBirthdaySlide_1->update(mvp_UniformData);
     }
 
-    if (texQuadEndCreditSlide_1 )
+    if (texQuadEndCreditSlide_1)
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
@@ -197,7 +207,7 @@ void SceneEndCredit::update(void)
         texQuadEndCreditSlide_1->update(mvp_UniformData);
     }
 
-    if (texQuadEndCreditSlide_2 )
+    if (texQuadEndCreditSlide_2)
     {
         memset((void *)&mvp_UniformData, 0, sizeof(MVP_UniformData));
         mvp_UniformData.modelMatrix = glm::mat4(1.0f);
@@ -205,6 +215,25 @@ void SceneEndCredit::update(void)
         mvp_UniformData.viewMatrix = glm::mat4(1.0f);
 
         texQuadEndCreditSlide_2->update(mvp_UniformData);
+    }
+
+    if (fadeInFadeOut && elapsed_time >= TSM::SCENE_ENDCREDITS_TIME - 5.0f)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha < 0.95f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha + (0.2 * delta_time);
+        else
+            fadeInFadeOut->alpha = 0.95f;
+        // printf("fadeInFadeOut->alpha %f", fadeInFadeOut->alpha);
+    }
+    else if (fadeInFadeOut)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha >= 0.0f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha - (0.2 * delta_time);
+        // fadeInFadeOut->update();
     }
 }
 

@@ -19,11 +19,19 @@ SceneIntro::SceneIntro(/* args */)
 
     texturedQuad = new TexturedQuad();
     texturedQuad->initialize("resources\\textures\\Intro_slide_1.png");
+
+    fadeInFadeOut = new FadeInFadeOut();
+    fadeInFadeOut->alpha = 1.0f;
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
 SceneIntro::~SceneIntro()
 {
+    if (fadeInFadeOut)
+    {
+        delete fadeInFadeOut;
+        fadeInFadeOut = nullptr;
+    }
 
     if (texturedQuad)
     {
@@ -67,6 +75,9 @@ void SceneIntro::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     // //pyramid->initialCommandBuffer(commandBuffer);
 
     texturedQuad->buildCommandBuffers(commandBuffer);
+
+    if (fadeInFadeOut)
+        fadeInFadeOut->initialCommandBuffer(commandBuffer);
 }
 
 void SceneIntro::createPipeline(void)
@@ -154,11 +165,11 @@ void SceneIntro::update(void)
     delta_time = elapsed_time - prev_time;
     prev_time = elapsed_time;
 
-        printf("SceneIntro::update : %f\n", elapsed_time);
+    // printf("SceneIntro::update : %f\n", elapsed_time);
     // printf("time : %f\n", elapsed_time);
     if (elapsed_time >= TSM::SCENE_INTRO_TIME)
     {
-        printf("completed : %f\n", elapsed_time);
+        // printf("completed : %f\n", elapsed_time);
         completed = true;
     }
 
@@ -172,6 +183,21 @@ void SceneIntro::update(void)
         mvp_UniformData.viewMatrix = glm::mat4(1.0f);
 
         texturedQuad->update(mvp_UniformData);
+    }
+    if (fadeInFadeOut && elapsed_time >= TSM::SCENE_INTRO_TIME - 5.0f)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha <= 1.0f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha + (0.2 * delta_time);
+    }
+    else if (fadeInFadeOut)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha >= 0.0f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha - (0.2 * delta_time);
+        // fadeInFadeOut->update();
     }
 }
 
@@ -192,4 +218,7 @@ void SceneIntro::onResize(int width, int height)
     // createPipeline();
 
     texturedQuad->resize(width, height);
+
+    if (fadeInFadeOut)
+        fadeInFadeOut->onResize(width, height);
 }

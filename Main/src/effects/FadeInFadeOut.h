@@ -11,22 +11,24 @@ public:
     FadeInFadeOut();
     ~FadeInFadeOut();
 
-    FadeInFadeOut(const FadeInFadeOut&) = delete;
-    FadeInFadeOut operator=(const FadeInFadeOut&) = delete;
+    FadeInFadeOut(const FadeInFadeOut &) = delete;
+    FadeInFadeOut operator=(const FadeInFadeOut &) = delete;
 
     void display();
     void update();
-    void initialCommandBuffer(VkCommandBuffer& commandBuffer);
+    void initialCommandBuffer(VkCommandBuffer &commandBuffer);
     void createPipeline();
     VkResult createDescriptorSet();
     void onResize(const int width, const int height);
+    void update(float _alpha);
+
+    float alpha{0.0f};
 
 private:
     VkResult updateUniformBuffer();
     VkResult createUniformBuffer();
     VkResult createDescriptorSetLayout();
     VkResult createPipelineLayout();
-
 
     struct MyUniformData
     {
@@ -40,17 +42,18 @@ private:
     {
         VkBuffer vkBuffer;
         VkDeviceMemory vkDeviceMemory;
-    } uniformData;
+    };
 
-    float alpha{0.0f};
+    static struct UniformData uniformData;
+
     bool isFadingIn{false};
 
-    Quad *quad {nullptr};
-    VkShaderModule vertexShaderModule {VK_NULL_HANDLE};
-    VkShaderModule fragmentShaderModule {VK_NULL_HANDLE};
-    VkPipeline vkPipeline{VK_NULL_HANDLE};
-    VkDescriptorSetLayout vkDescriptorSetLayout {VK_NULL_HANDLE};
-    VkDescriptorSet vkDescriptorSet{VK_NULL_HANDLE};
-    VulkanPipelineBuilder *pipelineBuilder{nullptr};
-    VkPipelineLayout vkPipelineLayout {VK_NULL_HANDLE};
+    static Quad *quad;
+    static VkShaderModule vertexShaderModule;
+    static VkShaderModule fragmentShaderModule;
+    static VkPipeline vkPipeline;
+    static VkDescriptorSetLayout vkDescriptorSetLayout;
+    static VkDescriptorSet vkDescriptorSet;
+    static VulkanPipelineBuilder *pipelineBuilder;
+    static VkPipelineLayout vkPipelineLayout;
 };

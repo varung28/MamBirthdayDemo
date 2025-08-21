@@ -4,6 +4,7 @@
 #include "../../helper/Geometry.h"
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
+#include "../../effects/FadeInFadeOut.h"
 
 #include "pradnya.h"
 #include "Buildings.h"
@@ -42,6 +43,7 @@ public:
     void createPipeline(void);
     void update(void);
     void onResize(int width, int height);
+    FadeInFadeOut *fadeInFadeOut{nullptr};
 
     inline bool isCompleted(void)
     {

@@ -6,7 +6,7 @@
 #include "VkMain.h"
 
 // VULKAN HEADERS
-#define VK_USE_PLATFORM_WIN32_KHR	
+#define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 
 // GLM MACROS & HEADER FILES
@@ -163,7 +163,7 @@ Pyramid *pyramid = nullptr;
 SceneMain *mainScene = nullptr;
 
 OpenAL *openal;
-
+extern bool updateColorAnimation;
 // ONLY FOR DEBUG
 int main()
 {
@@ -339,7 +339,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case 'F':
 			ToggleFullScreen();
 			break;
-		
+
 		case 49:
 			TSM::selectedScene = TSM::SCENE::INTRO; // TEMPORRAY ARREMGEMENT FOR SCEN CHANGE
 			buildCommandBuffers();
@@ -1255,12 +1255,16 @@ VkResult display(void)
 	updateUniformBuffer();
 
 	static int prevScene = TSM::selectedScene;
+	static bool updateColorAnimation_prev = updateColorAnimation;
+
+	prevScene = TSM::selectedScene;
+	updateColorAnimation_prev = updateColorAnimation;
 
 	mainScene->update();
 
 	vkDeviceWaitIdle(vkDevice);
 
-	if(prevScene != TSM::selectedScene)
+	if (prevScene != TSM::selectedScene || updateColorAnimation_prev != updateColorAnimation)
 		buildCommandBuffers();
 
 	return (vkResult);
@@ -3535,7 +3539,6 @@ VkResult buildCommandBuffers(void)
 			return vkResult;
 		}
 
-
 		VkCommandBufferBeginInfo vkCommandBufferBeginInfo;
 
 		memset((void *)&vkCommandBufferBeginInfo, 0, sizeof(VkCommandBufferBeginInfo));
@@ -3550,7 +3553,6 @@ VkResult buildCommandBuffers(void)
 			fprintf(gpFile, "%s => vkBeginCommandBuffer() IS FAILED FOR INDEX %d.\n", __func__, i);
 			return vkResult;
 		}
-
 
 		VkClearValue vkClearValue_Array[2];
 
@@ -3594,7 +3596,6 @@ VkResult buildCommandBuffers(void)
 			fprintf(gpFile, "%s => vkEndCommandBuffer() IS FAILED FOR INDEX %d.\n", __func__, i);
 			return vkResult;
 		}
-
 	}
 
 	return vkResult;

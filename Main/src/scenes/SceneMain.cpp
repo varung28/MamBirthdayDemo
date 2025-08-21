@@ -6,7 +6,7 @@ SceneMain::SceneMain(/* args */)
     TSM::selectedScene = TSM::SCENE::INTRO;
     TSM::E2D_DEMO = true; // if want timer based scene swicth
 
-    //fadeInFadeOut = new FadeInFadeOut();
+    // fadeInFadeOut = new FadeInFadeOut();
     sceneEndCredit = new SceneEndCredit();
     sceneMyTown = new SceneMyTown();
     sceneIntro = new SceneIntro();
@@ -16,10 +16,10 @@ SceneMain::SceneMain(/* args */)
 
 SceneMain::~SceneMain()
 {
-    if (fadeInFadeOut) {
-        delete fadeInFadeOut;
-        fadeInFadeOut = nullptr;
-    }
+    // if (fadeInFadeOut) {
+    //     delete fadeInFadeOut;
+    //     fadeInFadeOut = nullptr;
+    // }
 
     if (sceneEndCredit)
     {
@@ -60,7 +60,7 @@ void SceneMain::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 
         break;
     }
-
+    // printf("initialCommandBuffer\n");
     // fadeInFadeOut->initialCommandBuffer(commandBuffer);
 }
 
@@ -78,8 +78,10 @@ void SceneMain::update(void)
         if (sceneIntro->isCompleted() && TSM::E2D_DEMO)
         {
             TSM::selectedScene = TSM::SCENE::MAIN;
-            printf("Updatiiing :\n");
+
             prev_time = 0.0f;
+            if (sceneMyTown)
+                sceneMyTown->fadeInFadeOut->alpha = 1.0f;
         }
         break;
 
@@ -91,6 +93,9 @@ void SceneMain::update(void)
         {
             TSM::selectedScene = TSM::SCENE::END_CREDITS;
             prev_time = 0.0f;
+
+            if (sceneEndCredit)
+                sceneEndCredit->fadeInFadeOut->alpha = 1.0f;
         }
 
         break;
@@ -105,7 +110,6 @@ void SceneMain::update(void)
         break;
     }
 
-    printf("TSM::selectedScene %d\n", TSM::selectedScene);
 }
 
 void SceneMain::onResize(int width, int height)

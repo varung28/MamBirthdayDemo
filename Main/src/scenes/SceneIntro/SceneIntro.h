@@ -3,8 +3,9 @@
 #include "../../helper/ShaderModule.h"
 #include "../../helper/PipelineBuilder.h"
 #include "../../helper/TexturedQuad.h"
+#include "../../effects/FadeInFadeOut.h"
 
-class SceneIntro
+class SceneIntro  : public SCENE
 {
 private:
     /* data */
@@ -32,4 +33,5 @@ public:
     {
         return completed;
     };
+    FadeInFadeOut *fadeInFadeOut{nullptr};
 };

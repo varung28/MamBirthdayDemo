@@ -39,6 +39,9 @@ SceneMyTown::SceneMyTown(/* args */)
     stars = new Stars();
     stars->initialize();
 
+    fadeInFadeOut = new FadeInFadeOut();
+    fadeInFadeOut->alpha = 1.0f;
+
     sdkCreateTimer(&timer);
 }
 
@@ -119,6 +122,12 @@ void SceneMyTown::createPipeline(void)
 
 SceneMyTown::~SceneMyTown()
 {
+    if (fadeInFadeOut)
+    {
+        delete fadeInFadeOut;
+        fadeInFadeOut = nullptr;
+    }
+
     if (stars)
     {
         delete stars;
@@ -174,7 +183,7 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
     if (buildings)
         buildings->buildCommandBuffers(commandBuffer);
 
-    if (stars)
+    if (stars && updateColorAnimation)
         stars->buildCommandBuffers(commandBuffer);
 
     if (streetLight)
@@ -191,6 +200,9 @@ void SceneMyTown::initialCommandBuffer(VkCommandBuffer &commandBuffer)
 
     if (scenePradnya_Sky)
         scenePradnya_Sky->buildCommandBuffers(commandBuffer);
+
+    if (fadeInFadeOut)
+        fadeInFadeOut->initialCommandBuffer(commandBuffer);
 }
 
 void SceneMyTown::update(void)
@@ -203,7 +215,7 @@ void SceneMyTown::update(void)
     delta_time = elapsed_time - prev_time;
     prev_time = elapsed_time;
 
-    printf("SceneMyTown::update : %f\n", elapsed_time);
+    // printf("SceneMyTown::update : %f\n", elapsed_time);
     // printf("time : %f\n", elapsed_time);
     if (elapsed_time >= TSM::SCENE_MAIN_TIME)
     {
@@ -233,8 +245,26 @@ void SceneMyTown::update(void)
 
     if (elapsed_time >= TSM::SCENE_MAIN_TIME / 2.0)
     {
-        if (elapsed_time >= (TSM::SCENE_MAIN_TIME / 2.0) + 5.0f)
+        if (elapsed_time >= (TSM::SCENE_MAIN_TIME / 2.0)){
             updateColorAnimation = true;
+            printf("updateColorAnimation\n");
+        }
+    }
+
+    if (fadeInFadeOut && elapsed_time >= TSM::SCENE_MAIN_TIME - 5.0f)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha <= 1.0f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha + (0.2 * delta_time);
+    }
+    else if (fadeInFadeOut)
+    {
+        fadeInFadeOut->display();
+
+        if (fadeInFadeOut->alpha >= 0.0f)
+            fadeInFadeOut->alpha = fadeInFadeOut->alpha - (0.2 * delta_time);
+        // fadeInFadeOut->update();
     }
 }
 
@@ -249,7 +279,7 @@ void SceneMyTown::onResize(int width, int height)
         streetLight->resize(width, height);
 
     if (stars)
-        stars->resize(width,height);
+        stars->resize(width, height);
 
     if (trees)
         trees->resize(width, height);
@@ -262,4 +292,7 @@ void SceneMyTown::onResize(int width, int height)
 
     if (scenePradnya)
         scenePradnya->resize(width, height);
+
+    if (fadeInFadeOut)
+        fadeInFadeOut->onResize(width, height);
 }
