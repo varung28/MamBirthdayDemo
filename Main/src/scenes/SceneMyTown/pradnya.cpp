@@ -951,7 +951,7 @@ VkResult ScenePradnya::updateColorVertexBuffer_sky(void)
                                                                    {beginning_skyBottom_R, beginning_skyBottom_G, beginning_skyBottom_B},
                                                                    {beginning_skyTop_R, beginning_skyTop_G, beginning_skyTop_B}};
 
-    const float delta = 0.05f * delta_time;
+    const float delta = 0.04f * delta_time;
 
     // ****** SKY QUAD TOP COLOR CHANGE ******
     if (rectangle_colors_2D_array[0][0] > end_skyTop_R)

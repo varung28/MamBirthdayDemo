@@ -182,7 +182,7 @@ void SceneEndCredit::update(void)
 
     if (yPos < -yAxis_start_point)
     {
-        yPos += 0.5f * delta_time;
+        yPos += 0.4f * delta_time;
         // yPos += 0.0001f;
         // printf("SceneEndCredit::update : %f\n", yPos);
     }

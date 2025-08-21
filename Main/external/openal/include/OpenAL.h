@@ -205,6 +205,12 @@ public:
             printf("InitalizeAudio() : alSourcei() Failed.\n");
             return FALSE;
         }
+        alSourcei(audioSource, AL_LOOPING, AL_TRUE);
+        if (alGetError() != AL_NO_ERROR)
+        {
+            printf("InitalizeAudio() : alSourcei() Failed.\n");
+            return FALSE;
+        }
 
         // UNLOAD WAV RESOURCE
         // UnlockResource(hResource);

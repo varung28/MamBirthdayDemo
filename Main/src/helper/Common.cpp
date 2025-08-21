@@ -2,8 +2,8 @@
 
 namespace TSM
 {
-    double SCENE_INTRO_TIME = 8.0f;
-    double SCENE_MAIN_TIME = 20.0f;
+    double SCENE_INTRO_TIME = 13.0f;
+    double SCENE_MAIN_TIME = 37.0f;
     double SCENE_ENDCREDITS_TIME = 35.0f;
 
     double g_current_scene_time = 10.0;
